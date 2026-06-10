@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.462</title>
+    <title>Sistema de Dublagem v12.465</title>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -432,6 +432,90 @@
             .dub-body{flex-direction:column;}
             .dub-rot-table{font-size:13px;}
         }
+
+        /* ═══════════════════════════════════════════════════
+           RESPONSIVIDADE MOBILE — AppDub
+           Breakpoints: 768px (tablet), 480px (phone)
+        ═══════════════════════════════════════════════════ */
+
+        /* AVISO MOBILE — exibido no topo em telas pequenas */
+        .mobile-aviso {
+            display: none;
+            background: #1e293b;
+            color: #94a3b8;
+            font-size: 11px;
+            text-align: center;
+            padding: 6px 12px;
+            border-bottom: 1px solid #334155;
+        }
+
+        @media(max-width:768px) {
+
+            /* AVISO */
+            .mobile-aviso { display: block; }
+
+            /* LOGIN */
+            .login-box { padding: 32px 24px !important; margin: 16px; }
+            .login-box h1 { font-size: 22px !important; }
+
+            /* HEADER */
+            .header { flex-wrap: wrap; padding: 8px 12px !important; gap: 6px !important; min-height: auto !important; }
+            .header-left { min-width: 0 !important; display: none; }
+            .header-center h1 { font-size: 13px !important; white-space: nowrap; }
+            .header-right { min-width: 0 !important; gap: 8px !important; font-size: 12px !important; }
+            .btn-logout { padding: 5px 10px !important; font-size: 11px !important; }
+
+            /* ABAS PRINCIPAIS */
+            .tabs { overflow-x: auto; scrollbar-width: none; }
+            .tabs::-webkit-scrollbar { display: none; }
+            .tab-btn { min-width: 80px !important; padding: 10px 8px !important; font-size: 10px !important; white-space: nowrap; }
+
+            /* CONTEÚDO PRINCIPAL */
+            .aba.active { padding: 10px !important; }
+
+            /* PROJETOS — lista de projetos */
+            .proj-equipe-grid { gap: 12px !important; padding: 12px !important; }
+            .proj-membro-card { width: 120px !important; min-width: 100px !important; padding: 14px 10px !important; }
+
+            /* CONFIGURAÇÕES */
+            #cfgWrapper { padding: 0 !important; }
+
+            /* TELA DUBLADOR */
+            .dub-screen { font-size: 13px; }
+            .dub-col-left { max-height: 140px !important; }
+            .dub-rot-table { font-size: 12px !important; }
+            .dub-rot-table td, .dub-rot-table th { padding: 4px 6px !important; }
+
+            /* TELA CONFERENTE */
+            .conf-body { flex-direction: column !important; }
+            .conf-col-left { width: 100% !important; max-height: 150px !important; border-right: none !important; border-bottom: 1px solid #0f3460 !important; }
+
+            /* CATÁLOGO DE VOZES */
+            .cat-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important; gap: 10px !important; }
+            .cat-card { padding: 12px 8px !important; }
+
+            /* GERÊNCIA / PRODUÇÃO */
+            .prod-container { flex-direction: column !important; }
+            .prod-sidebar { width: 100% !important; max-height: 160px !important; overflow-y: auto; border-right: none !important; border-bottom: 2px solid #e2e8f0 !important; }
+            .prod-res-card { min-width: 80px !important; padding: 8px !important; }
+
+            /* MODAIS */
+            .modal-content { width: 95% !important; max-width: none !important; padding: 16px !important; }
+            .prod-modal-box { padding: 16px !important; width: 95% !important; }
+            .proj-senha-box { padding: 20px 16px !important; width: 90% !important; }
+
+            /* TABELAS com scroll horizontal */
+            .aba.active table { display: block; overflow-x: auto; white-space: nowrap; }
+        }
+
+        @media(max-width:480px) {
+            /* PHONE — ajustes adicionais */
+            .header-center h1 { font-size: 11px !important; }
+            .tab-btn { min-width: 64px !important; font-size: 9px !important; padding: 8px 4px !important; }
+            .proj-membro-card { width: 100px !important; min-width: 85px !important; font-size: 11px !important; }
+            .login-box { padding: 24px 16px !important; }
+            .login-box h1 { font-size: 18px !important; }
+        }
         .dub-pers-btn { padding:3px 9px;border-radius:16px;border:1px solid #334155;background:#1e293b;color:#94a3b8;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap; }
         .dub-pers-btn.ativo { background:#2563eb;border-color:#1d4ed8;color:white; }
         .dub-ep-envio { background:none;border:none;color:#3b82f6;font-size:12px;cursor:pointer;padding:0 2px;opacity:0;transition:opacity .15s;position:absolute;right:24px;top:50%;transform:translateY(-50%); }
@@ -445,7 +529,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1>🎬 Sistema de Dublagem</h1>
-        <p>v12.462</p>
+        <p>v12.465</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" autocomplete="current-password" required>
@@ -455,19 +539,20 @@
             </div>
             <button type="submit" id="btnEntrar">✅ ENTRAR</button>
         </form>
-        <p class="dica" id="loginDica" style="font-size:11px;color:#6b7280;">Primeira entrada: use seu nome ou e-mail cadastrado</p>
+        <p class="dica" id="loginDica" style="font-size:11px;color:#6b7280;">Primeira entrada neste dispositivo? Use <strong>Sydney</strong> e senha <strong>admin123</strong> e troque em seguida.</p>
     </div>
 </div>
 
 <!-- APP -->
 <div id="appContainer" class="app-container" style="display:none;">
+    <div class="mobile-aviso">📱 Modo mobile — algumas funções avançadas estão disponíveis apenas no desktop.</div>
     <header class="header">
         <div class="header-left">
             <span id="headerNomeSerie" class="header-serie" style="display:none;"></span>
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.462</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.465</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1556,7 +1641,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.462</footer>
+    <footer>🎬 Sistema de Dublagem v12.465</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -6932,7 +7017,7 @@ function _adminsGarantirSuperadmin() {
     var sa = null;
     for (var i = 0; i < lista.length; i++) { if (lista[i].role === 'superadmin') { sa = lista[i]; break; } }
     if (!sa) {
-        lista.unshift({ id:'adm_superadmin', nome:'Sydney', email:'', senhaHash:_adminsHash('admin123'), role:'superadmin', ativo:true, criado:new Date().toISOString() });
+        lista.unshift({ id:'adm_superadmin', nome:'Admin', email:'', senhaHash:_adminsHash('admin123'), role:'superadmin', ativo:true, criado:new Date().toISOString() });
         _adminsSalvar(lista);
     } else if (!sa.senhaHash || sa.senhaHash.indexOf('h') !== 0) {
         // hash gerado pelo crypto.subtle antigo (formato hex de 64 chars) — reseta para admin123
@@ -11203,18 +11288,39 @@ function cfgCarregarGapi(callback) {
 }
 
 function cfgAutenticar(callback) {
+    // Tenta restaurar token salvo do localStorage
+    try {
+        var saved = JSON.parse(localStorage.getItem('_gtoken') || 'null');
+        if (saved && saved.access_token && saved.expiry && Date.now() < saved.expiry) {
+            gapi.client.setToken(saved);
+            callback();
+            return;
+        }
+    } catch(e) {}
+
+    // Token ausente ou expirado — pede nova autorização
     _tokenClient.callback = (resp) => {
         if(resp.error) {
             mostrarNotificacao('❌ Erro na autenticação Google: ' + resp.error, 'erro');
             return;
         }
+        // Salva token com expiração (55 minutos para margem de segurança)
+        var token = gapi.client.getToken();
+        if (token) {
+            token.expiry = Date.now() + (55 * 60 * 1000);
+            localStorage.setItem('_gtoken', JSON.stringify(token));
+        }
         callback();
     };
     if(gapi.client.getToken() === null) {
-        _tokenClient.requestAccessToken({ prompt: 'consent' });
+        _tokenClient.requestAccessToken({ prompt: '' });
     } else {
         callback();
     }
+}
+
+function cfgLimparTokenSalvo() {
+    localStorage.removeItem('_gtoken');
 }
 
 function cfgTestarConexao() {
@@ -11238,6 +11344,7 @@ function cfgTestarConexao() {
 function cfgDesconectar() {
     const token = gapi.client?.getToken?.();
     if(token) { google.accounts.oauth2.revoke(token.access_token); gapi.client.setToken(''); }
+    cfgLimparTokenSalvo();
     _gapiInited = false; _gisInited = false; _tokenClient = null;
     mostrarNotificacao('Desconectado do Google.', 'info');
 }
