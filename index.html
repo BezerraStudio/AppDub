@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.457</title>
+    <title>Sistema de Dublagem v12.459</title>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -445,7 +445,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1>🎬 Sistema de Dublagem</h1>
-        <p>v12.457</p>
+        <p>v12.459</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" autocomplete="current-password" required>
@@ -467,7 +467,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.457</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.459</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1005,10 +1005,6 @@
           <div id="cfgWrapper" style="max-width:1200px;margin:0 auto;padding:0;">
             <!-- Sub-abas compactas e fluidas -->
             <div style="display:flex;flex-wrap:wrap;gap:0;background:#f1f3f5;border-bottom:2px solid #d0d4d9;justify-content:center;">
-                <button onclick="_cfgSubAba('drive')" id="cfgTabDrive"
-                    style="flex:0 1 auto;padding:7px 12px;border:none;border-bottom:3px solid #3498db;background:#fff;color:#3498db;font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;text-align:center;">
-                    ☁️ Drive
-                </button>
                 <button onclick="_cfgSubAba('dubladores')" id="cfgTabDubladores"
                     style="flex:0 1 auto;padding:7px 12px;border:none;border-bottom:3px solid transparent;background:#f1f3f5;color:#7f8c8d;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;text-align:center;">
                     👤 Dubladores
@@ -1045,6 +1041,10 @@
                     style="flex:0 1 auto;padding:7px 12px;border:none;border-bottom:3px solid transparent;background:#f1f3f5;color:#c0392b;font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;text-align:center;">
                     🔐 Admins
                 </button>
+                <button onclick="_cfgSubAba('drive')" id="cfgTabDrive"
+                    style="flex:0 1 auto;padding:7px 12px;border:none;border-bottom:3px solid transparent;background:#f1f3f5;color:#3498db;font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;text-align:center;">
+                    ☁️ Drive
+                </button>
             </div>
 
             <!-- Container de conteúdo com padding -->
@@ -1067,27 +1067,50 @@
                 Criar <b>Chave de API</b>. Cole os valores abaixo.
               </div>
 
-              <div style="display:grid;gap:12px;">
+              <div style="display:grid;gap:14px;">
+
+                <!-- Client ID -->
                 <div>
                   <label style="font-size:12px;font-weight:600;color:#555;display:block;margin-bottom:4px;">Client ID (OAuth 2.0)</label>
-                  <input id="cfgClientId" type="text" placeholder="xxxxx.apps.googleusercontent.com"
-                    style="width:100%;padding:9px 12px;border:2px solid #dde;border-radius:6px;font-size:13px;box-sizing:border-box;"
-                    oninput="cfgSalvarLocal()">
-                </div>
-                <div>
-                  <label style="font-size:12px;font-weight:600;color:#555;display:block;margin-bottom:4px;">API Key</label>
-                  <input id="cfgApiKey" type="text" placeholder="AIzaSy..."
-                    style="width:100%;padding:9px 12px;border:2px solid #dde;border-radius:6px;font-size:13px;box-sizing:border-box;"
-                    oninput="cfgSalvarLocal()">
+                  <div style="display:flex;gap:6px;align-items:center;">
+                    <input id="cfgClientId" type="text" placeholder="xxxxx.apps.googleusercontent.com" disabled
+                      style="flex:1;padding:9px 12px;border:2px solid #dde;border-radius:6px;font-size:13px;box-sizing:border-box;background:#f8f9fa;color:#555;">
+                    <button onclick="cfgDesbloquear('cfgClientId',this)" style="padding:7px 10px;background:#f1f5f9;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;cursor:pointer;" title="Desbloquear para editar">🔒</button>
+                  </div>
                 </div>
 
+                <!-- API Key -->
                 <div>
-                  <label style="font-size:12px;font-weight:600;color:#555;display:block;margin-bottom:4px;">☁️ Pasta Raiz no Drive (ID)</label>
-                  <input id="cfgPastaRaizId" type="text" placeholder="ID da pasta raiz — drive.google.com/drive/folders/ID_AQUI"
-                    style="width:100%;padding:9px 12px;border:2px solid #2471a3;border-radius:6px;font-size:13px;box-sizing:border-box;"
-                    oninput="cfgSalvarLocal()">
-                  <span style="font-size:11px;color:#2471a3;">Todos os computadores do estúdio apontam para esta pasta — sincronização automática.</span>
+                  <label style="font-size:12px;font-weight:600;color:#555;display:block;margin-bottom:4px;">API Key</label>
+                  <div style="display:flex;gap:6px;align-items:center;">
+                    <input id="cfgApiKey" type="text" placeholder="AIzaSy..." disabled
+                      style="flex:1;padding:9px 12px;border:2px solid #dde;border-radius:6px;font-size:13px;box-sizing:border-box;background:#f8f9fa;color:#555;">
+                    <button onclick="cfgDesbloquear('cfgApiKey',this)" style="padding:7px 10px;background:#f1f5f9;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;cursor:pointer;" title="Desbloquear para editar">🔒</button>
+                  </div>
                 </div>
+
+                <!-- ID Raiz Sistema -->
+                <div style="background:#f0f7ff;border:1px solid #bcd4f0;border-radius:8px;padding:12px;">
+                  <label style="font-size:12px;font-weight:700;color:#1a5276;display:block;margin-bottom:4px;">📁 ID Raiz do Sistema <span style="font-weight:400;color:#5d8cb5;">(pasta "APP Dublagem")</span></label>
+                  <div style="display:flex;gap:6px;align-items:center;">
+                    <input id="cfgPastaRaizId" type="text" placeholder="ID da pasta APP Dublagem no Drive" disabled
+                      style="flex:1;padding:9px 12px;border:2px solid #2471a3;border-radius:6px;font-size:13px;box-sizing:border-box;background:#f8f9fa;color:#1a5276;">
+                    <button onclick="cfgDesbloquear('cfgPastaRaizId',this)" style="padding:7px 10px;background:#f1f5f9;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;cursor:pointer;" title="Desbloquear para editar">🔒</button>
+                  </div>
+                  <span style="font-size:11px;color:#2471a3;margin-top:4px;display:block;">_SISTEMA/ e ELENCO/ ficam aqui — dados permanentes do estúdio.</span>
+                </div>
+
+                <!-- ID Raiz Clientes -->
+                <div style="background:#f0fff4;border:1px solid #a9dfbf;border-radius:8px;padding:12px;">
+                  <label style="font-size:12px;font-weight:700;color:#1e8449;display:block;margin-bottom:4px;">📁 ID Raiz dos Projetos <span style="font-weight:400;color:#58a87a;">(pasta "Clientes")</span></label>
+                  <div style="display:flex;gap:6px;align-items:center;">
+                    <input id="cfgPastaClientesId" type="text" placeholder="ID da pasta Clientes no Drive" disabled
+                      style="flex:1;padding:9px 12px;border:2px solid #27ae60;border-radius:6px;font-size:13px;box-sizing:border-box;background:#f8f9fa;color:#1e8449;">
+                    <button onclick="cfgDesbloquear('cfgPastaClientesId',this)" style="padding:7px 10px;background:#f1f5f9;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;cursor:pointer;" title="Desbloquear para editar">🔒</button>
+                  </div>
+                  <span style="font-size:11px;color:#27ae60;margin-top:4px;display:block;">Pastas de cada cliente com seus projetos — arquivos de produção em andamento.</span>
+                </div>
+
               </div>
 
               <div style="display:flex;gap:10px;margin-top:12px;align-items:center;flex-wrap:wrap;">
@@ -1536,7 +1559,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.457</footer>
+    <footer>🎬 Sistema de Dublagem v12.459</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -11067,6 +11090,8 @@ function cfgCarregar() {
     const pr = document.getElementById('cfgPastaRaizId');
     if(ci) ci.value = cfg.clientId    || '';
     if(ak) ak.value = cfg.apiKey      || '';
+    var pc = document.getElementById('cfgPastaClientesId');
+    if(pc) pc.value = cfg.pastaClientesId || '';
     if(pr) pr.value = cfg.pastaRaizId || '';
     cfgAtualizarStatus();
     if(cfg.pastaRaizId) driveAtualizarStatusUI();
@@ -11074,12 +11099,38 @@ function cfgCarregar() {
 
 function cfgSalvarLocal() {
     const cfg = {
-        clientId:    document.getElementById('cfgClientId')?.value.trim()    || '',
-        apiKey:      document.getElementById('cfgApiKey')?.value.trim()      || '',
-        pastaRaizId: document.getElementById('cfgPastaRaizId')?.value.trim() || '',
+        clientId:        document.getElementById('cfgClientId')?.value.trim()        || '',
+        apiKey:          document.getElementById('cfgApiKey')?.value.trim()          || '',
+        pastaRaizId:     document.getElementById('cfgPastaRaizId')?.value.trim()     || '',
+        pastaClientesId: document.getElementById('cfgPastaClientesId')?.value.trim() || '',
     };
     localStorage.setItem('cfg_google', JSON.stringify(cfg));
     cfgAtualizarStatus();
+}
+
+function cfgDesbloquear(campoId, btn) {
+    _confirmar('Desbloquear este campo para edição? Alterar credenciais pode interromper a conexão com o Drive.', function() {
+        var input = document.getElementById(campoId);
+        if (!input) return;
+        input.disabled = false;
+        input.style.background = '#fff';
+        input.style.borderColor = '#f39c12';
+        input.focus();
+        btn.textContent = '🔓';
+        btn.style.background = '#fff7ed';
+        btn.style.borderColor = '#fed7aa';
+        // Ao sair do campo, salva e relockeia
+        input.addEventListener('blur', function onBlur() {
+            cfgSalvarLocal();
+            input.disabled = true;
+            input.style.background = '#f8f9fa';
+            input.style.borderColor = campoId === 'cfgPastaRaizId' ? '#2471a3' : campoId === 'cfgPastaClientesId' ? '#27ae60' : '#dde';
+            btn.textContent = '🔒';
+            btn.style.background = '#f1f5f9';
+            btn.style.borderColor = '#cbd5e1';
+            input.removeEventListener('blur', onBlur);
+        }, { once: true });
+    }, 'Desbloquear', '');
 }
 
 function cfgGet() {
