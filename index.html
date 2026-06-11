@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.471</title>
+    <title>Sistema de Dublagem v12.472</title>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -530,7 +530,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1>🎬 Sistema de Dublagem</h1>
-        <p>v12.471</p>
+        <p>v12.472</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" autocomplete="current-password" required>
@@ -559,7 +559,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.471</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.472</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1096,47 +1096,24 @@
 
           <div id="cfgWrapper" style="max-width:1200px;margin:0 auto;padding:0;">
             <!-- Sub-abas compactas e fluidas -->
-            <div style="display:flex;flex-wrap:wrap;gap:0;background:#f1f3f5;border-bottom:2px solid #d0d4d9;justify-content:center;">
-                <button onclick="_cfgSubAba('dubladores')" id="cfgTabDubladores"
-                    style="flex:0 1 auto;padding:7px 12px;border:none;border-bottom:3px solid transparent;background:#f1f3f5;color:#7f8c8d;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;text-align:center;">
-                    👤 Dubladores
-                </button>
-                <button onclick="_cfgSubAba('producao')" id="cfgTabProducao"
-                    style="flex:0 1 auto;padding:7px 12px;border:none;border-bottom:3px solid transparent;background:#f1f3f5;color:#7f8c8d;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;text-align:center;">
-                    🎬 Equipe
-                </button>
-                <button onclick="_cfgSubAba('servicos')" id="cfgTabServicos"
-                    style="flex:0 1 auto;padding:7px 12px;border:none;border-bottom:3px solid transparent;background:#f1f3f5;color:#7f8c8d;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;text-align:center;">
-                    💰 Serviços
-                </button>
-                <button onclick="_cfgSubAba('clientes')" id="cfgTabClientes"
-                    style="flex:0 1 auto;padding:7px 12px;border:none;border-bottom:3px solid transparent;background:#f1f3f5;color:#7f8c8d;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;text-align:center;">
-                    🏢 Clientes
-                </button>
-                <button onclick="_cfgSubAba('externos')" id="cfgTabExternos"
-                    style="flex:0 1 auto;padding:7px 12px;border:none;border-bottom:3px solid transparent;background:#f1f3f5;color:#7f8c8d;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;text-align:center;">
-                    🎯 Externos
-                </button>
-                <button onclick="_cfgSubAba('estudio')" id="cfgTabEstudio"
-                    style="flex:0 1 auto;padding:7px 12px;border:none;border-bottom:3px solid transparent;background:#f1f3f5;color:#7f8c8d;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;text-align:center;">
-                    🏛️ Estúdio
-                </button>
-                <button onclick="_cfgSubAba('logcasting')" id="cfgTabLogcasting"
-                    style="flex:0 1 auto;padding:7px 12px;border:none;border-bottom:3px solid transparent;background:#f1f3f5;color:#7c3aed;font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;text-align:center;">
-                    📋 Log
-                </button>
-                <button onclick="_cfgSubAba('links')" id="cfgTabLinks"
-                    style="flex:0 1 auto;padding:7px 12px;border:none;border-bottom:3px solid transparent;background:#f1f3f5;color:#7f8c8d;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;text-align:center;">
-                    🔗 Links
-                </button>
-                <button onclick="_cfgSubAba('admins')" id="cfgTabAdmins"
-                    style="flex:0 1 auto;padding:7px 12px;border:none;border-bottom:3px solid transparent;background:#f1f3f5;color:#c0392b;font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;text-align:center;">
-                    🔐 Admins
-                </button>
-                <button onclick="_cfgSubAba('drive')" id="cfgTabDrive"
-                    style="flex:0 1 auto;padding:7px 12px;border:none;border-bottom:3px solid transparent;background:#f1f3f5;color:#3498db;font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;text-align:center;">
-                    ☁️ Drive
-                </button>
+            <div style="display:flex;flex-wrap:nowrap;overflow-x:auto;gap:0;background:#f1f3f5;border-bottom:2px solid #d0d4d9;scrollbar-width:none;">
+                <!-- espaços reservados início -->
+                <button disabled style="flex:0 0 auto;padding:7px 28px;border:none;border-bottom:3px solid transparent;background:#f1f3f5;font-size:11px;cursor:default;white-space:nowrap;opacity:0;">·</button>
+                <button disabled style="flex:0 0 auto;padding:7px 28px;border:none;border-bottom:3px solid transparent;background:#f1f3f5;font-size:11px;cursor:default;white-space:nowrap;opacity:0;">·</button>
+                <!-- abas ativas -->
+                <button onclick="_cfgSubAba('dubladores')" id="cfgTabDubladores" style="flex:0 0 auto;padding:7px 14px;border:none;border-bottom:3px solid transparent;background:#f1f3f5;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;text-align:center;color:#7f8c8d;">👤 Dubladores</button>
+                <button onclick="_cfgSubAba('producao')"  id="cfgTabProducao"   style="flex:0 0 auto;padding:7px 14px;border:none;border-bottom:3px solid transparent;background:#f1f3f5;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;text-align:center;color:#7f8c8d;">🎬 Equipe</button>
+                <button onclick="_cfgSubAba('servicos')"  id="cfgTabServicos"   style="flex:0 0 auto;padding:7px 14px;border:none;border-bottom:3px solid transparent;background:#f1f3f5;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;text-align:center;color:#7f8c8d;">💰 Serviços</button>
+                <button onclick="_cfgSubAba('clientes')"  id="cfgTabClientes"   style="flex:0 0 auto;padding:7px 14px;border:none;border-bottom:3px solid transparent;background:#f1f3f5;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;text-align:center;color:#7f8c8d;">🏢 Clientes</button>
+                <button onclick="_cfgSubAba('externos')"  id="cfgTabExternos"   style="flex:0 0 auto;padding:7px 14px;border:none;border-bottom:3px solid transparent;background:#f1f3f5;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;text-align:center;color:#7f8c8d;">🎯 Externos</button>
+                <button onclick="_cfgSubAba('estudio')"   id="cfgTabEstudio"    style="flex:0 0 auto;padding:7px 14px;border:none;border-bottom:3px solid transparent;background:#f1f3f5;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;text-align:center;color:#7f8c8d;">🏛️ Estúdio</button>
+                <button onclick="_cfgSubAba('logcasting')" id="cfgTabLogcasting" style="flex:0 0 auto;padding:7px 14px;border:none;border-bottom:3px solid transparent;background:#f1f3f5;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;text-align:center;color:#7c3aed;font-weight:700;">📋 Log</button>
+                <button onclick="_cfgSubAba('links')"     id="cfgTabLinks"      style="flex:0 0 auto;padding:7px 14px;border:none;border-bottom:3px solid transparent;background:#f1f3f5;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;text-align:center;color:#7f8c8d;">🔗 Links</button>
+                <button onclick="_cfgSubAba('admins')"    id="cfgTabAdmins"     style="flex:0 0 auto;padding:7px 14px;border:none;border-bottom:3px solid transparent;background:#f1f3f5;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;text-align:center;color:#c0392b;font-weight:700;">🔐 Admins</button>
+                <button onclick="_cfgSubAba('drive')"     id="cfgTabDrive"      style="flex:0 0 auto;padding:7px 14px;border:none;border-bottom:3px solid transparent;background:#f1f3f5;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;text-align:center;color:#3498db;font-weight:700;">☁️ Drive</button>
+                <!-- espaços reservados fim -->
+                <button disabled style="flex:0 0 auto;padding:7px 28px;border:none;border-bottom:3px solid transparent;background:#f1f3f5;font-size:11px;cursor:default;white-space:nowrap;opacity:0;">·</button>
+                <button disabled style="flex:0 0 auto;padding:7px 28px;border:none;border-bottom:3px solid transparent;background:#f1f3f5;font-size:11px;cursor:default;white-space:nowrap;opacity:0;">·</button>
             </div>
 
             <!-- Container de conteúdo com padding -->
@@ -1648,7 +1625,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.471</footer>
+    <footer>🎬 Sistema de Dublagem v12.472</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -7237,7 +7214,7 @@ function _cfgSubAba(aba) {
         cfgRenderizarOutros();
     }
     var wrapper = document.getElementById('cfgWrapper');
-    if (wrapper) wrapper.style.maxWidth = (aba === 'links') ? '860px' : '700px';
+    // maxWidth fixo — não altera por aba
     if (aba === 'estudio') _cfgCarregarEstudio();
     if (aba === 'admins') cfgAdminsRenderizar();
     if (aba === 'links') {
