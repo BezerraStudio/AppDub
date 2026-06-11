@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.474</title>
+    <title>Sistema de Dublagem v12.478</title>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -610,7 +610,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1>🎬 Sistema de Dublagem</h1>
-        <p>v12.474</p>
+        <p>v12.478</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" autocomplete="current-password" required>
@@ -639,7 +639,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.474</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.478</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1705,7 +1705,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.474</footer>
+    <footer>🎬 Sistema de Dublagem v12.478</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -2351,7 +2351,7 @@ document.getElementById('formLogin').addEventListener('submit', async function(e
         }
         _admAbrir(adm);
     } else {
-        alert('❌ Usuário ou senha incorretos!');
+        mostrarNotificacao('❌ Usuário ou senha incorretos!', 'erro');
     }
 });
 
@@ -2516,7 +2516,7 @@ function salvarProjetos() {
 
 // ─── BACKUP / RESTORE ─────────────────────────────────────────────────────────
 function exportarBackup() {
-    if (!projetos.length) { alert('❌ Nenhum projeto para exportar!'); return; }
+    if (!projetos.length) { mostrarNotificacao('❌ Nenhum projeto para exportar!', 'erro'); return; }
     const data = new Date().toISOString().slice(0,10);
     const blob = new Blob([JSON.stringify({ versao: 'v12.46', data, projetos }, null, 2)], { type: 'application/json' });
     const a = document.createElement('a');
@@ -2534,7 +2534,7 @@ function importarBackup(event) {
         try {
             const dados = JSON.parse(e.target.result);
             const lista = dados.projetos || (Array.isArray(dados) ? dados : null);
-            if (!lista) { alert('❌ Arquivo inválido!'); return; }
+            if (!lista) { mostrarNotificacao('❌ Arquivo inválido!', 'erro'); return; }
             const mesclar = projetos.length > 0 && confirm(
                 `Você já tem ${projetos.length} projeto(s).\n\n` +
                 `✅ OK = Mesclar (mantém existentes + importa novos)\n` +
@@ -2545,10 +2545,10 @@ function importarBackup(event) {
                 const idsAtuais = new Set(projetos.map(p => p.id));
                 let adicionados = 0;
                 lista.forEach(p => { if (!idsAtuais.has(p.id)) { projetos.push(p); adicionados++; } });
-                alert(`✅ ${adicionados} projeto(s) importado(s)!`);
+                mostrarNotificacao(`✅ ${adicionados} projeto(s) importado(s)!`, 'sucesso');
             } else {
                 projetos = lista;
-                alert(`✅ ${lista.length} projeto(s) restaurado(s)!`);
+                mostrarNotificacao(`✅ ${lista.length} projeto(s) restaurado(s)!`, 'sucesso');
             }
             projetoAtual = null;
             // Migrar personagens combinados em todos os projetos restaurados
@@ -2556,7 +2556,7 @@ function importarBackup(event) {
             salvarProjetos();
             carregarProjetos();
         } catch(err) {
-            alert('❌ Erro ao ler o arquivo: ' + err.message);
+            mostrarNotificacao('❌ Erro ao ler o arquivo: ' + err.message, 'erro');
         }
     };
     reader.readAsText(file);
@@ -2852,46 +2852,49 @@ async function selecionarEIr(idx) {
 }
 
 function deletarProjeto(idx) {
-    if (!confirm(`Excluir "${projetos[idx].nome}"?`)) return;
-    if (projetoAtual?.id === projetos[idx].id) {
-        projetoAtual = null;
-        document.getElementById('projetoSelecionadoInfo').style.display = 'none';
-        definirStatusPasta('none', 'Nenhuma pasta vinculada');
-    }
-    idbDel('pasta_' + projetos[idx].id);
-    projetos.splice(idx, 1);
-    salvarProjetos(); carregarProjetos();
+    const _nomePrj = projetos[idx]?.nome || '';
+    _confirmar(`Excluir "${_nomePrj}"?`, function() {
+        if (projetoAtual?.id === projetos[idx]?.id) {
+            projetoAtual = null;
+            document.getElementById('projetoSelecionadoInfo').style.display = 'none';
+            definirStatusPasta('none', 'Nenhuma pasta vinculada');
+        }
+        idbDel('pasta_' + projetos[idx].id);
+        projetos.splice(idx, 1);
+        salvarProjetos(); carregarProjetos();
+    }, 'Excluir Projeto', '🗑️');
 }
 
 function limparSRTs() {
     if (!projetoAtual) { mostrarNotificacao('❌ Selecione um projeto primeiro', 'erro', 2000); return; }
-    if (!confirm('Limpar todos os SRTs deste projeto? Os episódios serão removidos.')) return;
-    projetoAtual.episodios = {};
-    projetoAtual.personagens = {};
-    salvarProjetos();
-    atualizarStatusSRT();
-    mostrarNotificacao('✅ SRTs removidos', 'sucesso', 2000);
+    _confirmar('Limpar todos os SRTs deste projeto? Os episódios serão removidos.', function() {
+        projetoAtual.episodios = {};
+        projetoAtual.personagens = {};
+        salvarProjetos();
+        atualizarStatusSRT();
+        mostrarNotificacao('✅ SRTs removidos', 'sucesso', 2000);
+    }, 'Limpar SRTs', '🗑️');
 }
 
 function limparVideos() {
     if (!projetoAtual) { mostrarNotificacao('❌ Selecione um projeto primeiro', 'erro', 2000); return; }
-    if (!confirm('Limpar vídeos carregados?')) return;
-    // Revogar URLs e limpar cache
-    Object.keys(videosCache).forEach(k => {
-        if (k.startsWith(projetoAtual.id + '_')) {
-            if (videosCache[k].url) URL.revokeObjectURL(videosCache[k].url);
-            delete videosCache[k];
-        }
-    });
-    projetoAtual.pastaVideosInfo = {};
-    projetoAtual.pastaNome = null;
-    salvarProjetos();
-    // Limpar files salvos no IndexedDB
-    idbDel('videos_files_' + projetoAtual.id);
-    definirStatusPasta('none', 'Nenhuma pasta vinculada');
-    const el = document.getElementById('durTotalSerie');
-    if (el) el.textContent = '';
-    mostrarNotificacao('✅ Vídeos removidos', 'sucesso', 2000);
+    _confirmar('Limpar vídeos carregados?', function() {
+        // Revogar URLs e limpar cache
+        Object.keys(videosCache).forEach(k => {
+            if (k.startsWith(projetoAtual.id + '_')) {
+                if (videosCache[k].url) URL.revokeObjectURL(videosCache[k].url);
+                delete videosCache[k];
+            }
+        });
+        projetoAtual.pastaVideosInfo = {};
+        projetoAtual.pastaNome = null;
+        salvarProjetos();
+        idbDel('videos_files_' + projetoAtual.id);
+        definirStatusPasta('none', 'Nenhuma pasta vinculada');
+        const el = document.getElementById('durTotalSerie');
+        if (el) el.textContent = '';
+        mostrarNotificacao('✅ Vídeos removidos', 'sucesso', 2000);
+    }, 'Limpar Vídeos', '🗑️');
 }
 
 function editarProjeto(idx) {
@@ -2931,7 +2934,7 @@ function editarProjeto(idx) {
 
 function _salvarEdicaoProjeto(idx, btn) {
     const nome = document.getElementById('_editNome')?.value.trim();
-    if (!nome) { alert('❌ Nome não pode ser vazio'); return; }
+    if (!nome) { mostrarNotificacao('❌ Nome não pode ser vazio', 'erro'); return; }
     projetos[idx].nome     = nome;
     projetos[idx].idioma   = document.getElementById('_editIdioma')?.value || projetos[idx].idioma;
     projetos[idx].dataInicio = document.getElementById('_editData')?.value || projetos[idx].dataInicio;
@@ -3530,11 +3533,12 @@ function adicionarPersonagem() {
 
 function deletarPersonagem(btn) {
     const nome = btn.closest('[data-nome]').dataset.nome;
-    if (!confirm(`Excluir "${nome}"?`)) return;
-    delete projetoAtual.personagens[nome];
-    salvarProjetos();
-    gerenciarPersonagens();
-    atualizarListaPersonagens();
+    _confirmar(`Excluir "${nome}"?`, function() {
+        delete projetoAtual.personagens[nome];
+        salvarProjetos();
+        gerenciarPersonagens();
+        atualizarListaPersonagens();
+    }, 'Excluir', '🗑️');
 }
 
 function incluirPersonagemRapido() {
@@ -3546,39 +3550,32 @@ function incluirPersonagemRapido() {
 }
 
 function excluirPersonagemLinha() {
-    if (!linhaAtual) { alert('❌ Selecione uma linha!'); return; }
-    if (!linhaAtual.personagem) { alert('Esta linha não tem personagem atribuído.'); return; }
-    if (!confirm(`Remover personagem "${linhaAtual.personagem}" desta linha?`)) return;
+    if (!linhaAtual) { mostrarNotificacao('❌ Selecione uma linha!', 'erro'); return; }
+    if (!linhaAtual.personagem) { mostrarNotificacao('Esta linha não tem personagem atribuído.', 'aviso'); return; }
+    _confirmar(`Remover personagem "${linhaAtual.personagem}" desta linha?`, function() {
+        const linhas = episodioAtual.linhas;
+        const idx    = linhas.findIndex(l => l.num === linhaAtual.num);
 
-    const linhas = episodioAtual.linhas;
-    const idx    = linhas.findIndex(l => l.num === linhaAtual.num);
+        // Descobre o personagem do bloco ACIMA
+        let personagemAcima = null;
+        for (let i = idx - 1; i >= 0; i--) {
+            if (linhas[i].personagem) { personagemAcima = linhas[i].personagem; break; }
+        }
 
-    // Descobre o personagem do bloco ACIMA (quem vai "absorver" as linhas abaixo)
-    let personagemAcima = null;
-    for (let i = idx - 1; i >= 0; i--) {
-        if (linhas[i].personagem) { personagemAcima = linhas[i].personagem; break; }
-    }
+        const proximaLinha = linhas[idx + 1];
+        if (proximaLinha && !proximaLinha.personagem && !personagemAcima) {
+            proximaLinha.personagem = linhaAtual.personagem;
+        }
 
-    // A linha seguinte: se não tiver personagem explícito, precisa receber o do bloco de baixo
-    // (para não perder as linhas que já pertenciam a este bloco)
-    // MAS se tem personagemAcima, elas passam para ele — então a linha seguinte não precisa marcar nada
-    // Se NÃO tem personagemAcima e a linha seguinte era herdada, ela precisa ser marcada
-    const proximaLinha = linhas[idx + 1];
-    if (proximaLinha && !proximaLinha.personagem && !personagemAcima) {
-        // Sem bloco acima: próxima linha precisa manter o bloco original
-        proximaLinha.personagem = linhaAtual.personagem;
-    }
-    // Se tem personagemAcima: as linhas abaixo serão absorvidas pelo bloco de cima
-    // (a herança cuida disso automaticamente ao renderizar)
-
-    linhaAtual.personagem = null;
-    salvarProjetos();
-    carregarEpisodio();
-    cancelarEdicao();
+        linhaAtual.personagem = null;
+        salvarProjetos();
+        carregarEpisodio();
+        cancelarEdicao();
+    }, 'Remover Personagem', '❌');
 }
 
 function marcarLegenda() {
-    if (!linhaAtual) { alert('❌ Selecione uma linha!'); return; }
+    if (!linhaAtual) { mostrarNotificacao('❌ Selecione uma linha!', 'erro'); return; }
 
     const linhas = episodioAtual.linhas;
     const idx    = linhas.findIndex(l => l.num === linhaAtual.num);
@@ -5517,7 +5514,7 @@ function getNumeroPersonagem(nome) {
 }
 
 function inserirNovaLinha() {
-    if (!episodioAtual) { alert('❌ Selecione um episódio!'); return; }
+    if (!episodioAtual) { mostrarNotificacao('❌ Selecione um episódio!', 'erro'); return; }
 
     // Determina posição: acima da linha selecionada, ou no final
     const linhas = episodioAtual.linhas;
@@ -5666,7 +5663,7 @@ function renomearPersonagemInline(spanEl, nomeAntigo) {
     function confirmar() {
         const novoNome = input.value.trim();
         if (!novoNome || novoNome === nomeAntigo) { gerenciarPersonagens(); return; }
-        if (projetoAtual.personagens[novoNome]) { alert('Já existe um personagem com esse nome!'); gerenciarPersonagens(); return; }
+        if (projetoAtual.personagens[novoNome]) { mostrarNotificacao('Já existe um personagem com esse nome!', 'aviso'); gerenciarPersonagens(); return; }
         // Renomeia em personagens
         projetoAtual.personagens[novoNome] = projetoAtual.personagens[nomeAntigo];
         delete projetoAtual.personagens[nomeAntigo];
@@ -5700,7 +5697,7 @@ function renomearReacaoInline(spanEl, nomeAntigo) {
     function confirmar() {
         const novoNome = input.value.trim();
         if (!novoNome || novoNome === nomeAntigo) { gerenciarReacoes(); return; }
-        if (projetoAtual.reacoes[novoNome]) { alert('Já existe uma reação com esse nome!'); gerenciarReacoes(); return; }
+        if (projetoAtual.reacoes[novoNome]) { mostrarNotificacao('Já existe uma reação com esse nome!', 'aviso'); gerenciarReacoes(); return; }
         const cor = projetoAtual.reacoes[nomeAntigo];
         projetoAtual.reacoes[novoNome] = cor;
         delete projetoAtual.reacoes[nomeAntigo];
@@ -5721,7 +5718,7 @@ function renomearReacaoInline(spanEl, nomeAntigo) {
 }
 
 function atribuirPersonagem(nome) {
-    if (!linhaAtual) { alert('❌ Selecione uma linha primeiro!'); return; }
+    if (!linhaAtual) { mostrarNotificacao('❌ Selecione uma linha primeiro!', 'erro'); return; }
 
     const linhas = episodioAtual.linhas;
     const idx    = linhas.findIndex(l => l.num === linhaAtual.num);
@@ -5752,7 +5749,7 @@ function atribuirPersonagem(nome) {
 
 // ─── REAÇÕES ──────────────────────────────────────────────────────────────────
 function gerenciarReacoes() {
-    if (!projetoAtual) { alert('❌ Selecione um projeto!'); return; }
+    if (!projetoAtual) { mostrarNotificacao('❌ Selecione um projeto!', 'erro'); return; }
     if (!projetoAtual.reacoesTxt) projetoAtual.reacoesTxt = {};
     const lista = document.getElementById('listaReacoesModal');
     lista.innerHTML = '';
@@ -5819,10 +5816,11 @@ function adicionarReacao() {
 
 function deletarReacao(btn) {
     const nome = btn.closest('[data-nome]').dataset.nome;
-    if (!confirm(`Excluir "${nome}"?`)) return;
-    delete projetoAtual.reacoes[nome];
-    salvarProjetos();
-    gerenciarReacoes(); atualizarBarraReacoes();
+    _confirmar(`Excluir "${nome}"?`, function() {
+        delete projetoAtual.reacoes[nome];
+        salvarProjetos();
+        gerenciarReacoes(); atualizarBarraReacoes();
+    }, 'Excluir', '🗑️');
 }
 
 function incluirReacaoRapido() {
@@ -6813,8 +6811,8 @@ function importarDubladores() {
                 salvarDubladores(Object.values(mapa));
                 renderizarListaDubladores();
                 renderizarEscalacao();
-                alert(`✅ ${novos.length} dublador(es) importado(s)!`);
-            } catch(err) { alert('Erro ao importar: ' + err.message); }
+                mostrarNotificacao(`✅ ${novos.length} dublador(es) importado(s)!`, 'sucesso');
+            } catch(err) { mostrarNotificacao('Erro ao importar: ' + err.message, 'erro'); }
         };
         reader.readAsText(file);
     };
@@ -8132,7 +8130,7 @@ function redistribuirCores() {
 }
 
 function salvarEscalacao() {
-    if (!projetoAtual) { alert('Selecione um projeto!'); return; }
+    if (!projetoAtual) { mostrarNotificacao('Selecione um projeto!', 'aviso'); return; }
     document.querySelectorAll('#corpoEscalacao .sel-dublador').forEach(sel => {
         projetoAtual.escalacao.padrao[sel.dataset.pers] = sel.value;
     });
@@ -9691,7 +9689,7 @@ function roteiro_renderizar() {
 
 // ─── EXPORTAR XLSX ────────────────────────────────────────────────────────
 function roteiro_exportarXlsx(paraSheets) {
-    if (!projetoAtual) { alert('Selecione um projeto!'); return; }
+    if (!projetoAtual) { mostrarNotificacao('Selecione um projeto!', 'aviso'); return; }
 
     if (!window.ExcelJS) {
         mostrarNotificacao('⏳ Carregando ExcelJS...','info');
@@ -9702,7 +9700,7 @@ function roteiro_exportarXlsx(paraSheets) {
             const s2 = document.createElement('script');
             s2.src = 'https://unpkg.com/exceljs@4.4.0/dist/exceljs.min.js';
             s2.onload  = () => roteiro_exportarXlsx(paraSheets);
-            s2.onerror = () => alert('Erro ao carregar ExcelJS. Verifique a internet.');
+            s2.onerror = () => mostrarNotificacao('Erro ao carregar ExcelJS. Verifique a internet.', 'aviso');
             document.head.appendChild(s2);
         };
         document.head.appendChild(s);
@@ -10818,7 +10816,7 @@ function fecharModal(id) {
 // ─── MAPEAMENTO ───────────────────────────────────────────────────────────────
 function irParaMapeamento() {
     if (!projetoAtual || !Object.keys(projetoAtual.episodios).length) {
-        alert('❌ Importe SRTs primeiro!'); return;
+        mostrarNotificacao('❌ Importe SRTs primeiro!', 'erro'); return;
     }
     document.querySelectorAll('.tab-btn')[1].click();
 }
@@ -11003,13 +11001,14 @@ function cancelarEdicao() {
 
 function removerLinha() {
     if (!linhaAtual || !episodioAtual) return;
-    if (!confirm('Remover esta linha?')) return;
-    const idx = episodioAtual.linhas.findIndex(l => l.num === linhaAtual.num);
-    if (idx !== -1) {
-        episodioAtual.linhas.splice(idx, 1);
-        episodioAtual.linhas.forEach((l, i) => l.num = i + 1);
-        salvarProjetos(); carregarEpisodio();
-    }
+    _confirmar('Remover esta linha?', function() {
+        const idx = episodioAtual.linhas.findIndex(l => l.num === linhaAtual.num);
+        if (idx !== -1) {
+            episodioAtual.linhas.splice(idx, 1);
+            episodioAtual.linhas.forEach((l, i) => l.num = i + 1);
+            salvarProjetos(); carregarEpisodio();
+        }
+    }, 'Remover Linha', '🗑️');
 }
 
 function atualizarProgresso() {
@@ -11168,7 +11167,7 @@ function exportarSRTEsc() {
 }
 
 function exportarSRT() {
-    if (!episodioAtual) { alert('❌ Selecione um episódio!'); return; }
+    if (!episodioAtual) { mostrarNotificacao('❌ Selecione um episódio!', 'erro'); return; }
     const srt = episodioAtual.linhas.map(l =>
         `${l.num}\n${l.inicio} --> ${l.fim}\n` +
         (l.personagem ? `[${l.personagem}] ${l.texto}` : l.texto) + '\n'
@@ -11183,9 +11182,9 @@ function exportarSRT() {
 }
 
 async function exportarTodosSRT() {
-    if (!projetoAtual) { alert('❌ Selecione um projeto!'); return; }
+    if (!projetoAtual) { mostrarNotificacao('❌ Selecione um projeto!', 'erro'); return; }
     const eps = Object.entries(projetoAtual.episodios || {});
-    if (!eps.length) { alert('❌ Nenhum episódio no projeto!'); return; }
+    if (!eps.length) { mostrarNotificacao('❌ Nenhum episódio no projeto!', 'erro'); return; }
 
     const nomeProjeto = (projetoAtual.nome || 'Projeto').replace(/[\/\\:*?"<>|]/g, '_');
 
@@ -11215,7 +11214,7 @@ async function exportarTodosSRT() {
             console.error('Erro ao salvar ' + nomeArquivo, e);
         }
     }
-    alert(`✅ ${count} arquivo(s) exportado(s) com sucesso!`);
+    mostrarNotificacao(`✅ ${count} arquivo(s) exportado(s) com sucesso!`, 'sucesso');
 }
 
 function mostrarNotificacao(msg, tipo) {
@@ -11311,7 +11310,7 @@ let _gapiInited = false, _gisInited = false, _tokenClient = null;
 function cfgCarregarGapi(callback) {
     const cfg = cfgGet();
     if(!cfg.clientId || !cfg.apiKey) {
-        alert('Configure o Client ID e API Key na aba Configurações antes de usar.');
+        mostrarNotificacao('Configure o Client ID e API Key na aba Configurações antes de usar.', 'aviso');
         return;
     }
 
@@ -11424,10 +11423,10 @@ function cfgDesconectar() {
 // EXPORTAR PARA GOOGLE SHEETS (NATIVO — cria planilha real no Drive)
 
 async function exportarParaSheets() {
-    if(!projetoAtual) { alert('Selecione um projeto!'); return; }
+    if(!projetoAtual) { mostrarNotificacao('Selecione um projeto!', 'aviso'); return; }
     const cfg = cfgGet();
     if(!cfg.clientId || !cfg.apiKey) {
-        alert('Configure o Client ID e API Key na aba ⚙️ Configurações antes de usar o botão Sheets.');
+        mostrarNotificacao('Configure o Client ID e API Key na aba ⚙️ Configurações antes de usar o botão Sheets.', 'aviso');
         irParaAba('configuracoes');
         return;
     }
@@ -14608,12 +14607,13 @@ function prodSetSenhaPadrao(senha) {
     localStorage.setItem('senhaPadraoEquipe', senha);
 }
 function prodResetarSenhas() {
-    if (!confirm('Resetar a senha de TODOS os dubladores para a senha padrão?')) return;
-    const padrao = prodGetSenhaPadrao();
-    const lista  = carregarDubladores();
-    lista.forEach(d => { d.senhaAcesso = padrao; });
-    salvarDubladores(lista);
-    mostrarNotificacao('✅ Todas as senhas resetadas para "' + padrao + '"!', 'sucesso', 2000);
+    _confirmar('Resetar a senha de TODOS os dubladores para a senha padrão?', function() {
+        const padrao = prodGetSenhaPadrao();
+        const lista  = carregarDubladores();
+        lista.forEach(d => { d.senhaAcesso = padrao; });
+        salvarDubladores(lista);
+        mostrarNotificacao('✅ Todas as senhas resetadas para "' + padrao + '"!', 'sucesso', 2000);
+    }, 'Resetar Senhas', '🔑');
 }
 
 // ─── INTERFACE DO DUBLADOR / EDITOR / CONFERENTE ──────────────────────────────
@@ -14669,7 +14669,7 @@ function _dubVerificarURLParam() {
                        (esc.revisor && esc.revisor[dubId]);
             }) || todos[0] || null;
         }
-        if (!_dubProjeto) { alert('Nenhum projeto disponível.'); return; }
+        if (!_dubProjeto) { mostrarNotificacao('Nenhum projeto disponível.', 'aviso'); return; }
         initDB().then(function(){ _dubAbrirTela(); });
     }
 }
@@ -14681,7 +14681,7 @@ function _projMostrarSelectEquipe(projId) {
     document.getElementById('loginScreen').style.display = 'none';
     var todos = JSON.parse(localStorage.getItem('projetos_dublagem') || '[]');
     var proj  = todos.find(function(p){ return String(p.id) === String(projId); });
-    if (!proj) { alert('Projeto não encontrado. Verifique o link.'); return; }
+    if (!proj) { mostrarNotificacao('Projeto não encontrado. Verifique o link.', 'aviso'); return; }
     _dubProjeto = proj;
     document.getElementById('projSelectTitulo').textContent = '🎬 ' + (proj.nome || 'Projeto');
     document.getElementById('projSelectSub').textContent = 'Selecione seu nome para entrar';
@@ -14987,10 +14987,10 @@ function _dubAbrirTela() {
 }
 
 function dubLogout() {
-    if (confirm('Deseja sair?')) {
+    _confirmar('Deseja sair?', function() {
         document.getElementById('dubScreen').classList.remove('ativo');
         window.location.href = window.location.pathname;
-    }
+    }, 'Sair', '🚪');
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -16844,8 +16844,7 @@ function _dubMsParaTC(ms) {
 function dubResolverRetake(btn) {
     var epNum  = btn.dataset.ep;
     var rtIdx  = parseInt(btn.dataset.rtidx);
-    if (!confirm('Marcar este retake como gravado?')) return;
-
+    _confirmar('Marcar este retake como gravado?', function() {
     // Marcar como resolvido nos dados do projeto
     var dadosEp = _dubGetEpDados(epNum);
     if (dadosEp && dadosEp.retakes && dadosEp.retakes[rtIdx] !== undefined) {
@@ -16875,6 +16874,7 @@ function dubResolverRetake(btn) {
         _dubAtualizarRetakeAlerta();
         _dubRenderizarRoteiro();
     }
+    }, 'Confirmar', '✅');
 }
 
 // Nova função: marcar retake como feito (com popup ao invés de confirm)
@@ -17673,8 +17673,9 @@ function cfgSalvarEditor() {
 
 function cfgExcluirEditor(i) {
     var lista=carregarEditores();
-    if (!confirm('Excluir "' + (lista[i]&&lista[i].nome?lista[i].nome:'') + '"?')) return;
-    lista.splice(i,1); salvarEditores(lista); cfgRenderizarEditores();
+    _confirmar('Excluir "' + (lista[i]&&lista[i].nome?lista[i].nome:'') + '"?', function() {
+        lista.splice(i,1); salvarEditores(lista); cfgRenderizarEditores();
+    }, 'Excluir', '🗑️');
 }
 
 function cfgAbrirModalConferente(idx) {
@@ -17771,8 +17772,9 @@ function cfgSalvarConferente() {
 
 function cfgExcluirConferente(i) {
     var lista=carregarConferentes();
-    if (!confirm('Excluir "' + (lista[i]&&lista[i].nome?lista[i].nome:'') + '"?')) return;
-    lista.splice(i,1); salvarConferentes(lista); cfgRenderizarConferentes();
+    _confirmar('Excluir "' + (lista[i]&&lista[i].nome?lista[i].nome:'') + '"?', function() {
+        lista.splice(i,1); salvarConferentes(lista); cfgRenderizarConferentes();
+    }, 'Excluir', '🗑️');
 }
 
 // ─── REVISORES DE ROTEIRO ────────────────────────────────────────────────────
@@ -17892,8 +17894,9 @@ function cfgSalvarRevisor() {
 
 function cfgExcluirRevisor(i) {
     var lista = carregarRevisores();
-    if (!confirm('Excluir "' + (lista[i]?lista[i].nome:'') + '"?')) return;
-    lista.splice(i,1); salvarRevisores(lista); cfgRenderizarRevisores();
+    _confirmar('Excluir "' + (lista[i]?lista[i].nome:'') + '"?', function() {
+        lista.splice(i,1); salvarRevisores(lista); cfgRenderizarRevisores();
+    }, 'Excluir', '🗑️');
 }
 
 // ─── SERVIÇOS ──────────────────────────────────────────────────────────────
@@ -18277,8 +18280,9 @@ function cfgSalvarServico() {
 
 function cfgExcluirServico(i) {
     var lista = carregarServicos();
-    if (!confirm('Excluir "' + (lista[i]?lista[i].nome:'') + '"?')) return;
-    lista.splice(i,1); salvarServicos(lista); cfgRenderizarServicos();
+    _confirmar('Excluir "' + (lista[i]?lista[i].nome:'') + '"?', function() {
+        lista.splice(i,1); salvarServicos(lista); cfgRenderizarServicos();
+    }, 'Excluir', '🗑️');
 }
 
 // ─── PERFIS DE SERVIÇO ────────────────────────────────────────────────────
@@ -18350,8 +18354,9 @@ function cfgSalvarPerfil() {
 
 function cfgExcluirPerfil(i) {
     var lista = carregarPerfis();
-    if (!confirm('Excluir "' + (lista[i]?lista[i].nome:'') + '"?')) return;
-    lista.splice(i,1); salvarPerfis(lista); cfgRenderizarPerfis();
+    _confirmar('Excluir "' + (lista[i]?lista[i].nome:'') + '"?', function() {
+        lista.splice(i,1); salvarPerfis(lista); cfgRenderizarPerfis();
+    }, 'Excluir', '🗑️');
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -18481,8 +18486,9 @@ function cfgSalvarCliente() {
 
 function cfgExcluirCliente(i) {
     var lista = carregarClientes();
-    if (!confirm('Excluir "' + (lista[i]?lista[i].nome:'') + '"?')) return;
-    lista.splice(i,1); salvarClientes(lista); cfgRenderizarClientes();
+    _confirmar('Excluir "' + (lista[i]?lista[i].nome:'') + '"?', function() {
+        lista.splice(i,1); salvarClientes(lista); cfgRenderizarClientes();
+    }, 'Excluir', '🗑️');
 }
 
 // Hook na sub-aba 'producao'
@@ -19161,37 +19167,39 @@ function prodRotFecharForm(numLinha) {
 
 function prodRotResolverRetake(btn) {
     var dubId = btn.dataset.dub, ep = btn.dataset.ep, ri = parseInt(btn.dataset.ri);
-    if (!confirm('Marcar este retake como resolvido (gravado)?\nEle irá para o arquivo de Resolvidos.')) return;
-    var _todos = JSON.parse(localStorage.getItem('projetos_dublagem') || '[]');
-    var _idx   = _todos.findIndex(function(p){ return p.id === projetoAtual.id; });
-    if (_idx < 0) return;
-    projetoAtual = _todos[_idx];
-    projetos[projetos.findIndex(function(p){ return p.id === projetoAtual.id; })] = projetoAtual;
-    var epDados = _prodEnsureEp(dubId, ep);
-    var rt = epDados.retakes && epDados.retakes[ri];
-    if (rt) { rt.resolvido = true; rt.tsResolvido = Date.now(); rt.resolvidoPor = 'produtor'; }
-    _todos[_idx] = projetoAtual;
-    localStorage.setItem('projetos_dublagem', JSON.stringify(_todos));
-    _prodRotRenderizarLinhas();
-    prodRenderizar();
-    mostrarNotificacao('✅ Retake marcado como resolvido!', 'sucesso', 1500);
+    _confirmar('Marcar este retake como resolvido?\nEle irá para o arquivo de Resolvidos.', function() {
+        var _todos = JSON.parse(localStorage.getItem('projetos_dublagem') || '[]');
+        var _idx   = _todos.findIndex(function(p){ return p.id === projetoAtual.id; });
+        if (_idx < 0) return;
+        projetoAtual = _todos[_idx];
+        projetos[projetos.findIndex(function(p){ return p.id === projetoAtual.id; })] = projetoAtual;
+        var epDados = _prodEnsureEp(dubId, ep);
+        var rt = epDados.retakes && epDados.retakes[ri];
+        if (rt) { rt.resolvido = true; rt.tsResolvido = Date.now(); rt.resolvidoPor = 'produtor'; }
+        _todos[_idx] = projetoAtual;
+        localStorage.setItem('projetos_dublagem', JSON.stringify(_todos));
+        _prodRotRenderizarLinhas();
+        prodRenderizar();
+        mostrarNotificacao('✅ Retake marcado como resolvido!', 'sucesso', 1500);
+    }, 'Confirmar', '✅');
 }
 
 function prodRotExcluirRetake(btn) {
     var dubId = btn.dataset.dub, ep = btn.dataset.ep, ri = parseInt(btn.dataset.ri);
-    if (!confirm('Excluir este retake permanentemente?\n(Diferente de resolver — não ficará no arquivo)')) return;
-    var _todos = JSON.parse(localStorage.getItem('projetos_dublagem') || '[]');
-    var _idx   = _todos.findIndex(function(p){ return p.id === projetoAtual.id; });
-    if (_idx < 0) return;
-    projetoAtual = _todos[_idx];
-    projetos[projetos.findIndex(function(p){ return p.id === projetoAtual.id; })] = projetoAtual;
-    var epDados = _prodEnsureEp(dubId, ep);
-    if (epDados.retakes) epDados.retakes.splice(ri, 1);
-    _todos[_idx] = projetoAtual;
-    localStorage.setItem('projetos_dublagem', JSON.stringify(_todos));
-    _prodRotRenderizarLinhas();
-    prodRenderizar();
-    mostrarNotificacao('🗑️ Retake excluído.', 'info', 1500);
+    _confirmar('Excluir este retake permanentemente?\n(Diferente de resolver — não ficará no arquivo)', function() {
+        var _todos = JSON.parse(localStorage.getItem('projetos_dublagem') || '[]');
+        var _idx   = _todos.findIndex(function(p){ return p.id === projetoAtual.id; });
+        if (_idx < 0) return;
+        projetoAtual = _todos[_idx];
+        projetos[projetos.findIndex(function(p){ return p.id === projetoAtual.id; })] = projetoAtual;
+        var epDados = _prodEnsureEp(dubId, ep);
+        if (epDados.retakes) epDados.retakes.splice(ri, 1);
+        _todos[_idx] = projetoAtual;
+        localStorage.setItem('projetos_dublagem', JSON.stringify(_todos));
+        _prodRotRenderizarLinhas();
+        prodRenderizar();
+        mostrarNotificacao('🗑️ Retake excluído.', 'info', 1500);
+    }, 'Excluir Retake', '🗑️');
 }
 
 function prodRotAbrirEditForm(numLinha) {
