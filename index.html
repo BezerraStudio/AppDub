@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.472</title>
+    <title>Sistema de Dublagem v12.473</title>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -521,6 +521,86 @@
         .dub-pers-btn.ativo { background:#2563eb;border-color:#1d4ed8;color:white; }
         .dub-ep-envio { background:none;border:none;color:#3b82f6;font-size:12px;cursor:pointer;padding:0 2px;opacity:0;transition:opacity .15s;position:absolute;right:24px;top:50%;transform:translateY(-50%); }
         .dub-ep-btn:hover .dub-ep-envio { opacity:1; }
+
+        /* ═══════════════════════════════════════════════════
+           MOBILE — HORIZONTAL PAN
+           Telas complexas preservam layout desktop.
+           Arraste de lado para ver o conteúdo completo.
+           ═══════════════════════════════════════════════════ */
+        @media(max-width: 768px) {
+
+            /* ── Todas as abas: scroll lateral ativado ── */
+            .aba.active {
+                overflow-x: auto !important;
+                overflow-y: auto !important;
+            }
+            /* aba-flex tem overflow:hidden no CSS base — override */
+            .aba.active.aba-flex {
+                overflow: auto !important;
+            }
+            /* Gerência tem overflow:hidden inline — override via ID */
+            #aba-gravacao.active {
+                overflow: auto !important;
+            }
+
+            /* ── PROJETOS: grid 2 colunas preservado ── */
+            .projetos-container {
+                min-width: 860px !important;
+                height: auto !important;
+                min-height: 72vh;
+            }
+
+            /* ── MAPEAMENTO: flex 3 colunas preservado ── */
+            .mapeamento-container {
+                min-width: 980px !important;
+                height: auto !important;
+                min-height: 80vh;
+            }
+            /* Colunas do mapeamento: scroll interno mantido */
+            .col-left, .col-mid, .col-right {
+                max-height: 78vh !important;
+            }
+
+            /* ── ESCALAÇÃO: flex row interno preservado ── */
+            #aba-escalacao > div {
+                min-width: 960px !important;
+                min-height: 80vh;
+                height: auto !important;
+                overflow: visible !important;
+            }
+            /* Colunas da escalação: scroll interno mantido */
+            .esc-left, .esc-right {
+                max-height: 78vh !important;
+                overflow-y: auto !important;
+            }
+
+            /* ── GERÊNCIA: prod-wrap ganha largura mínima ── */
+            .prod-wrap {
+                min-width: 900px !important;
+            }
+
+            /* ── PAGAMENTOS: layout de coluna preservado ── */
+            .pag-layout {
+                min-width: 860px !important;
+            }
+
+            /* ── CONFIGURAÇÕES: wrapper ganha largura mínima ── */
+            #aba-configuracoes > div {
+                min-width: 860px !important;
+            }
+            #cfgWrapper {
+                min-width: 860px !important;
+                max-width: none !important;
+            }
+
+            /* ── TABELAS: manter display:table (não block) ── */
+            /* O scroll fica no aba.active, não em cada tabela */
+            .aba.active table {
+                display: table !important;
+                overflow-x: visible !important;
+                white-space: nowrap;
+            }
+        }
 </style>
 </head>
 <body>
@@ -530,7 +610,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1>🎬 Sistema de Dublagem</h1>
-        <p>v12.472</p>
+        <p>v12.473</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" autocomplete="current-password" required>
@@ -559,7 +639,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.472</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.473</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1625,7 +1705,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.472</footer>
+    <footer>🎬 Sistema de Dublagem v12.473</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
