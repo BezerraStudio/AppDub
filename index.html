@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.473</title>
+    <title>Sistema de Dublagem v12.474</title>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -584,18 +584,18 @@
                 min-width: 860px !important;
             }
 
-            /* ── CONFIGURAÇÕES: wrapper ganha largura mínima ── */
-            #aba-configuracoes > div {
-                min-width: 860px !important;
-            }
-            #cfgWrapper {
-                min-width: 860px !important;
-                max-width: none !important;
-            }
+            /* ── CONFIGURAÇÕES ── */
+            /* Sub-abas (Dubladores, Equipe, Clientes…) já adaptam
+               naturalmente no mobile via flex-wrap — sem min-width aqui. */
 
-            /* ── TABELAS: manter display:table (não block) ── */
-            /* O scroll fica no aba.active, não em cada tabela */
-            .aba.active table {
+            /* ── TABELAS: override apenas nas 5 abas de pan ── */
+            /* Configurações e outras abas responsivas mantêm
+               o display:block + overflow individual que já funcionava. */
+            #aba-projetos.active table,
+            #aba-mapeamento.active table,
+            #aba-escalacao.active table,
+            #aba-gravacao.active table,
+            #aba-pagamentos.active table {
                 display: table !important;
                 overflow-x: visible !important;
                 white-space: nowrap;
@@ -610,7 +610,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1>🎬 Sistema de Dublagem</h1>
-        <p>v12.473</p>
+        <p>v12.474</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" autocomplete="current-password" required>
@@ -639,7 +639,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.473</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.474</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1705,7 +1705,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.473</footer>
+    <footer>🎬 Sistema de Dublagem v12.474</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
