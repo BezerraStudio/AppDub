@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.478</title>
+    <title>Sistema de Dublagem v12.483</title>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -428,7 +428,7 @@
         @media(max-width:600px){
             .prod-sidebar{width:100%;max-height:180px;}
             .prod-container{flex-direction:column;}
-            .dub-col-left{width:100%;max-height:160px;border-right:none;border-bottom:1px solid #0f3460;}
+            .dub-col-left{width:100%;max-height:200px;border-right:none;border-bottom:1px solid #0f3460;}
             .dub-body{flex-direction:column;}
             .dub-rot-table{font-size:13px;}
         }
@@ -481,15 +481,23 @@
             /* BARRA DE ABAS DE CONFIGURAÇÕES */
             /* Abas de configurações — estilo inline via JS, sem classes */
 
-            /* TELA DUBLADOR */
+            /* TELA DUBLADOR / CONFERENTE / EDITOR */
             .dub-screen { font-size: 13px; }
-            .dub-col-left { max-height: 140px !important; }
+            /* Lista de episódios: mais espaço para ver mais eps */
+            .dub-col-left { max-height: 200px !important; }
             .dub-rot-table { font-size: 12px !important; }
             .dub-rot-table td, .dub-rot-table th { padding: 4px 6px !important; }
-
-            /* TELA CONFERENTE */
-            .conf-body { flex-direction: column !important; }
-            .conf-col-left { width: 100% !important; max-height: 150px !important; border-right: none !important; border-bottom: 1px solid #0f3460 !important; }
+            /* Header: fonte menor, gap reduzido */
+            .dub-header { padding: 8px 12px !important; gap: 8px !important; }
+            .dub-header h1 { font-size: 14px !important; }
+            /* Toolbar: padding menor */
+            .dub-toolbar { padding: 6px 10px !important; gap: 5px !important; }
+            .dub-btn { padding: 5px 8px !important; font-size: 11px !important; }
+            /* Área de upload: quebra para nova linha (sem margin-left:auto) */
+            #dubUploadArea { margin-left: 0 !important; width: 100%; }
+            /* Footer: botão principal ocupa linha inteira */
+            .dub-footer { flex-wrap: wrap !important; gap: 6px !important; padding: 8px 12px !important; }
+            .dub-concluir-btn { width: 100% !important; }
 
             /* CATÁLOGO DE VOZES */
             .cat-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important; gap: 10px !important; }
@@ -513,6 +521,11 @@
             /* PHONE — ajustes adicionais */
             .header-center h1 { font-size: 11px !important; }
             .tab-btn { min-width: 64px !important; font-size: 9px !important; padding: 8px 4px !important; }
+            /* Membro: phone pequeno */
+            .dub-screen { font-size: 12px !important; }
+            .dub-col-left { max-height: 170px !important; }
+            .dub-btn { padding: 4px 6px !important; font-size: 10px !important; }
+            .dub-header h1 { font-size: 13px !important; }
             .proj-membro-card { width: 100px !important; min-width: 85px !important; font-size: 11px !important; }
             .login-box { padding: 24px 16px !important; }
             .login-box h1 { font-size: 18px !important; }
@@ -610,7 +623,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1>🎬 Sistema de Dublagem</h1>
-        <p>v12.478</p>
+        <p>v12.483</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" autocomplete="current-password" required>
@@ -639,7 +652,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.478</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.483</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1705,7 +1718,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.478</footer>
+    <footer>🎬 Sistema de Dublagem v12.483</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -2408,38 +2421,41 @@ function admPrimeiroAcessoConfirmar() {
 }
 
 function fazerLogout() {
-    if (confirm('Desconectar?')) {
+    _confirmar('Desconectar?', function() {
         pararVideo();
         sessionStorage.removeItem('adm_logado');
         document.getElementById('appContainer').style.display = 'none';
         document.getElementById('loginScreen').style.display  = 'flex';
         document.getElementById('formLogin').reset();
-        // Recarregar usuário e senha salvos se existirem
         var u = localStorage.getItem('adm_lembrar_usuario');
         var s = localStorage.getItem('adm_lembrar_senha');
         if (u) { var elU = document.getElementById('usuario'); if(elU){elU.value=u;var cb=document.getElementById('admLembrar');if(cb)cb.checked=true;} }
         if (s) { try{ var elS=document.getElementById('senha'); if(elS){elS.value=atob(s);var cb2=document.getElementById('admLembrarSenha');if(cb2)cb2.checked=true;} }catch(e){} }
-    }
+    }, 'Sair', '🚪');
 }
 
 // ─── ABAS ─────────────────────────────────────────────────────────────────────
 // Popup aviso ao sair sem salvar
 function _verificarSalvarAntesDeSair(callback) {
     if (!_modificacoesNaoSalvas) { callback(); return; }
-    if (confirm('Salvar as modificações para não perdê-las?')) {
+    _confirmar('Salvar as modificações para não perdê-las?', function() {
         salvarProjetos();
         _modificacoesNaoSalvas = false;
-    }
-    callback(); // sai de qualquer forma (Sim salva antes, Não sai sem salvar)
-    // Cancelar = retorna false e NÃO executa callback
+        callback();
+    }, 'Modificações', '💾', function() {
+        callback(); // Continuar sem salvar
+    });
 }
 
-// Versão com Cancelar real (3 opções)
+// Versão com Cancelar real (OK = salvar, Cancelar = continuar sem salvar)
 function _avisarNaoSalvo(callback) {
     if (!_modificacoesNaoSalvas) { callback(); return; }
-    const r = window.confirm('Salvar as modificações para não perdê-las?\n\nOK = Salvar e continuar\nCancelar = Continuar sem salvar');
-    if (r) { salvarProjetos(); _modificacoesNaoSalvas = false; }
-    callback();
+    _confirmar('Salvar as modificações para não perdê-las?', function() {
+        salvarProjetos(); _modificacoesNaoSalvas = false;
+        callback();
+    }, 'Modificações', '💾', function() {
+        callback(); // Continuar sem salvar
+    });
 }
 
 // Função para trocar de aba — verifica modificações pendentes
@@ -2535,26 +2551,38 @@ function importarBackup(event) {
             const dados = JSON.parse(e.target.result);
             const lista = dados.projetos || (Array.isArray(dados) ? dados : null);
             if (!lista) { mostrarNotificacao('❌ Arquivo inválido!', 'erro'); return; }
-            const mesclar = projetos.length > 0 && confirm(
-                `Você já tem ${projetos.length} projeto(s).\n\n` +
-                `✅ OK = Mesclar (mantém existentes + importa novos)\n` +
-                `❌ Cancelar = Substituir tudo pelos ${lista.length} projeto(s) do backup`
-            );
-            if (mesclar) {
-                // Mescla: adiciona projetos do backup que não existem ainda (por id)
-                const idsAtuais = new Set(projetos.map(p => p.id));
-                let adicionados = 0;
-                lista.forEach(p => { if (!idsAtuais.has(p.id)) { projetos.push(p); adicionados++; } });
-                mostrarNotificacao(`✅ ${adicionados} projeto(s) importado(s)!`, 'sucesso');
+            const _bkpLista = lista;
+            var _finalizarBkp = function() {
+                projetoAtual = null;
+                projetos.forEach(p => _migrarPersonagensCombinados(p));
+                salvarProjetos(); carregarProjetos();
+            };
+            if (projetos.length > 0) {
+                _confirmar(
+                    `Você já tem ${projetos.length} projeto(s).\n\n` +
+                    `✅ OK = Mesclar (mantém existentes + importa novos)\n` +
+                    `❌ Cancelar = Substituir tudo pelos ${_bkpLista.length} projeto(s) do backup`,
+                    function() {
+                        // OK = Mesclar
+                        const idsAtuais = new Set(projetos.map(p => p.id));
+                        let adicionados = 0;
+                        _bkpLista.forEach(p => { if (!idsAtuais.has(p.id)) { projetos.push(p); adicionados++; } });
+                        mostrarNotificacao(`✅ ${adicionados} projeto(s) importado(s)!`, 'sucesso');
+                        _finalizarBkp();
+                    },
+                    'Importar Backup', '📦',
+                    function() {
+                        // Cancelar = Substituir
+                        projetos = _bkpLista;
+                        mostrarNotificacao(`✅ ${_bkpLista.length} projeto(s) restaurado(s)!`, 'sucesso');
+                        _finalizarBkp();
+                    }
+                );
             } else {
-                projetos = lista;
-                mostrarNotificacao(`✅ ${lista.length} projeto(s) restaurado(s)!`, 'sucesso');
+                projetos = _bkpLista;
+                mostrarNotificacao(`✅ ${_bkpLista.length} projeto(s) restaurado(s)!`, 'sucesso');
+                _finalizarBkp();
             }
-            projetoAtual = null;
-            // Migrar personagens combinados em todos os projetos restaurados
-            projetos.forEach(p => _migrarPersonagensCombinados(p));
-            salvarProjetos();
-            carregarProjetos();
         } catch(err) {
             mostrarNotificacao('❌ Erro ao ler o arquivo: ' + err.message, 'erro');
         }
@@ -2699,7 +2727,7 @@ function carregarProjetos() {
                         var aprovado = st==='aprovado' || st==='producao';
                         if (st === 'casting_reaberto') return '<span style="background:#f59e0b;color:#fff;font-size:10px;padding:2px 7px;border-radius:10px;font-weight:600;">🔄 Casting Reaberto</span>';
                         if (aprovado) return '<span style="background:#7c3aed;color:#fff;font-size:10px;padding:2px 7px;border-radius:10px;font-weight:600;">✅ Em Produção</span>';
-                        if (temResposta) return '<span style="background:#e67e22;color:#fff;font-size:10px;padding:2px 7px;border-radius:10px;font-weight:600;">⚡ Aguarda Aprovação</span>';
+                        if (temResposta) return '<span onclick="event.stopPropagation();_abrirPrateleiraAprovacao(' + idx + ')" title="Clique para aprovar o casting" style="background:#e67e22;color:#fff;font-size:10px;padding:2px 7px;border-radius:10px;font-weight:600;cursor:pointer;">⚡ Aguarda Aprovação</span>';
                         return '';
                     })()}
                     ${p.idioma ? `<span style="background:#eaf2ff;color:#2980b9;font-size:10px;padding:2px 7px;border-radius:10px;font-weight:600;">${p.idioma}</span>` : ''}
@@ -2935,6 +2963,9 @@ function editarProjeto(idx) {
 function _salvarEdicaoProjeto(idx, btn) {
     const nome = document.getElementById('_editNome')?.value.trim();
     if (!nome) { mostrarNotificacao('❌ Nome não pode ser vazio', 'erro'); return; }
+    // Capturar antes de alterar — necessário para o rename no Drive
+    const nomeAntigo        = projetos[idx].nome;
+    const linkPastaAtual    = projetos[idx]?.links?.pastaProjeto || '';
     projetos[idx].nome     = nome;
     projetos[idx].idioma   = document.getElementById('_editIdioma')?.value || projetos[idx].idioma;
     projetos[idx].dataInicio = document.getElementById('_editData')?.value || projetos[idx].dataInicio;
@@ -2942,6 +2973,16 @@ function _salvarEdicaoProjeto(idx, btn) {
     carregarProjetos();
     btn.closest('[style*=fixed]').remove();
     mostrarNotificacao('✅ Projeto atualizado', 'sucesso', 2000);
+    // Se nome mudou e há pasta Drive vinculada → renomear no Drive
+    if (nome !== nomeAntigo && linkPastaAtual) {
+        const folderId = linkPastaAtual.split('/folders/')[1]?.split('?')[0]?.trim();
+        if (folderId) {
+            _driveRenomearPasta(folderId, nome).then(function(ok) {
+                if (ok) mostrarNotificacao('📁 Pasta renomeada no Drive!', 'sucesso', 2500);
+                else    mostrarNotificacao('⚠️ Projeto renomeado localmente. Verifique o Drive.', 'aviso', 3500);
+            });
+        }
+    }
 }
 
 // ─── SRT ──────────────────────────────────────────────────────────────────────
@@ -3829,6 +3870,15 @@ function _renomearPersonagemUnificado(idCasting, nomeNovo) {
     });
 
     salvarProjetos();
+}
+
+function _abrirPrateleiraAprovacao(idx) {
+    selecionarProjeto(idx).then(function() {
+        carregarProjetos();
+        abrirPrateleira();
+        // Aguarda o modal renderizar antes de trocar para a aba Aprovação
+        setTimeout(function() { _pratAba('aprovacao'); }, 80);
+    });
 }
 
 function abrirPrateleira() {
@@ -5988,16 +6038,20 @@ function excluirPapel(i) {
     const papel   = lista[i];
     const dubs    = carregarDubladores();
     const emUso   = dubs.filter(d => d.papeis?.includes(papel)).map(d => d.nome);
-    if (emUso.length) {
-        if (!confirm(`"${papel}" está em uso em: ${emUso.join(', ')}.
-Excluir mesmo assim?`)) return;
+    function _excluir() {
+        lista.splice(i, 1);
+        salvarPapeis(lista);
+        renderizarListaPapeisModal();
+        _atualizarCheckboxesPapeis();
+        _atualizarSelectFiltroPapel();
+        mostrarNotificacao('✅ Papel excluído', 'sucesso', 2000);
     }
-    lista.splice(i, 1);
-    salvarPapeis(lista);
-    renderizarListaPapeisModal();
-    _atualizarCheckboxesPapeis();
-    _atualizarSelectFiltroPapel();
-    mostrarNotificacao('✅ Papel excluído', 'sucesso', 2000);
+    if (emUso.length) {
+        _confirmar(`"${papel}" está em uso em: ${emUso.join(', ')}. Excluir mesmo assim?`,
+            _excluir, 'Excluir', '⚠️');
+        return;
+    }
+    _excluir();
 }
 
 function adicionarPapel() {
@@ -6144,17 +6198,21 @@ function excluirIdioma(idx) {
     const lista  = carregarIdiomas();
     const idioma = lista[idx];
     const emUso  = projetos.filter(p => p.idioma === idioma).map(p => p.nome);
-    if (emUso.length) {
-        if (!confirm(`"${idioma}" está em uso no(s) projeto(s): ${emUso.join(', ')}.
-Excluir mesmo assim?`)) return;
+    function _excluir() {
+        lista.splice(idx, 1);
+        salvarIdiomas(lista);
+        renderizarListaIdiomasModal();
+        preencherSelectIdiomas();
+        popularSelectIdiomaProjeto();
+        renderizarListaDubladores();
+        mostrarNotificacao('✅ Idioma excluído', 'sucesso', 2000);
     }
-    lista.splice(idx, 1);
-    salvarIdiomas(lista);
-    renderizarListaIdiomasModal();
-    preencherSelectIdiomas();
-    popularSelectIdiomaProjeto();
-    renderizarListaDubladores();
-    mostrarNotificacao('✅ Idioma excluído', 'sucesso', 2000);
+    if (emUso.length) {
+        _confirmar(`"${idioma}" está em uso no(s) projeto(s): ${emUso.join(', ')}. Excluir mesmo assim?`,
+            _excluir, 'Excluir', '⚠️');
+        return;
+    }
+    _excluir();
 }
 
 function preencherSelectIdiomas(forceValue) {
@@ -11922,6 +11980,26 @@ async function _driveGarantirPasta(nomePasta, paiId) {
     });
     const nova = await cr.json();
     return nova.id;
+}
+
+// ── Renomear pasta existente no Drive ────────────────────────────────────────
+async function _driveRenomearPasta(folderId, novoNome) {
+    if (!folderId || !novoNome || !_driveToken()) return false;
+    try {
+        const resp = await _driveFetch(
+            `https://www.googleapis.com/drive/v3/files/${folderId}?fields=id,name`,
+            {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: novoNome })
+            }
+        );
+        const data = await resp.json();
+        return !!data.id;
+    } catch(e) {
+        console.warn('_driveRenomearPasta:', e);
+        return false;
+    }
 }
 
 // ── Criar estrutura de pastas para um projeto ─────────────────────────────────
