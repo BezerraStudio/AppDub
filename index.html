@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.537</title>
+    <title>Sistema de Dublagem v12.539</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.537</p>
+        <p>v12.539</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.537</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.539</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1738,7 +1738,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.537</footer>
+    <footer>🎬 Sistema de Dublagem v12.539</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -14875,6 +14875,9 @@ async function _criarPlanilhaNoSheets() {
         // ── STEP 1: Criar planilha com todas as abas ──────────────────────────
         mostrarNotificacao(t('notif.criandoAbas'), 'info');
 
+        // Nome da planilha: "Nome do Projeto - Planilha de Gravação"
+        const nomeArquivo = nome + ' - Planilha de Gravação';
+
         const sheetDefs = [
             { properties: { title: 'Retakes', tabColor: { red:0.75, green:0.1, blue:0.1 } } },
             { properties: { title: 'UNIFICADO', tabColor: { red:0.16, green:0.5, blue:0.73 } } },
@@ -14883,7 +14886,7 @@ async function _criarPlanilhaNoSheets() {
 
         const criado = await gapi.client.sheets.spreadsheets.create({
             resource: {
-                properties: { title: `Roteiro_${nome}` },
+                properties: { title: nomeArquivo },
                 sheets: sheetDefs
             }
         });
@@ -14892,8 +14895,23 @@ async function _criarPlanilhaNoSheets() {
         const sheets = criado.result.sheets;
         const idOf  = title => sheets.find(s=>s.properties.title===title)?.properties.sheetId;
 
-        // ── STEP 2: Mover para pasta se configurada ───────────────────────────
-        if(cfg.pastaId) {
+        // ── STEP 2: Mover para pasta do projeto ──────────────────────────────
+        var _pastaProjSheetId = null;
+        if (projetoAtual.links && projetoAtual.links.pastaProjeto) {
+            _pastaProjSheetId = projetoAtual.links.pastaProjeto
+                .replace('https://drive.google.com/drive/folders/', '')
+                .split('?')[0].trim();
+        }
+        if (_pastaProjSheetId) {
+            try {
+                await gapi.client.drive.files.update({
+                    fileId: sid,
+                    addParents: _pastaProjSheetId,
+                    removeParents: 'root',
+                    fields: 'id,parents'
+                });
+            } catch(e) { console.warn('Não foi possível mover planilha para pasta do projeto:', e); }
+        } else if(cfg.pastaId) {
             try {
                 await gapi.client.drive.files.update({
                     fileId: sid,
@@ -14968,12 +14986,12 @@ async function _criarPlanilhaNoSheets() {
             rows.push([ '', LK.pastaUpload?`${LBL.upload}`:LBL.upload, '', LK.pastaVideos?`${LBL.download}`:LBL.download, LBL.mots, ...pers.map(p=>nPal(ls,p)) ]);
             // L3: - | - | - | - | Doubleur | dubladores...
             rows.push([ '', '', '', '', LBL.doubleur, ...pers.map(p=>dNome(p,epNum)) ]);
-            // L4: cabeçalhos
-            rows.push([ LBL.numero, LBL.tc, LBL.pers, LBL.dial, ...pers.map(()=>'') ]);
-            // L5+: dados
+            // L4: cabeçalhos — E = Arquivo enviado, F+ = personagens
+            rows.push([ LBL.numero, LBL.tc, LBL.pers, LBL.dial, LBL.fichier, ...pers.map(()=>'') ]);
+            // L5+: dados — E vazio (preenchido pelo dublador), F+ vazio (marcação por personagem)
             ls.forEach((l,i) => {
                 const tc = (l.inicio&&l.fim)?`${l.inicio} --> ${l.fim}`:(l.inicio||'');
-                rows.push([ i+1, tc, l._pers||'', l.texto||'', ...pers.map(()=>'') ]);
+                rows.push([ i+1, tc, l._pers||'', l.texto||'', '', ...pers.map(()=>'') ]);
             });
 
             valuesData.push({
@@ -15060,12 +15078,12 @@ async function _criarPlanilhaNoSheets() {
             requests.push(freezeFmt(shId,4,0));
 
             // Larguras de coluna
-            requests.push(colWidth(shId,0,1,120)); // A: Número
+            requests.push(colWidth(shId,0,1,80));  // A: Número
             requests.push(colWidth(shId,1,2,200)); // B: Time Code
             requests.push(colWidth(shId,2,3,160)); // C: Personagem
-            requests.push(colWidth(shId,3,4,300)); // D: Diálogo
-            requests.push(colWidth(shId,4,5,160)); // E: Fichier
-            if(pers.length>0) requests.push(colWidth(shId,5,5+pers.length,110)); // Pers
+            requests.push(colWidth(shId,3,4,340)); // D: Diálogo
+            requests.push(colWidth(shId,4,5,160)); // E: Arquivo enviado
+            if(pers.length>0) requests.push(colWidth(shId,5,5+pers.length,110)); // F+: Pers
         };
 
         // ── Aba UNIFICADO ─────────────────────────────────────────────────────
@@ -15187,17 +15205,19 @@ async function _criarPlanilhaNoSheets() {
                 }
             });
             mostrarNotificacao(`⏳ Dados: ${Math.min(i+LOTE,valuesData.length)}/${valuesData.length} abas...`, 'info');
+            if (i + LOTE < valuesData.length) await new Promise(r => setTimeout(r, 1200));
         }
 
         // ── STEP 5: Aplicar formatação em lotes ────────────────────────────────
         mostrarNotificacao(t('misc.notif.aplicandoForm'), 'info');
-        const FMT_LOTE = 200;
+        const FMT_LOTE = 100;
         for(let i=0; i<requests.length; i+=FMT_LOTE) {
             await gapi.client.sheets.spreadsheets.batchUpdate({
                 spreadsheetId: sid,
                 resource: { requests: requests.slice(i, i+FMT_LOTE) }
             });
             mostrarNotificacao(t('misc.notif.formatando',{n:Math.min(i+FMT_LOTE,requests.length),total:requests.length}), 'info');
+            if (i + FMT_LOTE < requests.length) await new Promise(r => setTimeout(r, 1200));
         }
 
         // ── STEP 6: Abrir no Drive ─────────────────────────────────────────────
@@ -15346,10 +15366,12 @@ async function driveCriarPastaProjeto(nomeProjeto, nomeCliente) {
     const cfg = cfgGet();
     if (!cfg.pastaRaizId || !_driveToken()) return null;
     try {
-        // 1. Garantir pasta do cliente dentro da raiz
-        var paiId = cfg.pastaRaizId;
+        // Raiz dos projetos: pasta "Clientes" se configurada, senão pasta raiz do sistema
+        var raizProjetosId = cfg.pastaClientesId || cfg.pastaRaizId;
+        // 1. Garantir pasta do cliente dentro da raiz de projetos
+        var paiId = raizProjetosId;
         if (nomeCliente) {
-            paiId = await _driveGarantirPasta(nomeCliente, cfg.pastaRaizId);
+            paiId = await _driveGarantirPasta(nomeCliente, raizProjetosId);
         }
         // 2. Criar pasta do projeto dentro do cliente
         const pastaProj = await _driveGarantirPasta(nomeProjeto, paiId);
