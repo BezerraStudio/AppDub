@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.535</title>
+    <title>Sistema de Dublagem v12.536</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,25 +628,23 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.535</p>
-
-        <!-- Estado: verificando sessão -->
-        <div id="loginVerificando" style="text-align:center;padding:24px 0;">
-            <p style="color:#94a3b8;font-size:13px;">⏳ Verificando sessão...</p>
-        </div>
-
-        <!-- Estado: tela de login (exibida apenas se sem sessão) -->
-        <div id="loginGoogleArea" style="display:none;text-align:center;padding:16px 0;">
-            <button id="btnGoogle" onclick="sbLoginGoogle()"
-                style="display:inline-flex;align-items:center;gap:10px;padding:12px 24px;background:#fff;color:#3c4043;border:1px solid #dadce0;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.12);width:100%;justify-content:center;transition:box-shadow .2s;"
-                onmouseover="this.style.boxShadow='0 2px 8px rgba(0,0,0,.2)'"
-                onmouseout="this.style.boxShadow='0 1px 3px rgba(0,0,0,.12)'">
-                <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z"/></svg>
-                Entrar com Google
-            </button>
-            <p id="loginErro" style="color:#e74c3c;font-size:12px;display:none;margin-top:12px;"></p>
-            <p style="font-size:11px;color:#94a3b8;margin-top:16px;">Apenas contas autorizadas têm acesso ao sistema.</p>
-        </div>
+        <p>v12.536</p>
+        <form id="formLogin">
+            <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
+            <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin:-6px 0 8px;font-size:12px;color:#94a3b8;flex-wrap:wrap;gap:8px;">
+                <div style="display:flex;align-items:center;gap:6px;">
+                    <input type="checkbox" id="admLembrar" style="cursor:pointer;">
+                    <label for="admLembrar" style="cursor:pointer;" data-i18n="login.lembrar">Lembrar usuário</label>
+                </div>
+                <div style="display:flex;align-items:center;gap:6px;">
+                    <input type="checkbox" id="admLembrarSenha" style="cursor:pointer;">
+                    <label for="admLembrarSenha" style="cursor:pointer;" data-i18n="login.salvarSenha">Salvar senha</label>
+                </div>
+            </div>
+            <button type="submit" id="btnEntrar" data-i18n="login.btn.entrar">✅ ENTRAR</button>
+        </form>
+        <p class="dica" id="loginDica" style="font-size:11px;color:#6b7280;" data-i18n-html="login.dica">Primeira entrada neste dispositivo? Use <strong>admin</strong> e senha <strong>admin123</strong> e troque em seguida.</p>
     </div>
 </div>
 
@@ -659,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.535</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.536</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1740,7 +1738,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.535</footer>
+    <footer>🎬 Sistema de Dublagem v12.536</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -5634,9 +5632,46 @@ function idbDel(key) {
     });
 }
 
-// ─── LOGIN (fluxo migrado para Supabase Google OAuth — ver _sbInit) ──────────
-// O formLogin foi substituído pelo botão Google OAuth. Autenticação gerenciada
-// por _sbInit(), sbLoginGoogle() e _sbOnLogin() no bloco Supabase abaixo.
+// ─── LOGIN ────────────────────────────────────────────────────────────────────
+document.getElementById('formLogin').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    var usuario = (document.getElementById('usuario').value || '').trim();
+    var senha   = document.getElementById('senha').value || '';
+    var btn     = document.getElementById('btnEntrar');
+    _adminsGarantirSuperadmin();
+    var adm = adminsVerificarLogin(usuario, senha);
+    if (adm) {
+        btn.textContent = t('login.carregando'); btn.disabled = true;
+        // Carregar dados compartilhados do Supabase antes de abrir o app
+        await _sbCarregarDados();
+        await initDB();
+        try {
+            var cfg = JSON.parse(localStorage.getItem('cfg_geral')||'{}');
+            if (!cfg.idiomas || !cfg.idiomas.length) {
+                cfg.idiomas = ['Francês','Inglês','Espanhol','Japonês','Alemão','Italiano','Coreano','Português'];
+                localStorage.setItem('cfg_geral', JSON.stringify(cfg));
+            }
+        } catch(e){}
+        if (document.getElementById('admLembrar') && document.getElementById('admLembrar').checked) {
+            localStorage.setItem('adm_lembrar_usuario', usuario);
+        } else {
+            localStorage.removeItem('adm_lembrar_usuario');
+        }
+        if (document.getElementById('admLembrarSenha') && document.getElementById('admLembrarSenha').checked) {
+            localStorage.setItem('adm_lembrar_senha', btoa(senha));
+        } else {
+            localStorage.removeItem('adm_lembrar_senha');
+        }
+        btn.textContent = t('login.btnEntrar'); btn.disabled = false;
+        if (adm.senhaDefinida === false) {
+            _admPrimeiroAcessoAbrir(adm);
+            return;
+        }
+        _admAbrir(adm);
+    } else {
+        mostrarNotificacao(t('login.senhaIncorreta'), 'erro');
+    }
+});
 
 function _admAbrir(adm) {
     sessionStorage.setItem('adm_logado', JSON.stringify({ id: adm.id, nome: adm.nome, role: adm.role }));
@@ -5698,14 +5733,12 @@ function fazerLogout() {
         pararVideo();
         sessionStorage.removeItem('adm_logado');
         document.getElementById('appContainer').style.display = 'none';
-        // Sign-out Supabase (redireciona para tela de login via onAuthStateChange)
-        if (_sbClient) {
-            _sbClient.auth.signOut();
-        } else {
-            document.getElementById('loginScreen').style.display = 'flex';
-            document.getElementById('loginVerificando').style.display = 'none';
-            document.getElementById('loginGoogleArea').style.display  = 'block';
-        }
+        document.getElementById('loginScreen').style.display  = 'flex';
+        document.getElementById('formLogin').reset();
+        var u = localStorage.getItem('adm_lembrar_usuario');
+        var s = localStorage.getItem('adm_lembrar_senha');
+        if (u) { var elU = document.getElementById('usuario'); if(elU){elU.value=u;var cb=document.getElementById('admLembrar');if(cb)cb.checked=true;} }
+        if (s) { try{ var elS=document.getElementById('senha'); if(elS){elS.value=atob(s);var cb2=document.getElementById('admLembrarSenha');if(cb2)cb2.checked=true;} }catch(e){} }
     }, t('modal.t.sair'), '🚪');
 }
 
@@ -24637,41 +24670,37 @@ async function carregarSRTsDrive() {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// ─── SUPABASE — autenticação Google OAuth + StorageAdapter ───────────────────
+// ─── SUPABASE — banco compartilhado (anon key, sem autenticação própria) ──────
 // ═══════════════════════════════════════════════════════════════════════════════
 
-const _SB_URL       = 'https://jnjddruioscxlktecinb.supabase.co';
-const _SB_KEY       = 'sb_publishable_n0EYA2mDXVqDlJoQsXqFBA_Htxx0nUg';
-const _SB_SA_EMAIL  = 'contact@bezerragroupstudio.com';
+const _SB_URL = 'https://jnjddruioscxlktecinb.supabase.co';
+const _SB_KEY = 'sb_publishable_n0EYA2mDXVqDlJoQsXqFBA_Htxx0nUg';
 
-// Chaves que ficam APENAS locais — nunca sobem ao Supabase
+// Chaves que ficam APENAS locais — tokens de sessão e preferências de dispositivo
 const _SB_LOCAL_ONLY = new Set([
     'app_token', 'cfg_google_token', 'adm_lembrar_usuario',
     'adm_lembrar_senha', 'app_lang', 'adm_logado',
     '_driveFileId', '_driveSistemaId'
 ]);
 
-let _sbClient  = null;
+let _sbClient   = null;
 let _sbPendente = {};
-let _sbTimer   = null;
+let _sbTimer    = null;
 
-// ─── Storage Adapter — intercepta localStorage.setItem ───────────────────────
-(function() {
-    var _orig = localStorage.setItem.bind(localStorage);
-    localStorage.setItem = function(chave, valor) {
-        _orig(chave, valor);
-        if (_sbClient && !_SB_LOCAL_ONLY.has(chave)) {
-            _sbPendente[chave] = valor;
-            clearTimeout(_sbTimer);
-            _sbTimer = setTimeout(_sbFlush, 1500);
-        }
-    };
-})();
+// ─── StorageAdapter — intercepta localStorage.setItem ────────────────────────
+// Qualquer usuário (admin ou membro) que modifica dados → vai ao Supabase automaticamente
+const _lsSetOrig = localStorage.setItem.bind(localStorage);
+localStorage.setItem = function(chave, valor) {
+    _lsSetOrig(chave, valor);
+    if (_sbClient && !_SB_LOCAL_ONLY.has(chave)) {
+        _sbPendente[chave] = valor;
+        clearTimeout(_sbTimer);
+        _sbTimer = setTimeout(_sbFlush, 1500);
+    }
+};
 
 async function _sbFlush() {
     if (!_sbClient) return;
-    var session = (await _sbClient.auth.getSession()).data.session;
-    if (!session) return;
     var entradas = Object.entries(_sbPendente);
     _sbPendente = {};
     for (var i = 0; i < entradas.length; i++) {
@@ -24679,7 +24708,7 @@ async function _sbFlush() {
         var valor = entradas[i][1];
         try {
             var parsed;
-            try { parsed = JSON.parse(valor); } catch(e) { parsed = valor; }
+            try { parsed = JSON.parse(valor); } catch(ex) { parsed = valor; }
             await _sbClient.from('app_data').upsert(
                 { chave: chave, valor: parsed, atualizado_em: new Date().toISOString() },
                 { onConflict: 'chave' }
@@ -24690,99 +24719,24 @@ async function _sbFlush() {
     }
 }
 
+// Carrega todos os dados do Supabase para o localStorage local
+// Chamado no login (admin) e no carregamento de tela de membro
 async function _sbCarregarDados() {
     if (!_sbClient) return;
     try {
         var res = await _sbClient.from('app_data').select('chave,valor');
         if (res.error) throw res.error;
-        var lsOrig = Storage.prototype.setItem.bind(localStorage);
-        for (var i = 0; i < (res.data || []).length; i++) {
+        var n = (res.data || []).length;
+        for (var i = 0; i < n; i++) {
             var row = res.data[i];
             var serialized = (typeof row.valor === 'string')
                 ? row.valor : JSON.stringify(row.valor);
-            lsOrig(row.chave, serialized);
+            _lsSetOrig(row.chave, serialized); // usa original para não re-disparar sync
         }
-        console.log('Supabase: ' + (res.data||[]).length + ' chaves carregadas.');
+        if (n > 0) console.log('Supabase: ' + n + ' chaves carregadas.');
     } catch(e) {
-        console.warn('Supabase carregar dados falhou:', e.message);
-    }
-}
-
-// Garante que o email logado tem entrada em cfg_admins
-function _sbGarantirAdmin(email, nomeDisplay) {
-    var lista = _adminsGet();
-    var existe = lista.find(function(a) { return a.email === email; });
-    if (!existe) {
-        var role = (email === _SB_SA_EMAIL) ? 'superadmin' : 'visualizador';
-        lista.push({
-            id: 'adm_' + Date.now(),
-            nome: nomeDisplay || email,
-            email: email,
-            senhaHash: '',
-            role: role,
-            ativo: true,
-            criado: new Date().toISOString(),
-            senhaDefinida: true,
-            googleAuth: true
-        });
-        _adminsSalvar(lista);
-    } else if (email === _SB_SA_EMAIL && existe.role !== 'superadmin') {
-        existe.role = 'superadmin';
-        _adminsSalvar(lista);
-    }
-}
-
-async function _sbOnLogin(session) {
-    var email = session.user.email;
-    var nome  = session.user.user_metadata && session.user.user_metadata.full_name
-                ? session.user.user_metadata.full_name : email;
-    // Carregar dados compartilhados do Supabase
-    await _sbCarregarDados();
-    await initDB();
-    // Garantir/criar entrada de admin para este email
-    _sbGarantirAdmin(email, nome);
-    // Localizar admin pelo email
-    var lista = _adminsGet();
-    var adm = null;
-    for (var i = 0; i < lista.length; i++) {
-        if (lista[i].email === email && lista[i].ativo !== false) { adm = lista[i]; break; }
-    }
-    if (!adm) {
-        var elErro = document.getElementById('loginErro');
-        if (elErro) { elErro.textContent = 'Email não autorizado. Solicite acesso ao administrador.'; elErro.style.display = 'block'; }
-        var elVer = document.getElementById('loginVerificando'); if (elVer) elVer.style.display = 'none';
-        var elGA  = document.getElementById('loginGoogleArea');  if (elGA)  elGA.style.display  = 'block';
-        await _sbClient.auth.signOut();
-        return;
-    }
-    _admAbrir(adm);
-}
-
-function _sbOnLogout() {
-    sessionStorage.removeItem('adm_logado');
-    document.getElementById('appContainer').style.display = 'none';
-    document.getElementById('loginScreen').style.display  = 'flex';
-    var elVer = document.getElementById('loginVerificando'); if (elVer) elVer.style.display = 'none';
-    var elGA  = document.getElementById('loginGoogleArea');  if (elGA)  elGA.style.display  = 'block';
-    var elErr = document.getElementById('loginErro');        if (elErr) elErr.style.display = 'none';
-}
-
-async function sbLoginGoogle() {
-    if (!_sbClient) { mostrarNotificacao('Sistema ainda inicializando...', 'info'); return; }
-    var elGA  = document.getElementById('loginGoogleArea');
-    var elVer = document.getElementById('loginVerificando');
-    var elErr = document.getElementById('loginErro');
-    if (elGA)  elGA.style.display  = 'none';
-    if (elVer) { elVer.style.display = 'block'; elVer.querySelector('p').textContent = '⏳ Redirecionando para Google...'; }
-    if (elErr) elErr.style.display = 'none';
-    var res = await _sbClient.auth.signInWithOAuth({
-        provider: 'google',
-        options: { redirectTo: window.location.origin + window.location.pathname }
-    });
-    if (res.error) {
-        if (elGA)  elGA.style.display  = 'block';
-        if (elVer) elVer.style.display = 'none';
-        if (elErr) { elErr.textContent = 'Erro: ' + res.error.message; elErr.style.display = 'block'; }
+        console.warn('Supabase: falha ao carregar dados —', e.message || e);
+        // Não bloqueia o sistema: continua com dados locais
     }
 }
 
@@ -24792,34 +24746,13 @@ function _sbInit() {
         return;
     }
     _sbClient = window.supabase.createClient(_SB_URL, _SB_KEY);
-    // Ouvir mudanças de estado de auth
-    _sbClient.auth.onAuthStateChange(function(event, session) {
-        if (event === 'SIGNED_IN' && session) {
-            _sbOnLogin(session);
-        } else if (event === 'SIGNED_OUT') {
-            _sbOnLogout();
-        }
-    });
-    // Verificar sessão existente (ex.: refresh de página)
-    _sbClient.auth.getSession().then(function(result) {
-        var session = result.data && result.data.session;
-        if (session) {
-            // Sessão ativa — _sbOnLogin será chamado via onAuthStateChange
-        } else {
-            // Sem sessão — mostrar botão de login
-            var elVer = document.getElementById('loginVerificando');
-            var elGA  = document.getElementById('loginGoogleArea');
-            if (elVer) elVer.style.display = 'none';
-            if (elGA)  elGA.style.display  = 'block';
-        }
-    });
+    console.log('Supabase conectado (anon).');
 }
 
-// Inicializar Supabase quando o DOM estiver pronto
+// Inicializar ao carregar a página
 window.addEventListener('load', function() {
     setTimeout(_sbInit, 100);
 });
-
 </script>
 
 <!-- MODAL AVISO NÃO SALVO -->
