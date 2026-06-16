@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.533</title>
+    <title>Sistema de Dublagem v12.534</title>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -627,7 +627,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.533</p>
+        <p>v12.534</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -656,7 +656,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.533</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.534</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -682,7 +682,10 @@
 
                 <!-- COLUNA ESQUERDA: configurações -->
                 <div class="projetos-col">
-                    <h2 data-i18n="proj.h1.novo">1️⃣ NOVO PROJETO</h2>
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+                        <h2 style="margin:0;" data-i18n="proj.h1.novo">1️⃣ NOVO PROJETO</h2>
+                        <button onclick="novoProjetoLimpar()" style="font-size:12px;padding:5px 12px;background:#27ae60;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:700;" title="Limpar formulário para criar um novo projeto">➕ Novo</button>
+                    </div>
 
                     <div class="form-group">
                         <label data-i18n="proj.label.nome">Nome do Projeto:</label>
@@ -711,6 +714,13 @@
 
                     <div class="form-group" style="margin-top:8px;">
                         <label data-i18n="proj.label.srt">📥 Importar SRT(s):</label>
+                        <!-- Linha Drive (visível apenas quando projeto tem pasta SRTs do Projeto) -->
+                        <div id="srtDriveRow" style="display:none;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:6px;padding:6px 8px;background:#eaf4fb;border:1px solid #aed6f1;border-radius:6px;">
+                            <span style="font-size:11px;color:#1a5276;font-weight:600;">☁️ Drive:</span>
+                            <a id="srtDriveLink" href="#" target="_blank" style="font-size:11px;color:#2471a3;text-decoration:underline;word-break:break-all;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="">📂 SRTs do Projeto</a>
+                            <button onclick="carregarSRTsDrive()" style="font-size:11px;padding:4px 10px;background:#2471a3;color:#fff;border:none;border-radius:5px;cursor:pointer;font-weight:700;white-space:nowrap;">📥 Carregar do Drive</button>
+                        </div>
+                        <!-- Linha local (sempre visível) -->
                         <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
                             <input type="file" id="uploadSRT" accept=".srt" multiple class="input-file" style="display:none;">
                             <button type="button" onclick="document.getElementById('uploadSRT').click()" class="btn" style="font-size:12px;padding:5px 10px;background:#ecf0f1;color:#2c3e50;border:1px solid #bdc3c7;" data-i18n="btn.escolherArquivos">📂 Escolher arquivos</button>
@@ -1727,7 +1737,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.533</footer>
+    <footer>🎬 Sistema de Dublagem v12.534</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -6582,6 +6592,7 @@ function atualizarStatusSRT() {
     const el = document.getElementById('srtStatus');
     el.textContent = n > 0 ? t('proj.status.epsImportados', {n:n}) : t('proj.status.semSRT');
     el.style.color = n > 0 ? '#27ae60' : '#7f8c8d';
+    _atualizarSRTDriveUI();
 }
 
 // ─── PASTA DE VÍDEOS ──────────────────────────────────────────────────────────
@@ -10684,6 +10695,7 @@ var _cfgPastasPadrao = [
     {nome:'Dubladores', filhos:[
         {nome:'Retakes', filhos:[]}
     ]},
+    {nome:'SRTs do Projeto', filhos:[]},
     {nome:'SRT para Revisão', filhos:[]},
     {nome:'Videos Para Conferencia', filhos:[]},
     {nome:'SRTs Finais', filhos:[]},
@@ -15350,6 +15362,7 @@ async function driveCriarPastaProjeto(nomeProjeto, nomeCliente) {
             'Videos Para Dublagem':    'pastaVideos',
             'Dubladores':              'pastaDubladores',
             'Retakes':                 'pastaRetakes',
+            'SRTs do Projeto':         'pastaSRTsProjeto',
             'SRT para Revisão':        'pastaSRTRevisao',
             'Videos Para Conferencia': 'pastaMateriais',
             'SRTs Finais':             'pastaSRTsFinais',
@@ -15376,7 +15389,16 @@ async function driveCriarPastaProjeto(nomeProjeto, nomeCliente) {
                 var chave = linkMap[nome];
                 if (chave) projetos[idx].links[chave] = base + ids[nome];
             });
+            // Salvar ID bruto da pasta SRTs do Projeto para uso na API
+            if (ids['SRTs do Projeto']) {
+                projetos[idx].links.pastaSRTsProjetoId = ids['SRTs do Projeto'];
+            }
             salvarProjetos();
+            // Atualizar UI do Drive SRT se este for o projeto atual
+            if (projetoAtual && projetoAtual.id === projetos[idx].id) {
+                projetoAtual.links = projetos[idx].links;
+                _atualizarSRTDriveUI();
+            }
         }
         mostrarNotificacao(t('misc.notif.estruturaDriveCriada'), 'sucesso', 3000);
         return pastaProj;
@@ -24514,6 +24536,137 @@ function _cliGerarXLSX(texto){
 function cliFecharDrawer() {
     var ov=document.getElementById('cliOverlay'); if(ov) ov.classList.remove('open');
     var dr=document.getElementById('cliDrawer'); if(dr) dr.classList.remove('open');
+}
+
+// ─── NOVO PROJETO ─────────────────────────────────────────────────────────────
+function novoProjetoLimpar() {
+    projetoAtual = null;
+    // Limpar campos do formulário
+    var elNome  = document.getElementById('inputNomeProjeto');
+    var elData  = document.getElementById('inputDataInicioProjeto');
+    var elIdioma= document.getElementById('inputIdiomaProjeto');
+    var hoje    = new Date().toISOString().split('T')[0];
+    if (elNome)   elNome.value   = '';
+    if (elData)   elData.value   = hoje;
+    if (elIdioma) elIdioma.value = '';
+    _popularSelectClientes('');
+    // Resetar status SRT
+    var elSrtName = document.getElementById('srtFileName');
+    var elSrtSt   = document.getElementById('srtStatus');
+    var elUpSRT   = document.getElementById('uploadSRT');
+    if (elSrtName) elSrtName.textContent = t('btn.nenhumArqSel');
+    if (elSrtSt)   { elSrtSt.textContent = t('proj.status.semSRT'); elSrtSt.style.color = '#7f8c8d'; }
+    if (elUpSRT)   elUpSRT.value = '';
+    // Resetar status vídeos
+    var elVidName = document.getElementById('videoFileName');
+    var elVidSt   = document.getElementById('pastaStatusTxt');
+    var elDur     = document.getElementById('durTotalSerie');
+    if (elVidName) elVidName.textContent = t('btn.nenhumArqSel');
+    if (elVidSt)   { elVidSt.textContent = t('proj.status.semVideo'); elVidSt.className = 'input-status'; }
+    if (elDur)     elDur.textContent = '';
+    // Desabilitar botões dependentes de projeto
+    var btnEsc  = document.getElementById('btnEscalarEquipe');
+    var btnPrat = document.getElementById('btnPrateleira');
+    if (btnEsc)  { btnEsc.disabled  = true; btnEsc.title  = t('tooltip.salveProjeto'); }
+    if (btnPrat) { btnPrat.disabled = true; btnPrat.title = t('tooltip.salveProjeto'); }
+    // Esconder badges do header
+    var badge     = document.getElementById('headerNomeSerie');
+    var badgeData = document.getElementById('headerDataInicio');
+    if (badge)     badge.style.display = 'none';
+    if (badgeData) badgeData.style.display = 'none';
+    // Esconder linha Drive SRT
+    _atualizarSRTDriveUI();
+    mostrarNotificacao('Formulário pronto para novo projeto', 'sucesso', 2000);
+}
+
+// ─── UI DRIVE — linha da pasta SRTs do Projeto ───────────────────────────────
+function _atualizarSRTDriveUI() {
+    var row  = document.getElementById('srtDriveRow');
+    var link = document.getElementById('srtDriveLink');
+    if (!row || !link) return;
+    var url = projetoAtual && projetoAtual.links && projetoAtual.links.pastaSRTsProjeto
+              ? projetoAtual.links.pastaSRTsProjeto : '';
+    if (url) {
+        link.href        = url;
+        link.textContent = '📂 SRTs do Projeto';
+        link.title       = url;
+        row.style.display = 'flex';
+    } else {
+        row.style.display = 'none';
+    }
+}
+
+// ─── IMPORTAR SRTs A PARTIR DE DADOS (Drive) ────────────────────────────────
+async function _importarSRTsDados(items) {
+    if (!projetoAtual) return 0;
+    if (!items || !items.length) return 0;
+    projetoAtual.episodios   = {};
+    projetoAtual.personagens = {};
+    var importados = 0;
+    var sorted = items.slice().sort(function(a,b){ return a.name.localeCompare(b.name); });
+    for (var epNum = 1; epNum <= sorted.length; epNum++) {
+        var arq    = sorted[epNum - 1];
+        var linhas = parseSRT(arq.content);
+        if (!linhas.length) continue;
+        projetoAtual.episodios[epNum] = { numero: epNum, arquivo: arq.name, linhas: linhas };
+        linhas.forEach(function(l) {
+            if (!l.personagem) return;
+            var nome = l.personagem;
+            if (nome && !projetoAtual.personagens[nome])
+                projetoAtual.personagens[nome] = { ativo: true };
+            if (nome) _syncPersParaCasting(nome);
+        });
+        importados++;
+    }
+    salvarProjetos();
+    atualizarStatusSRT();
+    return importados;
+}
+
+// ─── CARREGAR SRTs DO DRIVE ──────────────────────────────────────────────────
+async function carregarSRTsDrive() {
+    if (!projetoAtual) {
+        mostrarNotificacao(t('proj.notif.selecioneProjeto'), 'erro', 2000);
+        return;
+    }
+    var pastaId = projetoAtual.links && projetoAtual.links.pastaSRTsProjetoId
+                  ? projetoAtual.links.pastaSRTsProjetoId
+                  : null;
+    // Fallback: extrair ID da URL se não tiver ID bruto salvo
+    if (!pastaId && projetoAtual.links && projetoAtual.links.pastaSRTsProjeto) {
+        pastaId = projetoAtual.links.pastaSRTsProjeto.replace('https://drive.google.com/drive/folders/', '');
+    }
+    if (!pastaId) {
+        mostrarNotificacao('Pasta "SRTs do Projeto" não encontrada. Certifique-se de que a estrutura Drive foi criada.', 'erro', 3000);
+        return;
+    }
+    if (!_driveToken()) {
+        mostrarNotificacao(t('notif.conectandoGoogle'), 'info');
+        cfgCarregarGapi(function(){ cfgAutenticar(function(){ carregarSRTsDrive(); }); });
+        return;
+    }
+    mostrarNotificacao('🔍 Buscando SRTs no Drive...', 'info', 2500);
+    try {
+        var q    = "'" + pastaId + "' in parents and name contains '.srt' and trashed=false";
+        var resp = await _driveFetch('https://www.googleapis.com/drive/v3/files?q=' + encodeURIComponent(q) + '&fields=files(id,name)&orderBy=name');
+        var data = await resp.json();
+        var arquivos = data.files || [];
+        if (!arquivos.length) {
+            mostrarNotificacao('Nenhum arquivo .srt encontrado na pasta "SRTs do Projeto" do Drive.', 'aviso', 3000);
+            return;
+        }
+        mostrarNotificacao('⬇️ Baixando ' + arquivos.length + ' SRT(s)...', 'info', 2500);
+        var items = [];
+        for (var i = 0; i < arquivos.length; i++) {
+            var txt = await _driveLerArquivo(arquivos[i].id);
+            items.push({ name: arquivos[i].name, content: txt });
+        }
+        var n = await _importarSRTsDados(items);
+        mostrarNotificacao('✅ ' + n + ' SRT(s) carregado(s) do Drive!', 'sucesso', 3000);
+    } catch(e) {
+        console.error('carregarSRTsDrive:', e);
+        mostrarNotificacao('Erro ao carregar SRTs do Drive: ' + (e.message || e), 'erro', 4000);
+    }
 }
 
 </script>
