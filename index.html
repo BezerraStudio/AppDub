@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.539</title>
+    <title>Sistema de Dublagem v12.540</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.539</p>
+        <p>v12.540</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.539</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.540</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1738,7 +1738,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.539</footer>
+    <footer>🎬 Sistema de Dublagem v12.540</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -14709,6 +14709,15 @@ function cfgCarregarGapi(callback) {
         return;
     }
 
+    // Se ambos já estão inicializados, chamar callback UMA ÚNICA VEZ e sair
+    if(_gapiInited && _gisInited) { callback(); return; }
+
+    // Usar flag para garantir que callback só seja chamado uma vez mesmo com init assíncrono
+    var _cbChamado = false;
+    var _chamarUmaVez = function() {
+        if(_gapiInited && _gisInited && !_cbChamado) { _cbChamado = true; callback(); }
+    };
+
     const carregar = () => {
         gapi.load('client', async () => {
             await gapi.client.init({
@@ -14719,7 +14728,7 @@ function cfgCarregarGapi(callback) {
                 ]
             });
             _gapiInited = true;
-            if(_gisInited) callback();
+            _chamarUmaVez();
         });
     };
 
@@ -14730,7 +14739,7 @@ function cfgCarregarGapi(callback) {
             callback: () => {},
         });
         _gisInited = true;
-        if(_gapiInited) callback();
+        _chamarUmaVez();
     };
 
     // Carregar scripts se necessário
@@ -14740,7 +14749,7 @@ function cfgCarregarGapi(callback) {
         s.onload = carregar;
         document.head.appendChild(s);
     } else {
-        if(!_gapiInited) carregar(); else if(_gapiInited && _gisInited) callback();
+        if(!_gapiInited) carregar(); else _chamarUmaVez();
     }
     if(typeof google === 'undefined' || typeof google.accounts === 'undefined') {
         const s2 = document.createElement('script');
@@ -14748,7 +14757,7 @@ function cfgCarregarGapi(callback) {
         s2.onload = carregarGis;
         document.head.appendChild(s2);
     } else {
-        if(!_gisInited) carregarGis(); else if(_gapiInited && _gisInited) callback();
+        if(!_gisInited) carregarGis(); else _chamarUmaVez();
     }
 }
 
@@ -14756,10 +14765,16 @@ function cfgAutenticar(callback) {
     // Tenta restaurar token salvo do localStorage
     try {
         var saved = JSON.parse(localStorage.getItem('_gtoken') || 'null');
-        if (saved && saved.access_token && saved.expiry && Date.now() < saved.expiry) {
+        // Só usa token salvo se tiver escopo de spreadsheets (pode ter sido salvo só com Drive)
+        var temSheets = saved && saved.scope && saved.scope.includes('spreadsheets');
+        if (saved && saved.access_token && saved.expiry && Date.now() < saved.expiry && temSheets) {
             gapi.client.setToken(saved);
             callback();
             return;
+        } else if (saved && (!temSheets)) {
+            // Token existe mas sem escopo Sheets — limpar para forçar re-auth com scope completo
+            localStorage.removeItem('_gtoken');
+            gapi.client.setToken('');
         }
     } catch(e) {}
 
