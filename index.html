@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.544</title>
+    <title>Sistema de Dublagem v12.545</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.544</p>
+        <p>v12.545</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.544</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.545</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1009,7 +1009,7 @@
                 <div style="flex:1;"></div>
                 <button onclick="abrirModalLinks()" style="padding:5px 10px;background:#8e44ad;color:white;border:none;border-radius:4px;cursor:pointer;font-size:11px;font-weight:600;">🔗 Links</button>
                 <button onclick="roteiro_exportarXlsx(false)" title="Exportar planilha .xlsx para abrir no Excel ou importar manualmente no Sheets" data-i18n-title="tooltip.exportarXlsx" style="padding:5px 10px;background:#27ae60;color:white;border:none;border-radius:4px;cursor:pointer;font-size:11px;font-weight:600;">📥 Excel</button>
-                <button onclick="exportarParaSheets()" title="Cria planilha nativa no Google Drive com fórmulas Retakes automáticas" data-i18n-title="tooltip.exportarSheets" style="padding:5px 10px;background:#4285f4;color:white;border:none;border-radius:4px;cursor:pointer;font-size:11px;font-weight:600;">☁️ Sheets</button>
+                <button id="btnExportSheets" onclick="exportarParaSheets()" title="Cria planilha nativa no Google Drive com fórmulas Retakes automáticas" data-i18n-title="tooltip.exportarSheets" style="padding:5px 10px;background:#4285f4;color:white;border:none;border-radius:4px;cursor:pointer;font-size:11px;font-weight:600;">☁️ Sheets</button>
               </div>
               <div style="display:flex;gap:12px;padding:4px 10px;background:#ecf0f1;font-size:11px;color:#555;border-bottom:1px solid #ddd;flex-wrap:wrap;flex-shrink:0;align-items:center;">
                 <span>📝 <b id="mTotalFalas">0</b> <span data-i18n="esc.stats.falas">falas</span></span>
@@ -1738,7 +1738,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.544</footer>
+    <footer>🎬 Sistema de Dublagem v12.545</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -14832,16 +14832,35 @@ function cfgDesconectar() {
 
 // EXPORTAR PARA GOOGLE SHEETS (NATIVO — cria planilha real no Drive)
 
+let _sheetsEmProgresso = false;
+
 async function exportarParaSheets() {
     if(!projetoAtual) { mostrarNotificacao('Selecione um projeto!', 'aviso'); return; }
+    if(_sheetsEmProgresso) { mostrarNotificacao('Já existe uma geração de planilha em andamento. Aguarde...', 'aviso'); return; }
     const cfg = cfgGet();
     if(!cfg.clientId || !cfg.apiKey) {
         mostrarNotificacao(t('cfg.drive.notifConfigureKey'), 'aviso');
         irParaAba('configuracoes');
         return;
     }
+    _sheetsEmProgresso = true;
+    const _btnSheets = document.getElementById('btnExportSheets');
+    if(_btnSheets) { _btnSheets.disabled = true; _btnSheets.style.opacity = '0.55'; _btnSheets.style.cursor = 'not-allowed'; }
+    // Trava de segurança: libera o botão após 90s mesmo se algo travar (popup cancelado, etc.)
+    const _liberarTravaSheets = () => {
+        _sheetsEmProgresso = false;
+        if(_btnSheets) { _btnSheets.disabled = false; _btnSheets.style.opacity = '1'; _btnSheets.style.cursor = 'pointer'; }
+    };
+    const _timeoutTrava = setTimeout(_liberarTravaSheets, 90000);
     mostrarNotificacao(t('notif.conectandoGoogle'), 'info');
-    cfgCarregarGapi(() => cfgAutenticar(() => _criarPlanilhaNoSheets()));
+    cfgCarregarGapi(() => cfgAutenticar(async () => {
+        try {
+            await _criarPlanilhaNoSheets();
+        } finally {
+            clearTimeout(_timeoutTrava);
+            _liberarTravaSheets();
+        }
+    }));
 }
 
 async function _criarPlanilhaNoSheets() {
