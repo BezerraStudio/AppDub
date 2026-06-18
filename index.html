@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.548</title>
+    <title>Sistema de Dublagem v12.551</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.548</p>
+        <p>v12.551</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.548</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.551</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1738,7 +1738,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.548</footer>
+    <footer>🎬 Sistema de Dublagem v12.551</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -5685,6 +5685,7 @@ function _admAbrir(adm) {
     _i18nScan();
     carregarProjetos();
     verificarUltimoBackup();
+    _sbIniciarPolling();
 }
 
 function _admPrimeiroAcessoAbrir(adm) {
@@ -15667,16 +15668,21 @@ criarProjeto = async function() {
     }
 };
 
-// ── Inicialização: se pastaRaiz configurada, sincronizar ao carregar ──────────
-window.addEventListener('load', () => {
-    setTimeout(() => {
-        const cfg = cfgGet();
-        if (cfg.pastaRaizId && cfg.clientId && cfg.apiKey) {
-            driveAtualizarStatusUI(t('cfg.drive.statusAguardando'));
-            cfgCarregarGapi(() => cfgAutenticar(() => driveCarregarDados()));
-        }
-    }, 2000);
-});
+// ── Inicialização: Drive sync automático DESATIVADO ───────────────────────────
+// O Supabase já sincroniza projetos_dublagem (e demais chaves) em tempo real e
+// de forma incremental — repetir isso via Drive a cada carregamento de página
+// era redundante e deixava o login mais lento. Os botões "🔄 Sincronizar Drive"
+// e "⬇️ Carregar do Drive" continuam disponíveis para uso manual (ex: backup
+// extra fora do Supabase, ou configuração inicial de um computador novo).
+// window.addEventListener('load', () => {
+//     setTimeout(() => {
+//         const cfg = cfgGet();
+//         if (cfg.pastaRaizId && cfg.clientId && cfg.apiKey) {
+//             driveAtualizarStatusUI(t('cfg.drive.statusAguardando'));
+//             cfgCarregarGapi(() => cfgAutenticar(() => driveCarregarDados()));
+//         }
+//     }, 2000);
+// });
 
 // ─── PLAYER DE VÍDEO DA ESCALAÇÃO ────────────────────────────────────────────
 
@@ -18179,7 +18185,7 @@ var _dubModoTC       = 'unif'; // 'unif' | 'ep' | 'ambos'
 var _confPrimeiroClique = null; // ep aguardando segundo clique
 
 // ── Verificar URL params ──────────────────────────────────────────────────────
-function _dubVerificarURLParam() {
+async function _dubVerificarURLParam() {
     var params = new URLSearchParams(window.location.search);
     // Página do cliente — Casting
     var pratToken = params.get('pratcasting');
@@ -18201,6 +18207,9 @@ function _dubVerificarURLParam() {
         var papel = params.get('papel') || 'dub';
         var projId2 = params.get('proj'); // id do projeto passado na URL
         _dubDubId = dubId; _dubPapel = papel;
+        // Busca dados mais recentes do Supabase antes de abrir a tela do membro
+        await _sbCarregarDados();
+        _sbIniciarPolling();
         var todos = JSON.parse(localStorage.getItem('projetos_dublagem') || '[]');
         // Busca de projeto: igual para todos os papéis
         if (projId2) {
@@ -18224,8 +18233,11 @@ function _dubVerificarURLParam() {
 // ── Tela de seleção de equipe (?projeto=ID) ────────────────────────────────────
 var _projMembroSelecionado = null;
 
-function _projMostrarSelectEquipe(projId) {
+async function _projMostrarSelectEquipe(projId) {
     document.getElementById('loginScreen').style.display = 'none';
+    // Busca dados mais recentes do Supabase antes de listar a equipe/projeto
+    await _sbCarregarDados();
+    _sbIniciarPolling();
     var todos = JSON.parse(localStorage.getItem('projetos_dublagem') || '[]');
     var proj  = todos.find(function(p){ return String(p.id) === String(projId); });
     if (!proj) { mostrarNotificacao(t('membro.dub.projetoNaoEnc'), 'aviso'); return; }
@@ -24911,11 +24923,25 @@ async function _sbFlush() {
     }
 }
 
+// Espera o cliente Supabase ficar pronto (até timeoutMs) — útil quando o pull
+// precisa rodar logo na abertura da página, antes do _sbInit() terminar
+function _sbEsperarCliente(timeoutMs) {
+    return new Promise(function(resolve) {
+        var max = timeoutMs || 3000, intervalo = 100, decorrido = 0;
+        (function checar() {
+            if (_sbClient || decorrido >= max) { resolve(_sbClient); return; }
+            decorrido += intervalo;
+            setTimeout(checar, intervalo);
+        })();
+    });
+}
+
 // Carrega dados do Supabase para o localStorage local — INCREMENTAL após o
 // primeiro login: só busca o que mudou desde a última sincronização, evitando
 // que o login fique cada vez mais lento conforme a tabela cresce com o tempo.
-// Chamado no login (admin) e no carregamento de tela de membro
+// Chamado no login (admin) e na abertura da tela de membro (?dub= / ?projeto=)
 async function _sbCarregarDados() {
+    if (!_sbClient) await _sbEsperarCliente(3000);
     if (!_sbClient) return;
     try {
         var ultimaSync = localStorage.getItem('_sb_last_sync');
@@ -24935,10 +24961,43 @@ async function _sbCarregarDados() {
         }
         if (maiorData) _lsSetOrig('_sb_last_sync', maiorData);
         if (n > 0) console.log('Supabase: ' + n + ' chaves ' + (ultimaSync ? 'atualizadas' : 'carregadas') + '.');
+        return n;
     } catch(e) {
         console.warn('Supabase: falha ao carregar dados —', e.message || e);
         // Não bloqueia o sistema: continua com dados locais
+        return 0;
     }
+}
+
+// ── Polling periódico — mantém telas abertas o dia inteiro cientes de mudanças ──
+// Não recarrega nada automaticamente (evita perder digitação/trabalho em
+// andamento); apenas avisa com um banner discreto e deixa a pessoa decidir
+// quando atualizar. Roda em qualquer tela já aberta: admin ou membro da equipe.
+let _sbPollingAtivo = false;
+const _SB_POLL_INTERVALO_MS = 45000; // 45s
+
+function _sbIniciarPolling() {
+    if (_sbPollingAtivo) return;
+    _sbPollingAtivo = true;
+    setInterval(async function() {
+        try {
+            var n = await _sbCarregarDados();
+            if (n > 0) _sbMostrarBannerAtualizacao();
+        } catch(e) { console.warn('Polling Supabase falhou:', e); }
+    }, _SB_POLL_INTERVALO_MS);
+}
+
+function _sbMostrarBannerAtualizacao() {
+    if (document.getElementById('sbBannerAtualizacao')) return; // já visível, não duplica
+    var banner = document.createElement('div');
+    banner.id = 'sbBannerAtualizacao';
+    banner.style.cssText = 'position:fixed;top:0;left:0;width:100%;background:#2563eb;color:white;'
+        + 'padding:10px 16px;display:flex;align-items:center;justify-content:center;gap:14px;'
+        + 'font-size:13px;font-weight:600;z-index:999999;box-shadow:0 2px 10px rgba(0,0,0,.35);';
+    banner.innerHTML = '🔄 Outro usuário atualizou dados deste projeto.'
+        + '<button onclick="location.reload()" style="background:white;color:#2563eb;border:none;border-radius:6px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;">Atualizar agora</button>'
+        + '<button onclick="document.getElementById(\'sbBannerAtualizacao\').remove()" style="background:transparent;color:white;border:1px solid rgba(255,255,255,.5);border-radius:6px;padding:6px 10px;font-size:12px;cursor:pointer;">Depois</button>';
+    document.body.appendChild(banner);
 }
 
 function _sbInit() {
