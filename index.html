@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.553</title>
+    <title>Sistema de Dublagem v12.554</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.553</p>
+        <p>v12.554</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.553</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.554</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1738,7 +1738,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.553</footer>
+    <footer>🎬 Sistema de Dublagem v12.554</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -5827,6 +5827,22 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 
 // ─── PROJETOS ─────────────────────────────────────────────────────────────────
 function salvarProjetos() {
+    try {
+        var freshRaw = localStorage.getItem('projetos_dublagem');
+        var fresh = freshRaw ? JSON.parse(freshRaw) : null;
+        // Edição de rotina em um projeto já existente (mesma quantidade de projetos):
+        // mescla preservando o trabalho de OUTRAS pessoas em OUTROS projetos —
+        // só sobrescreve a entrada do projeto que estou editando agora.
+        // Criação/exclusão de projeto (mudou a quantidade) salva o array como está.
+        if (fresh && projetoAtual && projetoAtual.id != null && fresh.length === projetos.length) {
+            var idx = fresh.findIndex(function(p){ return p.id === projetoAtual.id; });
+            if (idx >= 0) {
+                fresh[idx] = projetoAtual;
+                projetos = fresh;
+            }
+        }
+    } catch(e) { console.warn('Mesclagem de projetos falhou, salvando como está:', e); }
+
     localStorage.setItem('projetos_dublagem', JSON.stringify(projetos));
     // Auto-backup: salva cópia datada a cada salvamento (mantém últimos 3)
     try {
@@ -21091,18 +21107,31 @@ function dubConfirmarEnvioEp() {
 
 // ── Inicializar URL params ao carregar ─────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', function() {
-    // Preencher usuário e senha salvos se existirem
-    var u = localStorage.getItem('adm_lembrar_usuario');
-    var s = localStorage.getItem('adm_lembrar_senha');
-    if (u) {
-        var elU = document.getElementById('usuario');
-        if (elU) { elU.value = u; var cb = document.getElementById('admLembrar'); if (cb) cb.checked = true; }
-    }
-    if (s) {
-        try {
-            var elS = document.getElementById('senha');
-            if (elS) { elS.value = atob(s); var cb2 = document.getElementById('admLembrarSenha'); if (cb2) cb2.checked = true; }
-        } catch(e) {}
+    // Restaura sessão de admin já aberta nesta aba — evita logout acidental
+    // em qualquer recarregamento de página (F5, reload, etc.)
+    var sessaoRestaurada = false;
+    try {
+        var sessao = sessionStorage.getItem('adm_logado');
+        if (sessao) {
+            var adm = JSON.parse(sessao);
+            if (adm && adm.id) { _admAbrir(adm); sessaoRestaurada = true; }
+        }
+    } catch(e) {}
+
+    if (!sessaoRestaurada) {
+        // Preencher usuário e senha salvos se existirem
+        var u = localStorage.getItem('adm_lembrar_usuario');
+        var s = localStorage.getItem('adm_lembrar_senha');
+        if (u) {
+            var elU = document.getElementById('usuario');
+            if (elU) { elU.value = u; var cb = document.getElementById('admLembrar'); if (cb) cb.checked = true; }
+        }
+        if (s) {
+            try {
+                var elS = document.getElementById('senha');
+                if (elS) { elS.value = atob(s); var cb2 = document.getElementById('admLembrarSenha'); if (cb2) cb2.checked = true; }
+            } catch(e) {}
+        }
     }
     _dubVerificarURLParam();
     _cliAplicarLogoEstudio();
@@ -25006,10 +25035,14 @@ async function _sbCarregarDados() {
     }
 }
 
-// ── Polling periódico — mantém telas abertas o dia inteiro cientes de mudanças ──
-// Não recarrega nada automaticamente (evita perder digitação/trabalho em
-// andamento); apenas avisa com um banner discreto e deixa a pessoa decidir
-// quando atualizar. Roda em qualquer tela já aberta: admin ou membro da equipe.
+// ── Sincronização silenciosa periódica — mantém os dados frescos o dia
+// inteiro sem NUNCA interromper quem está trabalhando: sem aviso, sem botão,
+// sem reload, sem fechar nada. A cada ciclo: busca o que outras pessoas
+// mudaram, salva (autosave) o que esta tela está editando agora — a mescla em
+// salvarProjetos() garante que isso não apaga o trabalho de mais ninguém em
+// outros projetos — e atualiza só os dados em memória. Quem está digitando
+// não percebe nada, porque o objeto projetoAtual que a tela usa nunca é
+// substituído por essa rotina.
 let _sbPollingAtivo = false;
 const _SB_POLL_INTERVALO_MS = 45000; // 45s
 
@@ -25018,23 +25051,22 @@ function _sbIniciarPolling() {
     _sbPollingAtivo = true;
     setInterval(async function() {
         try {
-            var n = await _sbCarregarDados();
-            if (n > 0) _sbMostrarBannerAtualizacao();
-        } catch(e) { console.warn('Polling Supabase falhou:', e); }
+            // 1) Busca o que outras pessoas/projetos mudaram desde o último ciclo
+            await _sbCarregarDados();
+            // 2) Autosave silencioso do que está sendo editado agora, se houver
+            //    (a mescla por id em salvarProjetos() protege os demais projetos)
+            if (typeof projetoAtual !== 'undefined' && projetoAtual && typeof salvarProjetos === 'function') {
+                salvarProjetos();
+            }
+            // 3) Atualiza os dados em memória — sem tocar na tela, sem recarregar
+            //    a página. projetoAtual continua sendo o MESMO objeto que a tela
+            //    já está usando, então nada visualmente muda para quem está editando.
+            var freshRaw = localStorage.getItem('projetos_dublagem');
+            if (freshRaw) {
+                try { projetos = JSON.parse(freshRaw); } catch(e) {}
+            }
+        } catch(e) { console.warn('Sincronização silenciosa falhou:', e); }
     }, _SB_POLL_INTERVALO_MS);
-}
-
-function _sbMostrarBannerAtualizacao() {
-    if (document.getElementById('sbBannerAtualizacao')) return; // já visível, não duplica
-    var banner = document.createElement('div');
-    banner.id = 'sbBannerAtualizacao';
-    banner.style.cssText = 'position:fixed;top:0;left:0;width:100%;background:#2563eb;color:white;'
-        + 'padding:10px 16px;display:flex;align-items:center;justify-content:center;gap:14px;'
-        + 'font-size:13px;font-weight:600;z-index:999999;box-shadow:0 2px 10px rgba(0,0,0,.35);';
-    banner.innerHTML = '🔄 Outro usuário atualizou dados deste projeto.'
-        + '<button onclick="location.reload()" style="background:white;color:#2563eb;border:none;border-radius:6px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;">Atualizar agora</button>'
-        + '<button onclick="document.getElementById(\'sbBannerAtualizacao\').remove()" style="background:transparent;color:white;border:1px solid rgba(255,255,255,.5);border-radius:6px;padding:6px 10px;font-size:12px;cursor:pointer;">Depois</button>';
-    document.body.appendChild(banner);
 }
 
 function _sbInit() {
