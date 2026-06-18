@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.547</title>
+    <title>Sistema de Dublagem v12.548</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.547</p>
+        <p>v12.548</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.547</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.548</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1738,7 +1738,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.547</footer>
+    <footer>🎬 Sistema de Dublagem v12.548</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -24872,7 +24872,7 @@ const _SB_KEY = 'sb_publishable_n0EYA2mDXVqDlJoQsXqFBA_Htxx0nUg';
 const _SB_LOCAL_ONLY = new Set([
     'app_token', 'cfg_google_token', 'adm_lembrar_usuario',
     'adm_lembrar_senha', 'app_lang', 'adm_logado',
-    '_driveFileId', '_driveSistemaId'
+    '_driveFileId', '_driveSistemaId', '_sb_last_sync'
 ]);
 
 let _sbClient   = null;
@@ -24911,21 +24911,30 @@ async function _sbFlush() {
     }
 }
 
-// Carrega todos os dados do Supabase para o localStorage local
+// Carrega dados do Supabase para o localStorage local — INCREMENTAL após o
+// primeiro login: só busca o que mudou desde a última sincronização, evitando
+// que o login fique cada vez mais lento conforme a tabela cresce com o tempo.
 // Chamado no login (admin) e no carregamento de tela de membro
 async function _sbCarregarDados() {
     if (!_sbClient) return;
     try {
-        var res = await _sbClient.from('app_data').select('chave,valor');
+        var ultimaSync = localStorage.getItem('_sb_last_sync');
+        var query = _sbClient.from('app_data').select('chave,valor,atualizado_em');
+        query = ultimaSync ? query.gte('atualizado_em', ultimaSync) : query;
+        var res = await query;
         if (res.error) throw res.error;
-        var n = (res.data || []).length;
+        var dados = res.data || [];
+        var n = dados.length;
+        var maiorData = ultimaSync || null;
         for (var i = 0; i < n; i++) {
-            var row = res.data[i];
+            var row = dados[i];
             var serialized = (typeof row.valor === 'string')
                 ? row.valor : JSON.stringify(row.valor);
             _lsSetOrig(row.chave, serialized); // usa original para não re-disparar sync
+            if (row.atualizado_em && (!maiorData || row.atualizado_em > maiorData)) maiorData = row.atualizado_em;
         }
-        if (n > 0) console.log('Supabase: ' + n + ' chaves carregadas.');
+        if (maiorData) _lsSetOrig('_sb_last_sync', maiorData);
+        if (n > 0) console.log('Supabase: ' + n + ' chaves ' + (ultimaSync ? 'atualizadas' : 'carregadas') + '.');
     } catch(e) {
         console.warn('Supabase: falha ao carregar dados —', e.message || e);
         // Não bloqueia o sistema: continua com dados locais
