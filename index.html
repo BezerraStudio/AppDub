@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.551</title>
+    <title>Sistema de Dublagem v12.553</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.551</p>
+        <p>v12.553</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.551</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.553</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1738,7 +1738,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.551</footer>
+    <footer>🎬 Sistema de Dublagem v12.553</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -14876,6 +14876,8 @@ async function _criarPlanilhaNoSheets() {
         const escExc = projetoAtual.escalacao?.excecoes || {};
         const dubs = carregarDubladores();
         const LK   = projetoAtual.links || {};
+        // Fallback: projetos criados antes do fix usam pastaDubladores como destino de upload
+        const linkUpload = LK.pastaUpload || LK.pastaDubladores || '';
 
         // Idioma
         const idiomaProj = (projetoAtual?.idioma||'').toLowerCase();
@@ -14917,8 +14919,7 @@ async function _criarPlanilhaNoSheets() {
 
         const sheetDefs = [
             { properties: { title: 'Retakes', tabColor: { red:0.75, green:0.1, blue:0.1 } } },
-            { properties: { title: 'UNIFICADO', tabColor: { red:0.16, green:0.5, blue:0.73 } } },
-            ...eps.map(ep => ({ properties: { title: String(ep).padStart(2,'0') } }))
+            { properties: { title: 'UNIFICADO', tabColor: { red:0.16, green:0.5, blue:0.73 } } }
         ];
 
         const criado = await gapi.client.sheets.spreadsheets.create({
@@ -15050,11 +15051,11 @@ async function _criarPlanilhaNoSheets() {
             });
 
             // Links via textFormat.link (locale-independente, sem fórmula)
-            if(LK.pastaUpload) requests.push({ repeatCell:{
+            if(linkUpload) requests.push({ repeatCell:{
                 range:{sheetId:shId,startRowIndex:1,endRowIndex:2,startColumnIndex:1,endColumnIndex:2},
                 cell:{
                     userEnteredValue:{stringValue:LBL.upload},
-                    userEnteredFormat:{textFormat:{link:{uri:LK.pastaUpload},foregroundColor:{red:1,green:1,blue:1},underline:true,bold:true}}
+                    userEnteredFormat:{textFormat:{link:{uri:linkUpload},foregroundColor:{red:1,green:1,blue:1},underline:true,bold:true}}
                 },
                 fields:'userEnteredValue,userEnteredFormat.textFormat.link,userEnteredFormat.textFormat.foregroundColor,userEnteredFormat.textFormat.underline,userEnteredFormat.textFormat.bold'
             }});
@@ -15152,33 +15153,61 @@ async function _criarPlanilhaNoSheets() {
             const persAll = [...new Set(eps.flatMap(ep=>persDoEp(ep)))];
             const allLs  = eps.flatMap(ep=>roteiro_resolverLinhas(ep));
             const prazo  = LK.dataGeral ? `${LBL.prazo}: ${linksFormatarData(LK.dataGeral)}` : LBL.prazo;
-            const nCU = 6 + persAll.length; // total de colunas (A-E + F(Retake?) + pers)
+            const nCU = 7 + persAll.length; // A-F fixas + G(Retake?) + pers
+
+            // TC Unificado: mesma lógica já usada e testada no exportador Excel —
+            // acumula o offset (duração) de cada episódio anterior
+            const tcParaSeg = tc => {
+                if(!tc) return 0;
+                const m = tc.match(/(\d+):(\d+):(\d+)[,\.](\d+)/);
+                if(!m) return 0;
+                return +m[1]*3600 + +m[2]*60 + +m[3] + +m[4]/1000;
+            };
+            const segParaTc = s => {
+                const h=Math.floor(s/3600), m=Math.floor((s%3600)/60), ss=Math.floor(s%60), ms=Math.round((s%1)*1000);
+                return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')},${String(ms).padStart(3,'0')}`;
+            };
+            const duracaoEp = {};
+            eps.forEach(ep => {
+                const ls = roteiro_resolverLinhas(ep);
+                let maxSeg = 0;
+                ls.forEach(l => { if(l.fim) maxSeg = Math.max(maxSeg, tcParaSeg(l.fim)); });
+                duracaoEp[ep] = maxSeg;
+            });
+
+            const tcOrigLabel = isPT ? 'TC Original' : 'Original TC';
+            const tcUnifLabel = isPT ? 'TC Unificado' : 'Unified TC';
 
             const rows = [];
-            rows.push([prazo,'','','',LBL.pers,'',...persAll]);
-            rows.push(['',LBL.upload,'',LBL.download,LBL.mots,'',...persAll.map(p=>nPal(allLs,p))]);
-            rows.push(['','','','',LBL.doubleur,'',...persAll.map(p=>dNome(p))]);
-            rows.push([LBL.ep,LBL.tc,LBL.pers,LBL.dial,LBL.fichier,LBL.retake,...persAll.map(()=>'')]);
+            rows.push([prazo,'','','','',LBL.pers,'',...persAll]);
+            rows.push(['',LBL.upload,'','',LBL.download,LBL.mots,'',...persAll.map(p=>nPal(allLs,p))]);
+            rows.push(['','','','','',LBL.doubleur,'',...persAll.map(p=>dNome(p))]);
+            rows.push([LBL.ep,tcOrigLabel,tcUnifLabel,LBL.pers,LBL.dial,LBL.fichier,LBL.retake,...persAll.map(()=>'')]);
 
-            eps.forEach(ep=>{
+            let offsetSeg = 0;
+            eps.forEach((ep, epIdx) => {
+                if (epIdx > 0) offsetSeg += duracaoEp[eps[epIdx-1]] || 0;
                 roteiro_resolverLinhas(ep).forEach(l=>{
-                    const tc = (l.inicio&&l.fim)?`${l.inicio} --> ${l.fim}`:(l.inicio||'');
-                    rows.push([+ep,tc,l._pers||'',l.texto||'','',false,...persAll.map(()=>'')]);
+                    const tcOrig = (l.inicio&&l.fim)?`${l.inicio} --> ${l.fim}`:(l.inicio||'');
+                    const tcUnifIni = l.inicio ? segParaTc(tcParaSeg(l.inicio) + offsetSeg) : '';
+                    const tcUnifFim = l.fim    ? segParaTc(tcParaSeg(l.fim)    + offsetSeg) : '';
+                    const tcUnif    = (tcUnifIni&&tcUnifFim) ? `${tcUnifIni} --> ${tcUnifFim}` : tcUnifIni;
+                    rows.push([+ep,tcOrig,tcUnif,l._pers||'',l.texto||'','',false,...persAll.map(()=>'')]);
                 });
             });
             valuesData.push({ range:'UNIFICADO!A1', values:rows });
 
             // Links via textFormat.link (locale-independente)
-            if(LK.pastaUpload) requests.push({ repeatCell:{
+            if(linkUpload) requests.push({ repeatCell:{
                 range:{sheetId:shId,startRowIndex:1,endRowIndex:2,startColumnIndex:1,endColumnIndex:2},
                 cell:{
                     userEnteredValue:{stringValue:LBL.upload},
-                    userEnteredFormat:{textFormat:{link:{uri:LK.pastaUpload},foregroundColor:{red:1,green:1,blue:1},underline:true,bold:true}}
+                    userEnteredFormat:{textFormat:{link:{uri:linkUpload},foregroundColor:{red:1,green:1,blue:1},underline:true,bold:true}}
                 },
                 fields:'userEnteredValue,userEnteredFormat.textFormat.link,userEnteredFormat.textFormat.foregroundColor,userEnteredFormat.textFormat.underline,userEnteredFormat.textFormat.bold'
             }});
             if(LK.pastaVideosUnif||LK.pastaVideos) requests.push({ repeatCell:{
-                range:{sheetId:shId,startRowIndex:1,endRowIndex:2,startColumnIndex:3,endColumnIndex:4},
+                range:{sheetId:shId,startRowIndex:1,endRowIndex:2,startColumnIndex:4,endColumnIndex:5},
                 cell:{
                     userEnteredValue:{stringValue:LBL.download},
                     userEnteredFormat:{textFormat:{link:{uri:LK.pastaVideosUnif||LK.pastaVideos||''},foregroundColor:{red:1,green:1,blue:1},underline:true,bold:true}}
@@ -15186,49 +15215,50 @@ async function _criarPlanilhaNoSheets() {
                 fields:'userEnteredValue,userEnteredFormat.textFormat.link,userEnteredFormat.textFormat.foregroundColor,userEnteredFormat.textFormat.underline,userEnteredFormat.textFormat.bold'
             }});
 
-                        // Formatação igual ao ep
+            // Formatação
             requests.push(cellFmt(shId,0,0,1,2,{ backgroundColor:COR_PRAZO,textFormat:{foregroundColor:COR_AMAR,bold:true,fontSize:11},horizontalAlignment:'CENTER',verticalAlignment:'MIDDLE' }));
             requests.push(mergeFmt(shId,0,0,1,2));
-            requests.push(cellFmt(shId,0,2,1,4,{ backgroundColor:COR_DARK,textFormat:{foregroundColor:COR_BRANCO,bold:true},horizontalAlignment:'CENTER' }));
-            requests.push(cellFmt(shId,0,4,1,5,{ backgroundColor:COR_DARK,textFormat:{foregroundColor:COR_BRANCO,bold:true},horizontalAlignment:'CENTER' }));
+            requests.push(cellFmt(shId,0,2,1,5,{ backgroundColor:COR_DARK,textFormat:{foregroundColor:COR_BRANCO,bold:true},horizontalAlignment:'CENTER' }));
+            requests.push(cellFmt(shId,0,5,1,6,{ backgroundColor:COR_DARK,textFormat:{foregroundColor:COR_BRANCO,bold:true},horizontalAlignment:'CENTER' }));
             requests.push(cellFmt(shId,1,0,2,1,{ backgroundColor:COR_DARK }));
             requests.push(cellFmt(shId,1,1,2,2,{ backgroundColor:COR_UPLOAD,textFormat:{foregroundColor:COR_BRANCO,bold:true},horizontalAlignment:'CENTER' }));
-            requests.push(cellFmt(shId,1,2,2,3,{ backgroundColor:COR_DARK }));
-            requests.push(cellFmt(shId,1,3,2,4,{ backgroundColor:COR_DOWN,textFormat:{foregroundColor:COR_BRANCO,bold:true},horizontalAlignment:'CENTER' }));
-            requests.push(cellFmt(shId,1,4,2,5,{ backgroundColor:COR_DARK,textFormat:{foregroundColor:COR_BRANCO,bold:true},horizontalAlignment:'CENTER' }));
-            requests.push(cellFmt(shId,2,0,3,4,{ backgroundColor:COR_DARK,textFormat:{foregroundColor:COR_BRANCO} }));
-            requests.push(cellFmt(shId,2,4,3,5,{ backgroundColor:COR_DARK,textFormat:{foregroundColor:COR_BRANCO,bold:true},horizontalAlignment:'CENTER' }));
+            requests.push(cellFmt(shId,1,2,2,4,{ backgroundColor:COR_DARK }));
+            requests.push(cellFmt(shId,1,4,2,5,{ backgroundColor:COR_DOWN,textFormat:{foregroundColor:COR_BRANCO,bold:true},horizontalAlignment:'CENTER' }));
+            requests.push(cellFmt(shId,1,5,2,6,{ backgroundColor:COR_DARK,textFormat:{foregroundColor:COR_BRANCO,bold:true},horizontalAlignment:'CENTER' }));
+            requests.push(cellFmt(shId,2,0,3,5,{ backgroundColor:COR_DARK,textFormat:{foregroundColor:COR_BRANCO} }));
+            requests.push(cellFmt(shId,2,5,3,6,{ backgroundColor:COR_DARK,textFormat:{foregroundColor:COR_BRANCO,bold:true},horizontalAlignment:'CENTER' }));
             requests.push(cellFmt(shId,3,0,4,nCU,{ backgroundColor:COR_HDR,textFormat:{foregroundColor:COR_BRANCO,bold:true},horizontalAlignment:'CENTER' }));
 
             persAll.forEach((p,ci) => {
                 const bgRgb=hexToRgb(pBg(p)); const fgRgb=hexToRgb(corTexto('#'+pBg(p)).replace('#',''));
-                requests.push(cellFmt(shId,0,6+ci,3,7+ci,{ backgroundColor:bgRgb,textFormat:{foregroundColor:fgRgb,bold:true},horizontalAlignment:'CENTER' }));
+                requests.push(cellFmt(shId,0,7+ci,3,8+ci,{ backgroundColor:bgRgb,textFormat:{foregroundColor:fgRgb,bold:true},horizontalAlignment:'CENTER' }));
             });
 
             let gi=0;
             eps.forEach(ep=>{ roteiro_resolverLinhas(ep).forEach((l,ri)=>{
                 gi++;
                 const bgZ=gi%2===1?{red:1,green:1,blue:1}:{red:0.949,green:0.949,blue:0.949};
-                [0,1,3,4].forEach(col=>requests.push(cellFmt(shId,4+gi-1,col,5+gi-1,col+1,{backgroundColor:bgZ})));
+                [0,1,2,4,5].forEach(col=>requests.push(cellFmt(shId,4+gi-1,col,5+gi-1,col+1,{backgroundColor:bgZ})));
                 if(l._pers) {
                     const bgRgb=hexToRgb(pBg(l._pers)); const fgRgb=hexToRgb(corTexto('#'+pBg(l._pers)).replace('#',''));
-                    requests.push(cellFmt(shId,4+gi-1,2,5+gi-1,3,{backgroundColor:bgRgb,textFormat:{foregroundColor:fgRgb,bold:true}}));
+                    requests.push(cellFmt(shId,4+gi-1,3,5+gi-1,4,{backgroundColor:bgRgb,textFormat:{foregroundColor:fgRgb,bold:true}}));
                     const ci=persAll.indexOf(l._pers);
-                    if(ci>=0) requests.push(cellFmt(shId,4+gi-1,6+ci,5+gi-1,7+ci,{backgroundColor:bgRgb,textFormat:{foregroundColor:fgRgb,bold:true},horizontalAlignment:'CENTER'}));
+                    if(ci>=0) requests.push(cellFmt(shId,4+gi-1,7+ci,5+gi-1,8+ci,{backgroundColor:bgRgb,textFormat:{foregroundColor:fgRgb,bold:true},horizontalAlignment:'CENTER'}));
                 }
             });});
 
-            // Checkbox "Retake?" na col F (índice 5) — UNIFICADO
+            // Checkbox "Retake?" — única fonte agora, na col G (índice 6) da UNIFICADO
             const _totalLinhasUnif = eps.reduce((acc,ep)=>acc+roteiro_resolverLinhas(ep).length,0);
             if(_totalLinhasUnif > 0) requests.push({ setDataValidation:{
-                range:{sheetId:shId,startRowIndex:4,endRowIndex:4+_totalLinhasUnif,startColumnIndex:5,endColumnIndex:6},
+                range:{sheetId:shId,startRowIndex:4,endRowIndex:4+_totalLinhasUnif,startColumnIndex:6,endColumnIndex:7},
                 rule:{condition:{type:'BOOLEAN'},strict:true,showCustomUi:true}
             }});
 
             requests.push(freezeFmt(shId,4,0));
-            requests.push(colWidth(shId,0,1,70)); requests.push(colWidth(shId,1,2,200));
-            requests.push(colWidth(shId,2,3,160)); requests.push(colWidth(shId,3,4,300));
-            requests.push(colWidth(shId,4,5,160)); requests.push(colWidth(shId,5,6,80));
+            requests.push(colWidth(shId,0,1,70));  requests.push(colWidth(shId,1,2,180));
+            requests.push(colWidth(shId,2,3,180)); requests.push(colWidth(shId,3,4,160));
+            requests.push(colWidth(shId,4,5,300)); requests.push(colWidth(shId,5,6,160));
+            requests.push(colWidth(shId,6,7,80));
         };
 
         // ── Aba RETAKES ────────────────────────────────────────────────────────────
@@ -15237,15 +15267,18 @@ async function _criarPlanilhaNoSheets() {
             const totalLinhas = eps.reduce((acc,ep)=>acc+roteiro_resolverLinhas(ep).length,0);
             const lastRow = 4 + totalLinhas; // dados começam na linha 5
 
-            // Filtra direto da UNIFICADO usando sua própria coluna F (Retake?) — referência simples,
-            // sem cruzar com outras abas, para eliminar risco de erro de fórmula entre planilhas
+            // Filtra direto da UNIFICADO usando sua própria coluna G (Retake?) — única fonte,
+            // já que as abas separadas por episódio foram eliminadas
             const formula = totalLinhas > 0
-                ? `=FILTER(UNIFICADO!A5:E${lastRow}${_SEP}UNIFICADO!F5:F${lastRow})`
+                ? `=FILTER(UNIFICADO!A5:F${lastRow}${_SEP}UNIFICADO!G5:G${lastRow})`
                 : '';
+
+            const tcOrigLabel = isPT ? 'TC Original' : 'Original TC';
+            const tcUnifLabel = isPT ? 'TC Unificado' : 'Unified TC';
 
             valuesData.push({ range:'Retakes!A1', values:[
                 ['RETAKES', ''],
-                [isPT?'Ep':'Ep', isPT?'Time Code':'Time Code',
+                [isPT?'Ep':'Ep', tcOrigLabel, tcUnifLabel,
                  isPT?'Personagem':'Character', isPT?'Diálogo':'Dialogue',
                  isPT?'Arquivo enviado':'File sent'],
                 [formula]
@@ -15268,15 +15301,16 @@ async function _criarPlanilhaNoSheets() {
             requests.push(mergeFmt(shId,0,0,1,2));
             requests.push(cellFmt(shId,1,0,2,6,{backgroundColor:COR_HDR,textFormat:{foregroundColor:COR_BRANCO,bold:true},horizontalAlignment:'CENTER'}));
             requests.push(freezeFmt(shId,2,0));
-            requests.push(colWidth(shId,0,1,60)); requests.push(colWidth(shId,1,2,200));
-            requests.push(colWidth(shId,2,3,160)); requests.push(colWidth(shId,3,4,320));
-            requests.push(colWidth(shId,4,5,160));
+            requests.push(colWidth(shId,0,1,60));  requests.push(colWidth(shId,1,2,160));
+            requests.push(colWidth(shId,2,3,160)); requests.push(colWidth(shId,3,4,140));
+            requests.push(colWidth(shId,4,5,280)); requests.push(colWidth(shId,5,6,160));
         };
 
                 // ── Construir tudo ─────────────────────────────────────────────────────
         buildAbaRetakes();
         buildAbaUnificado();
-        eps.forEach(ep => buildAbaEp(idOf(String(ep).padStart(2,'0')), ep));
+        // Abas separadas por episódio eliminadas — TC Original + TC Unificado lado a lado
+        // na UNIFICADO substituem a necessidade de abas individuais (decisão do Sydney)
 
         // ── STEP 4: Enviar valores ─────────────────────────────────────────────
         mostrarNotificacao(`⏳ Enviando ${valuesData.length} abas de dados...`, 'info');
@@ -15498,6 +15532,9 @@ async function driveCriarPastaProjeto(nomeProjeto, nomeCliente) {
                 var chave = linkMap[nome];
                 if (chave) projetos[idx].links[chave] = base + ids[nome];
             });
+            // A pasta "Dubladores" é onde o áudio é enviado — usar também como pastaUpload
+            // (chave que a exportação para Sheets espera para o link de upload de áudio)
+            if (ids['Dubladores']) projetos[idx].links.pastaUpload = base + ids['Dubladores'];
             // Salvar ID bruto da pasta SRTs do Projeto para uso na API
             if (ids['SRTs do Projeto']) {
                 projetos[idx].links.pastaSRTsProjetoId = ids['SRTs do Projeto'];
