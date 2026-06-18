@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.557</title>
+    <title>Sistema de Dublagem v12.559</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.557</p>
+        <p>v12.559</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.557</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.559</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1738,7 +1738,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.557</footer>
+    <footer>🎬 Sistema de Dublagem v12.559</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -2080,6 +2080,7 @@
 
       <!-- SEÇÃO 0: Links das subpastas do projeto (preenchido automaticamente) -->
       <div id="lnkSecSubpastas" style="display:none;background:#f0f7ff;border-radius:8px;padding:14px;border-left:4px solid #3498db;font-size:12px;"></div>
+      <button onclick="_linksRecriarPastasDrive()" style="align-self:flex-start;padding:7px 14px;background:#5dade2;color:#1a5276;border:none;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;">🔄 Recriar/atualizar links das pastas no Drive</button>
 
       <!-- SEÇÃO 1: Links globais da série -->
       <div style="background:#f8f9fa;border-radius:8px;padding:16px;border-left:4px solid #3498db;">
@@ -12780,6 +12781,28 @@ function fecharModalLinks() {
     document.getElementById('modalLinks').style.display = 'none';
 }
 
+// Força a releitura das pastas do projeto no Drive — útil quando algum link
+// ficou desatualizado/errado e o usuário quer corrigir sem precisar copiar
+// e colar manualmente. Reaproveita as pastas já existentes (não duplica) e
+// regrava os links no projeto a partir do que existe de fato no Drive agora.
+function _linksRecriarPastasDrive() {
+    if (!projetoAtual) return;
+    var cfg = cfgGet();
+    if (!cfg.pastaRaizId) {
+        mostrarNotificacao('Configure a pasta raiz do Drive em Configurações primeiro.', 'aviso');
+        return;
+    }
+    var clientes = carregarClientes();
+    var cliente = clientes.find(function(c){ return c.id === projetoAtual.clienteId; });
+    var nomeCliente = cliente ? cliente.nome : '';
+    mostrarNotificacao('🔄 Atualizando links das pastas no Drive...', 'info');
+    cfgCarregarGapi(() => cfgAutenticar(async () => {
+        await driveCriarPastaProjeto(projetoAtual.nome, nomeCliente);
+        mostrarNotificacao('✅ Links das pastas atualizados!', 'sucesso');
+        abrirModalLinks(); // reabre já com os links frescos nos campos
+    }));
+}
+
 function salvarModalLinks() {
     try {
         if (!projetoAtual.links) projetoAtual.links = {};
@@ -14902,12 +14925,12 @@ async function _criarPlanilhaNoSheets() {
             prazo:'Prazo de entrega', upload:'▶ LINK PARA UPLOAD DE ÁUDIOS',
             download:'▶ LINK PARA DOWNLOAD DE VÍDEOS', pers:'Personagem',
             mots:'Palavras', doubleur:'Dublador', numero:'Número',
-            tc:'Time Code', dial:'Diálogo', fichier:'Arquivo enviado', ep:'Ep', retake:'Retake?'
+            tc:'Time Code', dial:'Diálogo', fichier:'Marcar Retake', ep:'Ep'
         } : {
             prazo:'Recording Deadline', upload:'▶ UPLOAD AUDIO LINK',
             download:'▶ VIDEO DOWNLOAD LINK', pers:'Character',
             mots:'Words', doubleur:'Voice Actor', numero:'Number',
-            tc:'Time Code', dial:'Dialogue', fichier:'File sent', ep:'Ep', retake:'Retake?'
+            tc:'Time Code', dial:'Dialogue', fichier:'Mark Retake', ep:'Ep'
         };
 
         const dNome = (p, epNum) => {
@@ -15169,7 +15192,7 @@ async function _criarPlanilhaNoSheets() {
             const persAll = [...new Set(eps.flatMap(ep=>persDoEp(ep)))];
             const allLs  = eps.flatMap(ep=>roteiro_resolverLinhas(ep));
             const prazo  = LK.dataGeral ? `${LBL.prazo}: ${linksFormatarData(LK.dataGeral)}` : LBL.prazo;
-            const nCU = 7 + persAll.length; // A-F fixas + G(Retake?) + pers
+            const nCU = 6 + persAll.length; // A-F fixas (sem coluna de checkbox separada) + pers
 
             // TC Unificado: mesma lógica já usada e testada no exportador Excel —
             // acumula o offset (duração) de cada episódio anterior
@@ -15195,10 +15218,10 @@ async function _criarPlanilhaNoSheets() {
             const tcUnifLabel = isPT ? 'TC Unificado' : 'Unified TC';
 
             const rows = [];
-            rows.push([prazo,'','','','',LBL.pers,'',...persAll]);
-            rows.push(['',LBL.upload,'','',LBL.download,LBL.mots,'',...persAll.map(p=>nPal(allLs,p))]);
-            rows.push(['','','','','',LBL.doubleur,'',...persAll.map(p=>dNome(p))]);
-            rows.push([LBL.ep,tcOrigLabel,tcUnifLabel,LBL.pers,LBL.dial,LBL.fichier,LBL.retake,...persAll.map(()=>'')]);
+            rows.push([prazo,'','','',LBL.pers,'',...persAll]);
+            rows.push(['',LBL.upload,'','',LBL.download,LBL.mots,...persAll.map(p=>nPal(allLs,p))]);
+            rows.push(['','','','','',LBL.doubleur,...persAll.map(p=>dNome(p))]);
+            rows.push([LBL.ep,tcOrigLabel,tcUnifLabel,LBL.pers,LBL.dial,LBL.fichier,...persAll.map(()=>'')]);
 
             let offsetSeg = 0;
             eps.forEach((ep, epIdx) => {
@@ -15208,7 +15231,7 @@ async function _criarPlanilhaNoSheets() {
                     const tcUnifIni = l.inicio ? segParaTc(tcParaSeg(l.inicio) + offsetSeg) : '';
                     const tcUnifFim = l.fim    ? segParaTc(tcParaSeg(l.fim)    + offsetSeg) : '';
                     const tcUnif    = (tcUnifIni&&tcUnifFim) ? `${tcUnifIni} --> ${tcUnifFim}` : tcUnifIni;
-                    rows.push([+ep,tcOrig,tcUnif,l._pers||'',l.texto||'','',false,...persAll.map(()=>'')]);
+                    rows.push([+ep,tcOrig,tcUnif,l._pers||'',l.texto||'','',...persAll.map(()=>'')]);
                 });
             });
             valuesData.push({ range:'UNIFICADO!A1', values:rows });
@@ -15249,7 +15272,7 @@ async function _criarPlanilhaNoSheets() {
 
             persAll.forEach((p,ci) => {
                 const bgRgb=hexToRgb(pBg(p)); const fgRgb=hexToRgb(corTexto('#'+pBg(p)).replace('#',''));
-                requests.push(cellFmt(shId,0,7+ci,3,8+ci,{ backgroundColor:bgRgb,textFormat:{foregroundColor:fgRgb,bold:true},horizontalAlignment:'CENTER' }));
+                requests.push(cellFmt(shId,0,6+ci,3,7+ci,{ backgroundColor:bgRgb,textFormat:{foregroundColor:fgRgb,bold:true},horizontalAlignment:'CENTER' }));
             });
 
             let gi=0;
@@ -15261,34 +15284,26 @@ async function _criarPlanilhaNoSheets() {
                     const bgRgb=hexToRgb(pBg(l._pers)); const fgRgb=hexToRgb(corTexto('#'+pBg(l._pers)).replace('#',''));
                     requests.push(cellFmt(shId,4+gi-1,3,5+gi-1,4,{backgroundColor:bgRgb,textFormat:{foregroundColor:fgRgb,bold:true}}));
                     const ci=persAll.indexOf(l._pers);
-                    if(ci>=0) requests.push(cellFmt(shId,4+gi-1,7+ci,5+gi-1,8+ci,{backgroundColor:bgRgb,textFormat:{foregroundColor:fgRgb,bold:true},horizontalAlignment:'CENTER'}));
+                    if(ci>=0) requests.push(cellFmt(shId,4+gi-1,6+ci,5+gi-1,7+ci,{backgroundColor:bgRgb,textFormat:{foregroundColor:fgRgb,bold:true},horizontalAlignment:'CENTER'}));
                 }
             });});
 
-            // Checkbox "Retake?" — única fonte agora, na col G (índice 6) da UNIFICADO
-            const _totalLinhasUnif = eps.reduce((acc,ep)=>acc+roteiro_resolverLinhas(ep).length,0);
-            if(_totalLinhasUnif > 0) requests.push({ setDataValidation:{
-                range:{sheetId:shId,startRowIndex:4,endRowIndex:4+_totalLinhasUnif,startColumnIndex:6,endColumnIndex:7},
-                rule:{condition:{type:'BOOLEAN'},strict:true,showCustomUi:true}
-            }});
-
             requests.push(freezeFmt(shId,4,0));
-            requests.push(colWidth(shId,0,1,70));  requests.push(colWidth(shId,1,2,180));
-            requests.push(colWidth(shId,2,3,180)); requests.push(colWidth(shId,3,4,160));
-            requests.push(colWidth(shId,4,5,300)); requests.push(colWidth(shId,5,6,160));
-            requests.push(colWidth(shId,6,7,80));
+            requests.push(colWidth(shId,0,1,70));  requests.push(colWidth(shId,1,2,250));
+            requests.push(colWidth(shId,2,3,250)); requests.push(colWidth(shId,3,4,160));
+            requests.push(colWidth(shId,4,5,300)); requests.push(colWidth(shId,5,6,250));
         };
 
-        // ── Aba RETAKES ────────────────────────────────────────────────────────────
         const buildAbaRetakes = () => {
             const shId  = idOf('Retakes');
             const totalLinhas = eps.reduce((acc,ep)=>acc+roteiro_resolverLinhas(ep).length,0);
             const lastRow = 4 + totalLinhas; // dados começam na linha 5
 
-            // Filtra direto da UNIFICADO usando sua própria coluna G (Retake?) — única fonte,
-            // já que as abas separadas por episódio foram eliminadas
+            // Filtra direto da UNIFICADO: qualquer linha com texto escrito na coluna F
+            // (Marcar Retake) entra aqui automaticamente — escrever qualquer coisa já
+            // marca, apagar o texto já desmarca, sem precisar de checkbox separado
             const formula = totalLinhas > 0
-                ? `=FILTER(UNIFICADO!A5:F${lastRow}${_SEP}UNIFICADO!G5:G${lastRow})`
+                ? `=FILTER(UNIFICADO!A5:F${lastRow}${_SEP}UNIFICADO!F5:F${lastRow}<>"")`
                 : '';
 
             const tcOrigLabel = isPT ? 'TC Original' : 'Original TC';
@@ -15298,7 +15313,7 @@ async function _criarPlanilhaNoSheets() {
                 ['RETAKES', ''],
                 [isPT?'Ep':'Ep', tcOrigLabel, tcUnifLabel,
                  isPT?'Personagem':'Character', isPT?'Diálogo':'Dialogue',
-                 isPT?'Arquivo enviado':'File sent'],
+                 isPT?'Marcar Retake':'Mark Retake'],
                 [formula]
             ]});
 
@@ -15322,8 +15337,8 @@ async function _criarPlanilhaNoSheets() {
                 }});
             }
             requests.push(freezeFmt(shId,2,0));
-            requests.push(colWidth(shId,0,1,60));  requests.push(colWidth(shId,1,2,160));
-            requests.push(colWidth(shId,2,3,160)); requests.push(colWidth(shId,3,4,140));
+            requests.push(colWidth(shId,0,1,60));  requests.push(colWidth(shId,1,2,250));
+            requests.push(colWidth(shId,2,3,250)); requests.push(colWidth(shId,3,4,140));
             requests.push(colWidth(shId,4,5,280)); requests.push(colWidth(shId,5,6,160));
         };
 
