@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.545</title>
+    <title>Sistema de Dublagem v12.547</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.545</p>
+        <p>v12.547</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.545</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.547</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1738,7 +1738,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.545</footer>
+    <footer>🎬 Sistema de Dublagem v12.547</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -3189,6 +3189,7 @@ var _i18n = {
         'membro.selecione.secDubs':      '🎙️ Dubladores',
         'membro.senha.ola':              'Olá, {nome}!',
         'membro.senha.desc':             'Digite sua senha para acessar.',
+        'membro.senha.salvar':           '💾 Salvar senha neste dispositivo',
         'membro.senha.errou':            'Senha incorreta. Tente novamente.',
         'membro.senha.btnEntrar':        'Entrar',
         'membro.senha.btnVoltar':        'Voltar',
@@ -4749,6 +4750,7 @@ var _i18n = {
         'membro.selecione.secDubs':      '🎙️ Voice Actors',
         'membro.senha.ola':              'Hi, {nome}!',
         'membro.senha.desc':             'Enter your password to access.',
+        'membro.senha.salvar':           '💾 Save password on this device',
         'membro.senha.errou':            'Incorrect password. Try again.',
         'membro.senha.btnEntrar':        'Enter',
         'membro.senha.btnVoltar':        'Back',
@@ -15149,38 +15151,21 @@ async function _criarPlanilhaNoSheets() {
             const persAll = [...new Set(eps.flatMap(ep=>persDoEp(ep)))];
             const allLs  = eps.flatMap(ep=>roteiro_resolverLinhas(ep));
             const prazo  = LK.dataGeral ? `${LBL.prazo}: ${linksFormatarData(LK.dataGeral)}` : LBL.prazo;
-
-            // Coluna oculta no final: combina (OR) o checkbox da UNIFICADO com o
-            // checkbox correspondente na aba do episódio — captura marcação de qualquer um dos dois
-            const colHelperIdx = 6 + persAll.length; // 0-based
-            const nCU = colHelperIdx + 1; // total de colunas (A-E + F + pers + helper)
+            const nCU = 6 + persAll.length; // total de colunas (A-E + F(Retake?) + pers)
 
             const rows = [];
-            rows.push([prazo,'','','',LBL.pers,'',...persAll,'']);
-            rows.push(['',LBL.upload,'',LBL.download,LBL.mots,'',...persAll.map(p=>nPal(allLs,p)),'']);
-            rows.push(['','','','',LBL.doubleur,'',...persAll.map(p=>dNome(p)),'']);
-            rows.push([LBL.ep,LBL.tc,LBL.pers,LBL.dial,LBL.fichier,LBL.retake,...persAll.map(()=>''),'RetakeEfetivo']);
+            rows.push([prazo,'','','',LBL.pers,'',...persAll]);
+            rows.push(['',LBL.upload,'',LBL.download,LBL.mots,'',...persAll.map(p=>nPal(allLs,p))]);
+            rows.push(['','','','',LBL.doubleur,'',...persAll.map(p=>dNome(p))]);
+            rows.push([LBL.ep,LBL.tc,LBL.pers,LBL.dial,LBL.fichier,LBL.retake,...persAll.map(()=>'')]);
 
-            let gIdx0 = 0; // contador global 0-based de linhas de dados
             eps.forEach(ep=>{
-                const epPad = String(ep).padStart(2,'0');
-                roteiro_resolverLinhas(ep).forEach((l,i)=>{
+                roteiro_resolverLinhas(ep).forEach(l=>{
                     const tc = (l.inicio&&l.fim)?`${l.inicio} --> ${l.fim}`:(l.inicio||'');
-                    const rowUnif = 5 + gIdx0; // linha 1-based nesta planilha (UNIFICADO)
-                    const rowEp   = 5 + i;     // linha 1-based correspondente na aba do episódio
-                    const retakeEfetivo = `=IFERROR(OR(F${rowUnif}${_SEP}'${epPad}'!F${rowEp})${_SEP}FALSE)`;
-                    rows.push([+ep,tc,l._pers||'',l.texto||'','',false,...persAll.map(()=>''),retakeEfetivo]);
-                    gIdx0++;
+                    rows.push([+ep,tc,l._pers||'',l.texto||'','',false,...persAll.map(()=>'')]);
                 });
             });
             valuesData.push({ range:'UNIFICADO!A1', values:rows });
-
-            // Esconder a coluna helper — uso interno, não deve aparecer pro usuário
-            requests.push({ updateDimensionProperties:{
-                range:{ sheetId:shId, dimension:'COLUMNS', startIndex:colHelperIdx, endIndex:colHelperIdx+1 },
-                properties:{ hiddenByUser:true },
-                fields:'hiddenByUser'
-            }});
 
             // Links via textFormat.link (locale-independente)
             if(LK.pastaUpload) requests.push({ repeatCell:{
@@ -15249,14 +15234,12 @@ async function _criarPlanilhaNoSheets() {
         const buildAbaRetakes = () => {
             const shId  = idOf('Retakes');
             const totalLinhas = eps.reduce((acc,ep)=>acc+roteiro_resolverLinhas(ep).length,0);
-            // Coluna helper RetakeEfetivo fica após A-E + F(retake) + pers — calculada em buildAbaUnificado
-            const persAllQtd = [...new Set(eps.flatMap(ep=>persDoEp(ep)))].length;
-            const colHelperLetra = _colLetra(6 + persAllQtd); // mesma fórmula usada em buildAbaUnificado
             const lastRow = 4 + totalLinhas; // dados começam na linha 5
 
-            // Filtra direto da UNIFICADO: já inclui Ep (col A) e captura marcação de qualquer aba (via OR)
+            // Filtra direto da UNIFICADO usando sua própria coluna F (Retake?) — referência simples,
+            // sem cruzar com outras abas, para eliminar risco de erro de fórmula entre planilhas
             const formula = totalLinhas > 0
-                ? `=IFERROR(FILTER(UNIFICADO!A5:E${lastRow}${_SEP}UNIFICADO!${colHelperLetra}5:${colHelperLetra}${lastRow})${_SEP}"")`
+                ? `=FILTER(UNIFICADO!A5:E${lastRow}${_SEP}UNIFICADO!F5:F${lastRow})`
                 : '';
 
             valuesData.push({ range:'Retakes!A1', values:[
@@ -18354,8 +18337,18 @@ function _projClicarMembro(membro) {
     _projMembroSelecionado = membro;
     document.getElementById('projSenhaNome').textContent = t('membro.senha.ola', {nome: membro.nome});
     document.getElementById('projSenhaDesc').textContent = t('membro.senha.desc');
-    document.getElementById('projSenhaInput').value = '';
     document.getElementById('projSenhaErrou').style.display = 'none';
+    // Restaurar senha salva neste dispositivo, se houver
+    var chaveLembrar = 'membro_lembrar_senha_' + membro.tipo + '_' + membro.id;
+    var senhaSalva = localStorage.getItem(chaveLembrar);
+    var cbLembrar = document.getElementById('projLembrarSenha');
+    if (senhaSalva) {
+        try { document.getElementById('projSenhaInput').value = atob(senhaSalva); } catch(e) { document.getElementById('projSenhaInput').value = ''; }
+        if (cbLembrar) cbLembrar.checked = true;
+    } else {
+        document.getElementById('projSenhaInput').value = '';
+        if (cbLembrar) cbLembrar.checked = false;
+    }
     document.getElementById('projSenhaModal').classList.add('open');
     setTimeout(function(){ document.getElementById('projSenhaInput').focus(); }, 100);
 }
@@ -18365,43 +18358,71 @@ function projFecharSenha() {
     _projMembroSelecionado = null;
 }
 
+// Retorna {lista, registro, salvar} para o tipo de membro informado
+function _membroBuscar(tipo, id) {
+    if (tipo === 'dub') {
+        var lista = carregarDubladores();
+        return { lista: lista, registro: lista.find(function(d){ return d.id === id; }), salvar: salvarDubladores };
+    } else if (tipo === 'editor') {
+        var lista = carregarEditores();
+        return { lista: lista, registro: lista.find(function(e){ return e.id === id; }), salvar: salvarEditores };
+    } else if (tipo === 'conferente') {
+        var lista = carregarConferentes();
+        return { lista: lista, registro: lista.find(function(c){ return c.id === id; }), salvar: salvarConferentes };
+    } else if (tipo === 'revisor') {
+        var lista = carregarRevisores();
+        return { lista: lista, registro: lista.find(function(r){ return r.id === id; }), salvar: salvarRevisores };
+    }
+    return { lista: [], registro: null, salvar: function(){} };
+}
+
 function projConfirmarSenha() {
     if (!_projMembroSelecionado) return;
     var digitada = document.getElementById('projSenhaInput').value;
     var tipo     = _projMembroSelecionado.tipo || 'dub';
-    var correta  = prodGetSenhaPadrao();
-    if (tipo === 'dub') {
-        var dub = carregarDubladores().find(function(d){ return d.id === _projMembroSelecionado.id; });
-        if (dub && dub.senhaAcesso) correta = dub.senhaAcesso;
-    } else if (tipo === 'editor') {
-        var ed = carregarEditores().find(function(e){ return e.id === _projMembroSelecionado.id; });
-        if (ed && ed.senhaAcesso) correta = ed.senhaAcesso;
-    } else if (tipo === 'conferente') {
-        var cf = carregarConferentes().find(function(c){ return c.id === _projMembroSelecionado.id; });
-        if (cf && cf.senhaAcesso) correta = cf.senhaAcesso;
-    } else if (tipo === 'revisor') {
-        var rv = carregarRevisores().find(function(r){ return r.id === _projMembroSelecionado.id; });
-        if (rv && rv.senhaAcesso) correta = rv.senhaAcesso;
-    }
+    var info     = _membroBuscar(tipo, _projMembroSelecionado.id);
+    var registro = info.registro;
+    var correta  = (registro && registro.senhaAcesso) ? registro.senhaAcesso : prodGetSenhaPadrao();
+
     if (digitada !== correta) {
         document.getElementById('projSenhaErrou').style.display = 'block';
         document.getElementById('projSenhaInput').value = '';
         document.getElementById('projSenhaInput').focus();
         return;
     }
-    document.getElementById('projSenhaModal').classList.remove('open');
-    // NÃO remove 'ativo' da tela de equipe — ela permanece visível após abrir o membro
 
+    // Lembrar senha neste dispositivo
+    var chaveLembrar = 'membro_lembrar_senha_' + tipo + '_' + _projMembroSelecionado.id;
+    var cbLembrar = document.getElementById('projLembrarSenha');
+    if (cbLembrar && cbLembrar.checked) {
+        localStorage.setItem(chaveLembrar, btoa(digitada));
+    } else {
+        localStorage.removeItem(chaveLembrar);
+    }
+
+    document.getElementById('projSenhaModal').classList.remove('open');
+
+    // Primeiro acesso: logou com a senha padrão da equipe e ainda não definiu senha pessoal
+    var primeiroAcesso = (correta === prodGetSenhaPadrao()) && (!registro || registro.senhaDefinida !== true);
+    if (primeiroAcesso) {
+        _membroPrimeiroAcessoAbrir(_projMembroSelecionado, tipo);
+        return;
+    }
+
+    _projAbrirJanelaMembro(_projMembroSelecionado, tipo);
+}
+
+function _projAbrirJanelaMembro(membro, tipo) {
     // Abrir em janela separada passando dubId, tipo e projId na URL
     var projIdUrl = _dubProjeto ? _dubProjeto.id : '';
-    var url = window.location.href.split('?')[0] + '?dub=' + _projMembroSelecionado.id + '&papel=' + tipo + (projIdUrl ? '&proj=' + projIdUrl : '');
+    var url = window.location.href.split('?')[0] + '?dub=' + membro.id + '&papel=' + tipo + (projIdUrl ? '&proj=' + projIdUrl : '');
     var screenH = window.screen.availHeight || 900;
     var popH = Math.min(Math.round(screenH * 0.92), 1000);
     var win = window.open(url, '_blank',
         'width=1200,height='+popH+',resizable=yes,scrollbars=no,toolbar=no,menubar=no,location=no,status=no');
     if (!win) {
         // Pop-up bloqueado: abrir na mesma aba (neste caso a tela de equipe é substituída)
-        _dubDubId = _projMembroSelecionado.id;
+        _dubDubId = membro.id;
         _dubPapel = tipo;
         initDB().then(function(){ _dubAbrirTela(); });
         return;
@@ -18409,6 +18430,43 @@ function projConfirmarSenha() {
     // Tela de equipe permanece — o membro foi aberto em nova janela
     _projMembroSelecionado = null;
 }
+
+// ── Primeiro acesso — membro da equipe ────────────────────────────────────────
+function _membroPrimeiroAcessoAbrir(membro, tipo) {
+    window._membroPrimeiroAcesso = { membro: membro, tipo: tipo };
+    document.getElementById('mpaNome').textContent = membro.nome;
+    document.getElementById('mpaSenha').value = '';
+    document.getElementById('mpaConf').value = '';
+    document.getElementById('mpaErro').style.display = 'none';
+    document.getElementById('membroPrimeiroAcessoModal').classList.add('open');
+    setTimeout(function(){ document.getElementById('mpaSenha').focus(); }, 150);
+}
+
+function membroPrimeiroAcessoConfirmar() {
+    var s1 = document.getElementById('mpaSenha').value;
+    var s2 = document.getElementById('mpaConf').value;
+    var erro = document.getElementById('mpaErro');
+    if (!s1 || s1.length < 4) {
+        erro.textContent = t('login.primAcesso.senhaMin');
+        erro.style.display = 'block'; return;
+    }
+    if (s1 !== s2) {
+        erro.textContent = t('login.primAcesso.senhasNaoConf');
+        erro.style.display = 'block'; return;
+    }
+    var ctx = window._membroPrimeiroAcesso;
+    if (!ctx) return;
+    var info = _membroBuscar(ctx.tipo, ctx.membro.id);
+    if (info.registro) {
+        info.registro.senhaAcesso  = s1;
+        info.registro.senhaDefinida = true;
+        info.salvar(info.lista);
+    }
+    window._membroPrimeiroAcesso = null;
+    document.getElementById('membroPrimeiroAcessoModal').classList.remove('open');
+    _projAbrirJanelaMembro(ctx.membro, ctx.tipo);
+}
+
 
 function _idbBuscar(key) {
     return new Promise(function(res) {
@@ -25105,11 +25163,31 @@ window.addEventListener('load', function() {
     <p id="projSenhaDesc" data-i18n="membro.senha.desc">Digite sua senha para acessar o projeto.</p>
     <input type="password" class="proj-senha-input" id="projSenhaInput" placeholder="••••••••"
            onkeydown="if(event.key==='Enter'){event.preventDefault();event.stopPropagation();projConfirmarSenha();}">
+    <div style="display:flex;align-items:center;gap:6px;margin:-4px 0 10px;font-size:12px;color:#94a3b8;">
+        <input type="checkbox" id="projLembrarSenha" style="cursor:pointer;">
+        <label for="projLembrarSenha" style="cursor:pointer;" data-i18n="membro.senha.salvar">💾 Salvar senha neste dispositivo</label>
+    </div>
     <div class="proj-senha-errou" id="projSenhaErrou" data-i18n="membro.senha.errou">Senha incorreta. Tente novamente.</div>
     <div style="display:flex;gap:8px;">
       <button style="flex:1;padding:11px;background:#27ae60;color:white;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;" onclick="projConfirmarSenha()" data-i18n="membro.senha.btnEntrar">Entrar</button>
       <button style="padding:11px 16px;background:#334155;color:#e2e8f0;border:none;border-radius:8px;font-size:14px;cursor:pointer;" onclick="projFecharSenha()" data-i18n="membro.senha.btnVoltar">Voltar</button>
     </div>
+  </div>
+</div>
+
+<!-- MODAL PRIMEIRO ACESSO — MEMBRO DA EQUIPE -->
+<div class="proj-senha-modal" id="membroPrimeiroAcessoModal">
+  <div class="proj-senha-box">
+    <h3><span data-i18n="primeiroAcesso.bemVindo">Bem-vindo,</span> <span id="mpaNome"></span>!</h3>
+    <p data-i18n="primeiroAcesso.subtitulo" style="margin-bottom:12px;">Este é seu primeiro acesso.<br>Crie uma senha pessoal para continuar.</p>
+    <p style="font-size:11px;color:#fbbf24;margin-bottom:14px;" data-i18n="primeiroAcesso.aviso">⚠️ A senha padrão de primeiro acesso será substituída pela sua senha pessoal. Guarde-a com segurança — o administrador não terá acesso a ela.</p>
+    <label style="display:block;font-size:12px;font-weight:700;color:#cbd5e1;margin-bottom:5px;" data-i18n="primeiroAcesso.novaSenha">Nova senha</label>
+    <input type="password" class="proj-senha-input" id="mpaSenha" placeholder="Mínimo 4 caracteres" data-i18n-placeholder="primeiroAcesso.placeholder" style="margin-bottom:10px;">
+    <label style="display:block;font-size:12px;font-weight:700;color:#cbd5e1;margin-bottom:5px;" data-i18n="primeiroAcesso.confirmar">Confirmar senha</label>
+    <input type="password" class="proj-senha-input" id="mpaConf" placeholder="Repita a senha" data-i18n-placeholder="primeiroAcesso.repetir"
+           onkeydown="if(event.key==='Enter'){event.preventDefault();event.stopPropagation();membroPrimeiroAcessoConfirmar();}">
+    <div class="proj-senha-errou" id="mpaErro" style="display:none;"></div>
+    <button style="width:100%;padding:11px;background:#27ae60;color:white;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;margin-top:8px;" onclick="membroPrimeiroAcessoConfirmar()" data-i18n="primeiroAcesso.btn">✅ Definir minha senha e entrar</button>
   </div>
 </div>
 
