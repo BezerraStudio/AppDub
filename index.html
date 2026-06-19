@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.564</title>
+    <title>Sistema de Dublagem v12.567</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.564</p>
+        <p>v12.567</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.564</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.567</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1738,7 +1738,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.564</footer>
+    <footer>🎬 Sistema de Dublagem v12.567</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -3658,6 +3658,7 @@ var _i18n = {
         'membro.dub.nenhumConteudoSRT':   'Nenhum conteúdo para gerar.',
         'membro.dub.srtEnviadasDrive':    '✅ {n} SRT(s) enviadas para "SRT para Revisão" no Drive!',
         'membro.dub.configureDriveSRT':   'Configure o Drive em Configurações para envio direto.',
+        'membro.dub.driveDesconectadoSRT':'Drive não conectado — baixando os SRTs no computador. Conecte-se em Configurações para enviar direto para a pasta do projeto da próxima vez.',
         'cli.badge.escalacaoFinal':       'Escalação Final',
         'cli.badge.catalogoVozes':        'Catálogo de Vozes',
 
@@ -4772,6 +4773,8 @@ var _i18n = {
         'membro.papel.conferente':       'Reviewer',
         'membro.papel.dublador':         'Voice Actor',
         'membro.dub.bemVindoRev':        '📝 Welcome, {nome}! Script Review tab opened.',
+        'membro.dub.configureDriveSRT':  'Set up Drive in Settings for direct upload.',
+        'membro.dub.driveDesconectadoSRT':'Drive not connected — downloading the SRTs to this computer. Connect in Settings to send directly to the project folder next time.',
         'membro.dub.olaLabel':           '{icone} Hi, {nome}!',
         'membro.dub.projetoNaoEnc':      'Project not found. Check the link.',
         'membro.dub.personagem':         'Character:',
@@ -5712,6 +5715,26 @@ function _admAbrir(adm) {
     carregarProjetos();
     verificarUltimoBackup();
     _sbIniciarPolling();
+    _driveAutoConectar();
+}
+
+// Ao logar, tenta conectar ao Drive automaticamente — sem exigir clique em
+// nada, já que clientId/apiKey/pastaRaizId já ficam salvos de configurações
+// anteriores. Reaproveita o token salvo, ou renova silenciosamente se possível
+// (sem popup, contanto que a sessão do Google no navegador ainda seja válida).
+// Se não conseguir de jeito nenhum (sessão do Google realmente expirada/
+// desconectada), leva direto para Configurações, onde a pessoa vê o aviso e
+// o botão para reconectar.
+function _driveAutoConectar() {
+    var cfg = cfgGet();
+    if (!cfg.clientId || !cfg.apiKey || !cfg.pastaRaizId) return; // primeira configuração ainda não foi feita
+    _garantirDriveConectado().then(function(ok) {
+        if (ok) {
+            driveCarregarDados();
+        } else {
+            irParaAba('configuracoes');
+        }
+    });
 }
 
 function _admPrimeiroAcessoAbrir(adm) {
@@ -5810,6 +5833,29 @@ function _trocarAba(abaDestino) {
     const btnEl = document.querySelector('[data-aba="' + abaDestino + '"]');
     if (btnEl) btnEl.classList.add('active');
     if (abaDestino === 'mapeamento') inicializarMapeamento();
+    if (abaDestino === 'configuracoes') _avisarDriveSeNecessario();
+}
+
+// Aviso ao entrar em Configurações quando o Google Drive não está conectado
+// NESTE dispositivo/sessão — some sozinho assim que a pessoa conectar, já que
+// só afeta quem vai cadastrar mídia (foto/áudio/vídeo) de dubladores e equipe.
+// Texto/cadastros em geral sincronizam normalmente sem precisar disso.
+function _avisarDriveSeNecessario() {
+    var cfg = cfgGet();
+    if (!cfg.pastaRaizId) return; // sistema nem usa Drive ainda — nada a avisar
+    if (_driveToken()) return;    // já conectado nesta sessão — nada a avisar
+    if (document.getElementById('_avisoDriveModal')) return; // já está visível
+    var isPT = _getIdioma() !== 'en';
+    var html = '<div id="_avisoDriveModal" style="display:flex;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:10000;align-items:center;justify-content:center;">' +
+        '<div style="background:white;border-radius:12px;padding:28px 32px;max-width:430px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,0.3);text-align:center;">' +
+        '<div style="font-size:36px;margin-bottom:12px;">☁️</div>' +
+        '<h3 style="margin:0 0 8px;color:#2c3e50;font-size:16px;">' + (isPT?'Conecte sua conta Google':'Connect your Google account') + '</h3>' +
+        '<p style="color:#7f8c8d;font-size:13px;margin:0 0 20px;line-height:1.6;">' + (isPT
+            ? 'Para que fotos, áudios e vídeos cadastrados aqui (dubladores e equipe) fiquem disponíveis para todos os computadores, é preciso estar conectado à sua conta Google nesta aba. Sem essa conexão, esses arquivos de mídia ficam salvos apenas neste computador.<br><br>Os demais cadastros e textos continuam sincronizando normalmente entre todos, mesmo sem essa conexão.'
+            : 'For photos, audio and video registered here (voice actors and team) to be available on every computer, you need to be connected to your Google account on this tab. Without this connection, those media files are saved only on this computer.<br><br>All other registrations and text data keep syncing normally between everyone, even without this connection.') + '</p>' +
+        '<button onclick="document.getElementById(\'_avisoDriveModal\').remove()" style="padding:9px 24px;border:none;border-radius:7px;background:#3498db;color:white;font-size:13px;cursor:pointer;font-weight:600;">' + (isPT?'Entendi':'Got it') + '</button>' +
+        '</div></div>';
+    document.body.insertAdjacentHTML('beforeend', html);
 }
 
 function irParaAba(aba) {
@@ -14882,7 +14928,7 @@ function cfgCarregarGapi(callback) {
     }
 }
 
-function cfgAutenticar(callback) {
+function cfgAutenticar(callback, onError) {
     // Tenta restaurar token salvo do localStorage
     try {
         var saved = JSON.parse(localStorage.getItem('_gtoken') || 'null');
@@ -14902,7 +14948,8 @@ function cfgAutenticar(callback) {
     // Token ausente ou expirado — pede nova autorização
     _tokenClient.callback = (resp) => {
         if(resp.error) {
-            mostrarNotificacao(t('misc.notif.erroAuthGoogle', {msg: resp.error}), 'erro');
+            if (onError) { onError(resp.error); }
+            else { mostrarNotificacao(t('misc.notif.erroAuthGoogle', {msg: resp.error}), 'erro'); }
             return;
         }
         // Salva token com expiração (55 minutos para margem de segurança)
@@ -14918,6 +14965,26 @@ function cfgAutenticar(callback) {
     } else {
         callback();
     }
+}
+
+// Helper de conveniência: garante que o Drive está pronto para uso (config +
+// autenticação), tentando reaproveitar token salvo ou renovar silenciosamente,
+// sem travar o chamador caso falhe — resolve true/false, nunca fica pendurado
+function _garantirDriveConectado() {
+    return new Promise(function(resolve) {
+        var cfg = cfgGet();
+        if (!cfg.clientId || !cfg.apiKey || !cfg.pastaRaizId) { resolve(false); return; }
+        var resolvido = false;
+        var resolverUmaVez = function(v) { if (!resolvido) { resolvido = true; resolve(v); } };
+        // Margem de segurança: se em 8s não respondeu (ex: popup bloqueado pelo
+        // navegador, sem internet), não trava quem está esperando
+        setTimeout(function(){ resolverUmaVez(false); }, 8000);
+        try {
+            cfgCarregarGapi(function() {
+                cfgAutenticar(function() { resolverUmaVez(true); }, function(){ resolverUmaVez(false); });
+            });
+        } catch(e) { resolverUmaVez(false); }
+    });
 }
 
 function cfgLimparTokenSalvo() {
@@ -15683,6 +15750,101 @@ async function _dubMidiaCarregarPorId(tipo, dubId) {
     var todos = carregarDubladores();
     var dub = todos.find(function(x){ return x.id === dubId; });
     return _dubMidiaCarregar(tipo, dub);
+}
+
+// ── Mídia global de equipe (foto de editores/conferentes/revisores/outros) ────
+// Mesma arquitetura usada para dubladores: pasta global em _SISTEMA (não é
+// referente a um projeto específico, é a foto da pessoa, que atua em vários
+// projetos). Só foto — equipe não tem amostra de áudio/vídeo.
+
+var _driveMidiaEquipeId = null; // cache do ID da pasta Equipe_Midia
+
+async function _driveGetMidiaEquipeId() {
+    if (_driveMidiaEquipeId) return _driveMidiaEquipeId;
+    var sistemaId = await _driveGetSistemaId();
+    _driveMidiaEquipeId = await _driveGarantirPasta('Equipe_Midia', sistemaId);
+    return _driveMidiaEquipeId;
+}
+
+async function _driveSalvarMidiaEquipe(id, dataUrl) {
+    var cfg = cfgGet();
+    if (!cfg.pastaRaizId || !_driveToken()) return null;
+    try {
+        var pastaId = await _driveGetMidiaEquipeId();
+        var blob = _dataUrlParaBlob(dataUrl);
+        var ext = (blob.type.split('/')[1] || 'bin').replace('jpeg','jpg').split(';')[0];
+        var prefixo = 'eq_' + id + '_foto';
+        var nomeArquivo = prefixo + '.' + ext;
+        var qResp = await _driveFetch('https://www.googleapis.com/drive/v3/files?q=' + encodeURIComponent("name contains '" + prefixo + "' and '" + pastaId + "' in parents and trashed=false") + '&orderBy=createdTime&fields=files(id,name)');
+        var qData = await qResp.json();
+        var existente = (qData.files||[])[0];
+        var fileId;
+        if (existente) {
+            await _driveFetch('https://www.googleapis.com/upload/drive/v3/files/' + existente.id + '?uploadType=media', { method:'PATCH', headers:{'Content-Type': blob.type}, body: blob });
+            fileId = existente.id;
+        } else {
+            var meta = { name: nomeArquivo, parents: [pastaId] };
+            var form = new FormData();
+            form.append('metadata', new Blob([JSON.stringify(meta)], {type:'application/json'}));
+            form.append('file', blob);
+            var resp = await _driveFetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id', { method:'POST', body: form });
+            var novo = await resp.json();
+            fileId = novo.id || null;
+        }
+        if (fileId) await _driveTornarPublico(fileId);
+        return fileId;
+    } catch(e) {
+        console.warn('Drive: falha ao enviar foto de equipe:', e.message);
+        return null;
+    }
+}
+
+async function _driveExcluirMidiaEquipe(id) {
+    var cfg = cfgGet();
+    if (!cfg.pastaRaizId || !_driveToken()) return;
+    try {
+        var pastaId = await _driveGetMidiaEquipeId();
+        var prefixo = 'eq_' + id + '_foto';
+        var qResp = await _driveFetch('https://www.googleapis.com/drive/v3/files?q=' + encodeURIComponent("name contains '" + prefixo + "' and '" + pastaId + "' in parents and trashed=false") + '&fields=files(id)');
+        var qData = await qResp.json();
+        var arquivos = qData.files || [];
+        for (var i = 0; i < arquivos.length; i++) {
+            await _driveFetch('https://www.googleapis.com/drive/v3/files/' + arquivos[i].id, { method:'DELETE' });
+        }
+    } catch(e) { console.warn('Drive: falha ao excluir foto de equipe:', e.message); }
+}
+
+// Carrega a foto de um membro da equipe: cache local primeiro, com fallback
+// na URL pública do Drive se este dispositivo nunca baixou essa foto antes
+async function _equipeMidiaCarregar(obj) {
+    if (!obj) return null;
+    var local = await _idbLer('foto_eq_' + obj.id).catch(function(){ return null; });
+    if (local) return local;
+    if (!obj.driveFotoId) return null;
+    return _driveUrlMidiaPublica(obj.driveFotoId, 'foto');
+}
+
+// Envia a foto de um membro da equipe para o Drive em segundo plano (não
+// atrasa o "salvo" que já apareceu na tela) e guarda a referência no cadastro
+// — usado pelos 4 fluxos de salvar (editor/conferente/revisor/outros)
+function _equipeUploadFotoBackground(id, fotoRemovida, fotoTemp, carregarFn, salvarFn) {
+    (async function(){
+        try {
+            if (fotoRemovida) {
+                await _driveExcluirMidiaEquipe(id);
+                var lista1 = carregarFn();
+                var obj1 = lista1.find(function(x){ return x.id===id; });
+                if (obj1 && obj1.driveFotoId) { delete obj1.driveFotoId; salvarFn(lista1); }
+            } else if (fotoTemp) {
+                var fid = await _driveSalvarMidiaEquipe(id, fotoTemp);
+                if (fid) {
+                    var lista2 = carregarFn();
+                    var obj2 = lista2.find(function(x){ return x.id===id; });
+                    if (obj2) { obj2.driveFotoId = fid; salvarFn(lista2); }
+                }
+            }
+        } catch(e) { console.warn('Drive: envio de foto de equipe em segundo plano falhou:', e.message); }
+    })();
 }
 
 // ── Garantir que a pasta existe ───────────────────────────────────────────────
@@ -18242,6 +18404,8 @@ async function prodGerarSRTRevisao() {
     var pastaProjId = (LK.pastaProjeto || '').match(/folders\/([a-zA-Z0-9_-]+)/);
     pastaProjId = pastaProjId ? pastaProjId[1] : null;
     if (subpastaId || pastaProjId) {
+        var conectado = await _garantirDriveConectado();
+        if (conectado) {
         try {
             var token = (typeof gapi !== 'undefined') && gapi.client && gapi.client.getToken && gapi.client.getToken() ? gapi.client.getToken().access_token : null;
             if (token) {
@@ -18268,6 +18432,9 @@ async function prodGerarSRTRevisao() {
                 return;
             }
         } catch(e) { console.warn('Drive:', e.message); }
+        } else {
+            mostrarNotificacao(t('membro.dub.driveDesconectadoSRT'), 'aviso', 4000);
+        }
     }
     if (typeof JSZip === 'undefined') { mostrarNotificacao(t('membro.dub.configureDriveSRT'), 'info', 3000); return; }
     var zip = new JSZip();
@@ -21682,7 +21849,7 @@ function cfgAbrirModalEditor(idx) {
     document.addEventListener('paste', _equipeFotoPasteHandler);
     setTimeout(_equipeFotoInicializarDrag, 0);
     if (ed && ed.id) {
-        _idbLer('foto_eq_' + ed.id).then(function(foto){ if(foto){ _equipeFotoTemp=foto; _equipeFotoSetImagem(foto); } }).catch(function(){});
+        _equipeMidiaCarregar(ed).then(function(foto){ if(foto){ if(foto.indexOf('data:')===0) _equipeFotoTemp=foto; _equipeFotoSetImagem(foto); } }).catch(function(){});
     }
 }
 
@@ -21727,6 +21894,7 @@ function cfgSalvarEditor() {
     salvarEditores(lista); cfgRenderizarEditores();
     if (_equipeFotoRemovida) _idbDeletar('foto_eq_' + _edId).catch(function(){});
     else if (_equipeFotoTemp) _idbSalvar('foto_eq_' + _edId, _equipeFotoTemp).catch(function(){});
+    _equipeUploadFotoBackground(_edId, _equipeFotoRemovida, _equipeFotoTemp, carregarEditores, salvarEditores);
     mostrarNotificacao(t('cfg.notif.editorSalvo'),'sucesso',1500);
 }
 
@@ -21791,7 +21959,7 @@ function cfgAbrirModalConferente(idx) {
     document.addEventListener('paste', _equipeFotoPasteHandler);
     setTimeout(_equipeFotoInicializarDrag, 0);
     if (cf && cf.id) {
-        _idbLer('foto_eq_' + cf.id).then(function(foto){ if(foto){ _equipeFotoTemp=foto; _equipeFotoSetImagem(foto); } }).catch(function(){});
+        _equipeMidiaCarregar(cf).then(function(foto){ if(foto){ if(foto.indexOf('data:')===0) _equipeFotoTemp=foto; _equipeFotoSetImagem(foto); } }).catch(function(){});
     }
 }
 
@@ -21826,6 +21994,7 @@ function cfgSalvarConferente() {
     salvarConferentes(lista); cfgRenderizarConferentes();
     if (_equipeFotoRemovida) _idbDeletar('foto_eq_' + _cfId).catch(function(){});
     else if (_equipeFotoTemp) _idbSalvar('foto_eq_' + _cfId, _equipeFotoTemp).catch(function(){});
+    _equipeUploadFotoBackground(_cfId, _equipeFotoRemovida, _equipeFotoTemp, carregarConferentes, salvarConferentes);
     mostrarNotificacao(t('cfg.notif.conferenteSalvo'),'sucesso',1500);
 }
 
@@ -21911,7 +22080,7 @@ function cfgAbrirModalRevisor(idx) {
     document.addEventListener('paste', _equipeFotoPasteHandler);
     setTimeout(_equipeFotoInicializarDrag, 0);
     if (rv && rv.id) {
-        _idbLer('foto_eq_' + rv.id).then(function(foto){ if(foto){ _equipeFotoTemp=foto; _equipeFotoSetImagem(foto); } }).catch(function(){});
+        _equipeMidiaCarregar(rv).then(function(foto){ if(foto){ if(foto.indexOf('data:')===0) _equipeFotoTemp=foto; _equipeFotoSetImagem(foto); } }).catch(function(){});
     }
 }
 
@@ -21948,6 +22117,7 @@ function cfgSalvarRevisor() {
     cfgRenderizarRevisores();
     if (_equipeFotoRemovida) _idbDeletar('foto_eq_' + _rvId).catch(function(){});
     else if (_equipeFotoTemp) _idbSalvar('foto_eq_' + _rvId, _equipeFotoTemp).catch(function(){});
+    _equipeUploadFotoBackground(_rvId, _equipeFotoRemovida, _equipeFotoTemp, carregarRevisores, salvarRevisores);
     mostrarNotificacao(t('cfg.notif.revisorSalvo'),'sucesso',1500);
 }
 
@@ -22119,7 +22289,7 @@ function cfgAbrirModalOutroProfissional(idx) {
     document.addEventListener('paste', _equipeFotoPasteHandler);
     setTimeout(_equipeFotoInicializarDrag, 0);
     if (p && p.id) {
-        _idbLer('foto_eq_' + p.id).then(function(foto){ if(foto){ _equipeFotoTemp=foto; _equipeFotoSetImagem(foto); } }).catch(function(){});
+        _equipeMidiaCarregar(p).then(function(foto){ if(foto){ if(foto.indexOf('data:')===0) _equipeFotoTemp=foto; _equipeFotoSetImagem(foto); } }).catch(function(){});
     }
 }
 
@@ -22177,6 +22347,7 @@ function cfgSalvarOutroProfissional() {
     cfgFecharModalOutro();
     if (_equipeFotoRemovida) _idbDeletar('foto_eq_' + obj.id).catch(function(){});
     else if (_equipeFotoTemp) _idbSalvar('foto_eq_' + obj.id, _equipeFotoTemp).catch(function(){});
+    _equipeUploadFotoBackground(obj.id, _equipeFotoRemovida, _equipeFotoTemp, carregarOutros, salvarOutros);
     mostrarNotificacao(t('cfg.notif.profSalvo'),'sucesso',1800);
 }
 function cfgExcluirOutro(idx) {
