@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.560</title>
+    <title>Sistema de Dublagem v12.564</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.560</p>
+        <p>v12.564</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.560</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.564</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1738,7 +1738,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.560</footer>
+    <footer>🎬 Sistema de Dublagem v12.564</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -1983,6 +1983,8 @@
             <label style="font-size:11px;font-weight:700;color:#555;display:block;margin-bottom:3px;" data-i18n="cfg.dub.labelBio">📝 Bio do profissional</label>
             <textarea id="dubPortfolioBio" rows="4" placeholder="Apresentação para o cliente — descreva a voz, estilo, especialidades e destaques da carreira..." style="width:100%;padding:8px;border:2px solid #c7d2fe;border-radius:5px;font-size:13px;box-sizing:border-box;resize:vertical;font-family:inherit;background:white;"></textarea>
             <div style="font-size:10px;color:#6366f1;margin-top:4px;">💡 Inclua aqui as especialidades: Animação, Games, Narração, Documentário, Publicidade, Audiobook, Live Action...</div>
+            <label style="font-size:10px;font-weight:700;color:#5dade2;display:block;margin:10px 0 3px;" data-i18n="cfg.dub.labelBioEn">🇺🇸 Bio do profissional (EN) — opcional</label>
+            <textarea id="dubPortfolioBioEn" rows="4" placeholder="Client-facing introduction — describe the voice, style, specialties and career highlights..." data-i18n-placeholder="cfg.dub.placeholderBioEn" style="width:100%;padding:8px;border:2px dashed #aed6f1;border-radius:5px;font-size:13px;box-sizing:border-box;resize:vertical;font-family:inherit;background:#f7fbfe;"></textarea>
           </div>
           <div>
             <label style="font-size:11px;font-weight:700;color:#555;display:block;margin-bottom:3px;" data-i18n="cfg.dub.labelAnos">📅 Anos de experiência no momento do cadastro</label>
@@ -2798,6 +2800,8 @@ var _i18n = {
         'cfg.dub.labelPortfolio':        '🎬 Portfólio — Prateleira de Vozes',
         'cfg.dub.portfolioVisivel':      'visível ao cliente',
         'cfg.dub.labelBio':              '📝 Bio do profissional',
+        'cfg.dub.labelBioEn':            '🇺🇸 Bio do profissional (EN) — opcional',
+        'cfg.dub.placeholderBioEn':      'Apresentação para o cliente em inglês — descreva a voz, estilo, especialidades e destaques da carreira...',
         'cfg.dub.labelAnos':             '📅 Anos de experiência no momento do cadastro',
         'cfg.dub.btnSalvar':             '✅ Salvar',
         'cfg.dub.btnCancelar':           '❌ Cancelar',
@@ -3065,12 +3069,16 @@ var _i18n = {
         'notif.xlsxExportado':        '✅ Planilha Excel exportada!',
         'ficha.capturarFrame':           '📸 Capturar frame do vídeo',
         'ficha.descVoz':                 'DESCRIÇÃO DA VOZ',
+        'ficha.descVozEn':               '🇺🇸 DESCRIÇÃO DA VOZ (EN) — opcional',
         'ficha.etaria':                  'FAIXA ETÁRIA',
         'ficha.fechar':                  'Fechar',
         'ficha.genero':                  'GÊNERO',
         'ficha.papel':                   'PAPEL NA HISTÓRIA',
+        'ficha.papelEn':                 '🇺🇸 PAPEL NA HISTÓRIA (EN) — opcional',
         'ficha.placeholder.papel':       'Ex: Protagonista, antagonista, coadjuvante...',
+        'ficha.placeholder.papelEn':     'Ex: Protagonist, antagonist, supporting...',
         'ficha.placeholder.voz':         'Ex: Voz grossa, autoritária, madura...',
+        'ficha.placeholder.vozEn':       'Ex: Deep, authoritative, mature voice...',
         'ficha.salvar':                  '💾 Salvar',
         'ficha.titulo':                  'FICHA DO PERSONAGEM',
         'membro.dub.falasSuffix':        'falas',
@@ -3673,6 +3681,8 @@ var _i18n = {
         'prat.form.labelFaixas':         'Faixas etárias da voz',
         'prat.form.labelDesc':           'Descrição do personagem',
         'prat.form.phDesc':              'Personalidade, características marcantes, papel na história...',
+        'prat.form.labelDescEn':         '🇺🇸 Descrição do personagem (EN) — opcional',
+        'prat.form.phDescEn':            'Personality, notable traits, role in the story...',
         'prat.pers.confirmarRemover':    'Remover este personagem do casting?',
         'prat.pers.tituloRemover':       'Remover Personagem',
         'prat.cast.semPers':             'Cadastre personagens na aba Personagens.',
@@ -4519,6 +4529,8 @@ var _i18n = {
         'cfg.dub.labelPortfolio':        '🎬 Portfolio — Voice Shelf',
         'cfg.dub.portfolioVisivel':      'visible to client',
         'cfg.dub.labelBio':              '📝 Professional bio',
+        'cfg.dub.labelBioEn':            '🇺🇸 Professional bio (EN) — optional',
+        'cfg.dub.placeholderBioEn':      'Client-facing introduction in English — describe the voice, style, specialties and career highlights...',
         'cfg.dub.labelAnos':             '📅 Years of experience at registration',
         'cfg.dub.btnSalvar':             '✅ Save',
         'cfg.dub.btnCancelar':           '❌ Cancel',
@@ -4830,6 +4842,8 @@ var _i18n = {
         'prat.form.labelFaixas':         'Age ranges for voice',
         'prat.form.labelDesc':           'Character description',
         'prat.form.phDesc':              'Personality, notable traits, role in the story...',
+        'prat.form.labelDescEn':         '🇺🇸 Character description (EN) — optional',
+        'prat.form.phDescEn':            'Personality, notable traits, role in the story...',
         'prat.pers.confirmarRemover':    'Remove this character from casting?',
         'prat.pers.tituloRemover':       'Remove Character',
         'prat.cast.semPers':             'Register characters in the Characters tab.',
@@ -5047,12 +5061,16 @@ var _i18n = {
         'cli.cat.gravacaoNormal':        '🎙️ Normal Recording',
         'misc.descricao':                'Description',
         'ficha.descVoz':                 'VOICE DESCRIPTION',
+        'ficha.descVozEn':               '🇺🇸 VOICE DESCRIPTION (EN) — optional',
         'ficha.papel':                   'ROLE IN STORY',
+        'ficha.papelEn':                 '🇺🇸 ROLE IN STORY (EN) — optional',
         'ficha.genero':                  'GENDER',
         'ficha.etaria':                  'AGE RANGE',
         'ficha.capturarFrame':           '📸 Capture video frame',
         'ficha.placeholder.voz':         'Ex: Deep, authoritative, mature voice...',
+        'ficha.placeholder.vozEn':       'Ex: Deep, authoritative, mature voice...',
         'ficha.placeholder.papel':       'Ex: Protagonist, antagonist, supporting...',
+        'ficha.placeholder.papelEn':     'Ex: Protagonist, antagonist, supporting...',
         'ficha.salvar':                  '💾 Save',
         'ficha.fechar':                  'Close',
 
@@ -5247,6 +5265,13 @@ function t(key, vars) {
         });
     }
     return str;
+}
+
+// Escolhe entre o texto em PT e sua versão em EN (campo livre digitado pela
+// equipe — bio do dublador, descrição da voz, papel na história), com base no
+// idioma atual selecionado. Se a versão EN não foi preenchida, cai no PT.
+function _txtBi(textoPt, textoEn) {
+    return (_getIdioma() === 'en' && textoEn) ? textoEn : (textoPt || '');
 }
 
 // Detecta idioma: localStorage (admin) → navigator.language → 'pt'
@@ -7342,6 +7367,8 @@ function _pratAddPersonagem(idxEditar) {
         '</div></div>' +
         '<div><label style="font-size:11px;font-weight:700;color:#555;display:block;margin-bottom:3px;">'+t('prat.form.labelDesc')+'</label>' +
         '<textarea id="_pfDesc" rows="3" placeholder="'+t('prat.form.phDesc')+'" style="width:100%;padding:8px;border:2px solid #dde;border-radius:6px;font-size:13px;box-sizing:border-box;resize:vertical;font-family:inherit;">'+(p?p.descricao||'':'')+'</textarea></div>' +
+        '<div><label style="font-size:10px;font-weight:700;color:#5dade2;display:block;margin-bottom:3px;">'+t('prat.form.labelDescEn')+'</label>' +
+        '<textarea id="_pfDescEn" rows="3" placeholder="'+t('prat.form.phDescEn')+'" style="width:100%;padding:8px;border:2px dashed #aed6f1;border-radius:6px;font-size:13px;box-sizing:border-box;resize:vertical;font-family:inherit;background:#f7fbfe;">'+(p?p.descricaoEn||'':'')+'</textarea></div>' +
         '</div>' +
         '<div style="display:flex;gap:8px;margin-top:16px;">' +
         '<button onclick="_pratSalvarPersonagem('+(idxEditar!==undefined?idxEditar:'undefined')+')" style="flex:1;padding:9px;background:#27ae60;color:white;border:none;border-radius:7px;font-weight:700;cursor:pointer;">'+t('cfg.modal.salvar')+'</button>' +
@@ -7363,6 +7390,7 @@ function _pratSalvarPersonagem(idxParam) {
         genero: (document.getElementById('_pfGenero')||{value:''}).value,
         faixas: Array.from(document.querySelectorAll('._pfFaixa:checked')).map(function(c){return c.value;}),
         descricao: (document.getElementById('_pfDesc')||{value:''}).value.trim(),
+        descricaoEn: (document.getElementById('_pfDescEn')||{value:''}).value.trim(),
         foto: null, dubsCandidatos: []
     };
     if (!projetoAtual.personagensCasting) projetoAtual.personagensCasting = [];
@@ -7964,7 +7992,7 @@ function _pratRenderAprovacao(cont) {
                     '</div>' +
                     '</div>';
             // Foto async
-            (function(did, cid){ _idbLer('foto_'+did).then(function(f){ if(!f) return; var el=document.getElementById('aprvF_'+cid+'_'+did); if(el) el.innerHTML='<img src="'+f+'" style="width:38px;height:38px;object-fit:cover;object-position:top;border-radius:7px;">'; }).catch(function(){}); })(dubAqui.id, cast.id);
+            (function(did, cid){ _dubMidiaCarregarPorId('foto',did).then(function(f){ if(!f) return; var el=document.getElementById('aprvF_'+cid+'_'+did); if(el) el.innerHTML='<img src="'+f+'" style="width:38px;height:38px;object-fit:cover;object-position:top;border-radius:7px;">'; }).catch(function(){}); })(dubAqui.id, cast.id);
 
         } else if (tipo==='riscado' && dubAqui) {
             // Vermelho: escolhido aqui mas superado por casting mais recente → risco no nome
@@ -7975,7 +8003,7 @@ function _pratRenderAprovacao(cont) {
                     '</div>' +
                     '<div id="aprvF_'+cast.id+'_'+dubAqui.id+'" style="width:38px;height:38px;border-radius:7px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:18px;overflow:hidden;flex-shrink:0;opacity:.4;">🎙️</div>' +
                     '</div>';
-            (function(did, cid){ _idbLer('foto_'+did).then(function(f){ if(!f) return; var el=document.getElementById('aprvF_'+cid+'_'+did); if(el) el.innerHTML='<img src="'+f+'" style="width:38px;height:38px;object-fit:cover;object-position:top;border-radius:7px;filter:grayscale(1);">'; }).catch(function(){}); })(dubAqui.id, cast.id);
+            (function(did, cid){ _dubMidiaCarregarPorId('foto',did).then(function(f){ if(!f) return; var el=document.getElementById('aprvF_'+cid+'_'+did); if(el) el.innerHTML='<img src="'+f+'" style="width:38px;height:38px;object-fit:cover;object-position:top;border-radius:7px;filter:grayscale(1);">'; }).catch(function(){}); })(dubAqui.id, cast.id);
 
         } else if (tipo==='substituido' && ultima) {
             // Não escolhido aqui mas tem em outro: mostrar histórico de dubs
@@ -8169,7 +8197,7 @@ function _pratAbrirCastingFinal() {
 
         if (dub) {
             (function(dubId, persId){
-                _idbLer('foto_'+dubId).then(function(foto){
+                _dubMidiaCarregarPorId('foto',dubId).then(function(foto){
                     if (!foto) return;
                     var el = document.getElementById('cfFoto_'+persId);
                     if (el) el.innerHTML = '<img src="'+foto+'" style="width:36px;height:36px;object-fit:cover;object-position:top;border-radius:7px;">';
@@ -9665,11 +9693,13 @@ async function salvarDubladoresComMidia(lista) {
     return true;
 }
 
-// Carregar um dublador com sua mídia do IndexedDB
+// Carrega a foto, áudio e vídeo de um dublador — tenta o cache local
+// (IndexedDB) primeiro; se não encontrar e o dublador tiver mídia no Drive,
+// usa a URL pública direta de lá
 async function _carregarMidiaDublador(d) {
     try {
-        const audio = await _idbLer('audio_' + d.id);
-        const video = await _idbLer('video_' + d.id);
+        const audio = await _dubMidiaCarregar('audio', d);
+        const video = await _dubMidiaCarregar('video', d);
         if (audio) d.audio = audio;
         if (video) d.video = video;
     } catch(e) {
@@ -9945,7 +9975,7 @@ function abrirModalNovoDublador() {
     document.getElementById('modalDubladorTitulo').textContent = t('cfg.dub.tituloNovo');
     // Limpar novos campos
     const _el = f => document.getElementById(f);
-    ['dubladorVoz','dubladorFeedback','dubPortfolioBio'].forEach(f => { if (_el(f)) _el(f).value = ''; });
+    ['dubladorVoz','dubladorFeedback','dubPortfolioBio','dubPortfolioBioEn'].forEach(f => { if (_el(f)) _el(f).value = ''; });
     if (_el('dubPortfolioAnos')) _el('dubPortfolioAnos').value = '';
     const rdAt = document.getElementById('dubladorAtivo');
     if (rdAt) rdAt.checked = true; // padrão: ativo
@@ -9996,6 +10026,7 @@ function editarDublador(id) {
     // Portfólio
     const pf = d.portfolio || {};
     if (el('dubPortfolioBio'))   el('dubPortfolioBio').value   = pf.bio  || '';
+    if (el('dubPortfolioBioEn')) el('dubPortfolioBioEn').value = pf.bioEn|| '';
     if (el('dubPortfolioAnos'))  el('dubPortfolioAnos').value  = pf.anos || '';
     // Mostrar anos atuais calculados como hint
     var anoHint = document.getElementById('dubAnosHint');
@@ -10044,18 +10075,22 @@ function editarDublador(id) {
     const _phEdit  = document.getElementById('dubFotoPlaceholder');
     if (_imgEdit) { _imgEdit.src = ''; _imgEdit.style.display = 'none'; }
     if (_phEdit)  _phEdit.style.display = 'block';
-    _idbLer('foto_' + id).then(foto => {
+    _dubMidiaCarregar('foto', d).then(foto => {
         if (foto) {
-            _dubladorFotoTemp = foto;
+            // Só guarda em _dubladorFotoTemp se for um dataURL local de verdade —
+            // uma URL remota do Drive (carregada porque este dispositivo ainda não
+            // tinha cache local) é só para exibir; salvar sem trocar a foto não
+            // deve tentar reenviar essa URL como se fosse um arquivo novo
+            if (foto.indexOf('data:') === 0) _dubladorFotoTemp = foto;
             _dubFotoPosX = 50; _dubFotoPosY = 20;
             _dubFotoSetImagem(foto);
         }
     }).catch(()=>{});
     document.addEventListener('paste', _dubFotoPasteHandler);
-    // Carregar mídia do IndexedDB
-    _idbLer('audio_' + id).then(audio => {
+    // Carregar mídia (cache local, com fallback no Drive)
+    _dubMidiaCarregar('audio', d).then(audio => {
         if (audio) {
-            _dubladorAudioTemp = audio;
+            if (audio.indexOf('data:') === 0) _dubladorAudioTemp = audio;
             const nomeEl  = document.getElementById('dubladorAudioNome');
             const btnPlay = document.getElementById('btnTocaAudioEdit');
             if (nomeEl)  nomeEl.textContent    = t('cfg.dub.audioCarregado');
@@ -10064,9 +10099,9 @@ function editarDublador(id) {
             _audioEditAtual = new Audio(audio);
         }
     }).catch(() => {});
-    _idbLer('video_' + id).then(video => {
+    _dubMidiaCarregar('video', d).then(video => {
         if (video) {
-            _dubladorVideoTemp = video;
+            if (video.indexOf('data:') === 0) _dubladorVideoTemp = video;
             const nomeEl = document.getElementById('dubladorVideoNome');
             const btnVer = document.getElementById('btnVerVideoEdit');
             if (nomeEl) nomeEl.textContent   = t('cfg.dub.videoCarregado');
@@ -10105,6 +10140,7 @@ async function salvarDublador() {
     const voz       = document.getElementById('dubladorVoz')?.value.trim() || '';
     const feedback  = document.getElementById('dubladorFeedback')?.value.trim() || '';
     const portfolioBio  = document.getElementById('dubPortfolioBio')?.value.trim() || '';
+    const portfolioBioEn= document.getElementById('dubPortfolioBioEn')?.value.trim() || '';
     const portfolioAnos = parseInt(document.getElementById('dubPortfolioAnos')?.value) || 0;
     const idades    = [...document.querySelectorAll('.dub-idade:checked')].map(cb => cb.value);
     const papeis    = [...document.querySelectorAll('.dub-papel:checked')].map(cb => cb.value);
@@ -10124,7 +10160,7 @@ async function salvarDublador() {
     const dExist = editId ? lista.find(x => x.id === editId) : null;
     const anoBaseAnterior = (dExist && dExist.portfolio && dExist.portfolio.anoBase) ? dExist.portfolio.anoBase : null;
     const dados  = { nome, idioma, contato, genero, qualidade, idades, papeis, voz, feedback, rankings, ativo,
-        portfolio: { bio: portfolioBio, anos: portfolioAnos, anoBase: anoBaseAnterior || new Date().getFullYear() } };
+        portfolio: { bio: portfolioBio, bioEn: portfolioBioEn, anos: portfolioAnos, anoBase: anoBaseAnterior || new Date().getFullYear() } };
     if (editId) {
         const idx = lista.findIndex(d => d.id === editId);
         if (idx !== -1) Object.assign(lista[idx], dados);
@@ -10163,6 +10199,45 @@ async function salvarDublador() {
         fecharModal('modalDublador');
         mostrarNotificacao(t('cfg.notif.dubErroDados', {msg: e.message}), 'aviso', 4000);
     }
+    // Envio para o Drive em segundo plano — não atrasa a confirmação de salvo
+    // acima nem bloqueia a tela; quando concluir, guarda a referência no
+    // cadastro do dublador (que já sincroniza via Supabase entre dispositivos)
+    (async function(){
+        try {
+            var idAlvo = editId;
+            var algumaCoisaMudou = false;
+            if (_dubladorFotoRemovida) {
+                await _driveExcluirMidiaDub(idAlvo, 'foto');
+                var listaPos1 = carregarDubladores();
+                var dPos1 = listaPos1.find(function(x){ return x.id===idAlvo; });
+                if (dPos1 && dPos1.driveFotoId) { delete dPos1.driveFotoId; algumaCoisaMudou = true; salvarDubladores(listaPos1); }
+            } else if (temFoto) {
+                var fid = await _driveSalvarMidiaDub(idAlvo, 'foto', _dubladorFotoTemp);
+                if (fid) {
+                    var listaPos2 = carregarDubladores();
+                    var dPos2 = listaPos2.find(function(x){ return x.id===idAlvo; });
+                    if (dPos2) { dPos2.driveFotoId = fid; salvarDubladores(listaPos2); algumaCoisaMudou = true; }
+                }
+            }
+            if (temAudio) {
+                var aid = await _driveSalvarMidiaDub(idAlvo, 'audio', _dubladorAudioTemp);
+                if (aid) {
+                    var listaPos3 = carregarDubladores();
+                    var dPos3 = listaPos3.find(function(x){ return x.id===idAlvo; });
+                    if (dPos3) { dPos3.driveAudioId = aid; salvarDubladores(listaPos3); algumaCoisaMudou = true; }
+                }
+            }
+            if (temVideo) {
+                var vid = await _driveSalvarMidiaDub(idAlvo, 'video', _dubladorVideoTemp);
+                if (vid) {
+                    var listaPos4 = carregarDubladores();
+                    var dPos4 = listaPos4.find(function(x){ return x.id===idAlvo; });
+                    if (dPos4) { dPos4.driveVideoId = vid; salvarDubladores(listaPos4); algumaCoisaMudou = true; }
+                }
+            }
+            if (algumaCoisaMudou) _invalidarCacheDubladores();
+        } catch(e) { console.warn('Drive: envio de mídia do dublador em segundo plano falhou:', e.message); }
+    })();
     _dubladorFotoTemp    = null;
     _dubladorAudioTemp   = null;
     _dubladorVideoTemp   = null;
@@ -11066,8 +11141,8 @@ function _renderizarDubladoresCfg() {
 function _tocaAudioDublador(id) {
     const d = carregarDubladores().find(x => x.id === id);
     if (!d?.audio) {
-        // Tentar carregar do IndexedDB
-        _idbLer('audio_' + id).then(audio => {
+        // Tentar carregar do cache local, com fallback no Drive
+        _dubMidiaCarregar('audio', d).then(audio => {
             if (audio) { d.audio = audio; _tocaAudioDublador(id); }
         }).catch(()=>{});
         return;
@@ -13771,8 +13846,8 @@ function abrirFichaDublador(dubId) {
         document.getElementById('fichaDubHist').innerHTML = _formatarHistorico(d);
     } else histArea.style.display = 'none';
 
-    // Carregar foto do IndexedDB
-    _idbLer('foto_' + d.id).then(foto => {
+    // Carregar foto (cache local, com fallback no Drive)
+    _dubMidiaCarregar('foto', d).then(foto => {
         if (foto) {
             const fotoImg = document.getElementById('fichaDubFoto');
             const fotoPh  = document.getElementById('fichaDubFotoPlaceholder');
@@ -13780,9 +13855,9 @@ function abrirFichaDublador(dubId) {
             if (fotoPh)  fotoPh.style.display = 'none';
         }
     }).catch(()=>{});
-    // Carregar mídia do IndexedDB se não estiver em memória
+    // Carregar mídia se não estiver em memória (cache local, com fallback no Drive)
     if (!d.audio) {
-        _idbLer('audio_' + d.id).then(audio => {
+        _dubMidiaCarregar('audio', d).then(audio => {
             if (audio) {
                 const audioArea = document.getElementById('fichaDubAudioArea');
                 const audioEl   = document.getElementById('fichaDubAudio');
@@ -13791,7 +13866,7 @@ function abrirFichaDublador(dubId) {
         }).catch(()=>{});
     }
     if (!d.video) {
-        _idbLer('video_' + d.id).then(video => {
+        _dubMidiaCarregar('video', d).then(video => {
             if (video) {
                 const videoArea = document.getElementById('fichaDubVideoArea');
                 const videoBtn  = document.getElementById('fichaDubVideoBt');
@@ -13943,13 +14018,15 @@ function abrirFicha(nome, modoEdicao) {
 
     // Campos
     document.getElementById('fichaVoz').value    = ficha.voz    || '';
+    document.getElementById('fichaVozEn').value  = ficha.vozEn  || '';
     document.getElementById('fichaPapel').value  = ficha.papel  || '';
+    document.getElementById('fichaPapelEn').value= ficha.papelEn|| '';
     document.getElementById('fichaGenero').value = ficha.genero || '';
     document.getElementById('fichaEtaria').value = ficha.etaria || '';
 
     // Modo visualização vs edição
     const soLeitura = !modoEdicao;
-    ['fichaVoz','fichaPapel','fichaGenero','fichaEtaria'].forEach(id => {
+    ['fichaVoz','fichaVozEn','fichaPapel','fichaPapelEn','fichaGenero','fichaEtaria'].forEach(id => {
         document.getElementById(id).disabled = soLeitura;
         document.getElementById(id).style.background = soLeitura ? '#f8f9fa' : 'white';
     });
@@ -14006,10 +14083,12 @@ function salvarFicha() {
         projetoAtual.personagens[_fichaPersonagemAtual].ficha = {};
     }
     const ficha = projetoAtual.personagens[_fichaPersonagemAtual].ficha;
-    ficha.voz    = document.getElementById('fichaVoz').value.trim();
-    ficha.papel  = document.getElementById('fichaPapel').value.trim();
-    ficha.genero = document.getElementById('fichaGenero').value;
-    ficha.etaria = document.getElementById('fichaEtaria').value;
+    ficha.voz     = document.getElementById('fichaVoz').value.trim();
+    ficha.vozEn   = document.getElementById('fichaVozEn').value.trim();
+    ficha.papel   = document.getElementById('fichaPapel').value.trim();
+    ficha.papelEn = document.getElementById('fichaPapelEn').value.trim();
+    ficha.genero  = document.getElementById('fichaGenero').value;
+    ficha.etaria  = document.getElementById('fichaEtaria').value;
     // foto já foi salva em _fichaSetFoto()
     salvarProjetos();
     mostrarNotificacao(t('notif.fichaSalva'), 'sucesso', 1500);
@@ -15481,6 +15560,131 @@ async function _driveLerArquivo(fileId) {
     return await resp.text();
 }
 
+// ── Mídia global de dubladores (foto/áudio/vídeo de demonstração) ─────────────
+// Diferente dos dados do projeto, isso não pertence a nenhum projeto específico
+// — fica numa pasta global dentro de _SISTEMA, pois um dublador trabalha em
+// vários projetos. O IndexedDB continua sendo o cache local rápido; o Drive
+// passa a ser a cópia que viaja entre dispositivos.
+
+function _dataUrlParaBlob(dataUrl) {
+    var partes = dataUrl.split(',');
+    var mimeMatch = partes[0].match(/:(.*?);/);
+    var mime = mimeMatch ? mimeMatch[1] : 'application/octet-stream';
+    var bstr = atob(partes[1]);
+    var n = bstr.length;
+    var u8arr = new Uint8Array(n);
+    while (n--) { u8arr[n] = bstr.charCodeAt(n); }
+    return new Blob([u8arr], { type: mime });
+}
+
+var _driveMidiaDubladoresId = null; // cache do ID da pasta Dubladores_Midia
+
+async function _driveGetMidiaDubladoresId() {
+    if (_driveMidiaDubladoresId) return _driveMidiaDubladoresId;
+    var sistemaId = await _driveGetSistemaId();
+    _driveMidiaDubladoresId = await _driveGarantirPasta('Dubladores_Midia', sistemaId);
+    return _driveMidiaDubladoresId;
+}
+
+// Envia (ou atualiza, se já existir) a mídia de um dublador no Drive.
+// tipo: 'foto' | 'audio' | 'video'. Retorna o fileId do Drive, ou null se o
+// Drive não estiver configurado/autenticado (não bloqueia o salvamento local).
+async function _driveSalvarMidiaDub(dubId, tipo, dataUrl) {
+    var cfg = cfgGet();
+    if (!cfg.pastaRaizId || !_driveToken()) return null;
+    try {
+        var pastaId = await _driveGetMidiaDubladoresId();
+        var blob = _dataUrlParaBlob(dataUrl);
+        var ext = (blob.type.split('/')[1] || 'bin').replace('jpeg','jpg').split(';')[0];
+        var prefixo = dubId + '_' + tipo;
+        var nomeArquivo = prefixo + '.' + ext;
+        var qResp = await _driveFetch('https://www.googleapis.com/drive/v3/files?q=' + encodeURIComponent("name contains '" + prefixo + "' and '" + pastaId + "' in parents and trashed=false") + '&orderBy=createdTime&fields=files(id,name)');
+        var qData = await qResp.json();
+        var existente = (qData.files||[])[0];
+        var fileId;
+        if (existente) {
+            await _driveFetch('https://www.googleapis.com/upload/drive/v3/files/' + existente.id + '?uploadType=media', { method:'PATCH', headers:{'Content-Type': blob.type}, body: blob });
+            fileId = existente.id;
+        } else {
+            var meta = { name: nomeArquivo, parents: [pastaId] };
+            var form = new FormData();
+            form.append('metadata', new Blob([JSON.stringify(meta)], {type:'application/json'}));
+            form.append('file', blob);
+            var resp = await _driveFetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id', { method:'POST', body: form });
+            var novo = await resp.json();
+            fileId = novo.id || null;
+        }
+        // Precisa ficar acessível por link público — o cliente que acessa o
+        // catálogo pelo link próprio nunca passa pela autenticação do Google,
+        // então só consegue carregar essa mídia se o arquivo for público
+        if (fileId) await _driveTornarPublico(fileId);
+        return fileId;
+    } catch(e) {
+        console.warn('Drive: falha ao enviar mídia do dublador (' + tipo + '):', e.message);
+        return null;
+    }
+}
+
+// Concede acesso de leitura a "qualquer pessoa com o link" — necessário para
+// que o cliente (sem login Google) consiga carregar a mídia diretamente
+async function _driveTornarPublico(fileId) {
+    try {
+        await _driveFetch('https://www.googleapis.com/drive/v3/files/' + fileId + '/permissions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ role: 'reader', type: 'anyone' })
+        });
+    } catch(e) { console.warn('Drive: falha ao tornar mídia pública:', e.message); }
+}
+
+// Remove a mídia de um dublador do Drive (usado quando a foto é removida)
+async function _driveExcluirMidiaDub(dubId, tipo) {
+    var cfg = cfgGet();
+    if (!cfg.pastaRaizId || !_driveToken()) return;
+    try {
+        var pastaId = await _driveGetMidiaDubladoresId();
+        var prefixo = dubId + '_' + tipo;
+        var qResp = await _driveFetch('https://www.googleapis.com/drive/v3/files?q=' + encodeURIComponent("name contains '" + prefixo + "' and '" + pastaId + "' in parents and trashed=false") + '&fields=files(id)');
+        var qData = await qResp.json();
+        var arquivos = qData.files || [];
+        for (var i = 0; i < arquivos.length; i++) {
+            await _driveFetch('https://www.googleapis.com/drive/v3/files/' + arquivos[i].id, { method:'DELETE' });
+        }
+    } catch(e) { console.warn('Drive: falha ao excluir mídia do dublador:', e.message); }
+}
+
+// Monta a URL pública direta de uma mídia do Drive, a partir do fileId.
+// Fotos usam o proxy de imagens do Google (renderiza bem em <img>); áudio e
+// vídeo usam o link de download direto (funciona como src de <audio>/<video>
+// para arquivos pequenos, como os limitados a 5MB neste sistema).
+function _driveUrlMidiaPublica(fileId, tipo) {
+    if (!fileId) return null;
+    if (tipo === 'foto') return 'https://lh3.googleusercontent.com/d/' + fileId + '=w800';
+    return 'https://drive.google.com/uc?export=download&id=' + fileId;
+}
+
+// Carrega mídia de um dublador: tenta o cache local (IndexedDB) primeiro —
+// rápido e funciona offline. Se não encontrar localmente (ex: primeiro acesso
+// neste dispositivo, ou o próprio cliente vendo o catálogo) e o dublador
+// tiver uma referência salva no Drive, devolve a URL pública direta — sem
+// precisar de login Google, funciona em qualquer dispositivo.
+async function _dubMidiaCarregar(tipo, dub) {
+    if (!dub) return null;
+    var local = await _idbLer(tipo + '_' + dub.id).catch(function(){ return null; });
+    if (local) return local;
+    var driveId = dub['drive' + tipo.charAt(0).toUpperCase() + tipo.slice(1) + 'Id'];
+    if (!driveId) return null;
+    return _driveUrlMidiaPublica(driveId, tipo);
+}
+
+// Mesma coisa, mas conveniente quando só temos o ID do dublador à mão (sem o
+// objeto completo carregado) — usado nas telas do cliente/catálogo
+async function _dubMidiaCarregarPorId(tipo, dubId) {
+    var todos = carregarDubladores();
+    var dub = todos.find(function(x){ return x.id === dubId; });
+    return _dubMidiaCarregar(tipo, dub);
+}
+
 // ── Garantir que a pasta existe ───────────────────────────────────────────────
 
 async function _driveGarantirPasta(nomePasta, paiId) {
@@ -15603,6 +15807,60 @@ async function driveCriarPastaProjeto(nomeProjeto, nomeCliente) {
 
 // ── Carregar dados do Drive → localStorage ────────────────────────────────────
 
+// ── Chaves incluídas no backup geral do Drive (além de projetos_dublagem) ─────
+// ARRAY: listas de cadastro com .id — mescladas item a item (Drive vence em
+// caso de conflito, mas nada que só existe localmente é perdido)
+const _DRIVE_BACKUP_CHAVES_ARRAY = [
+    'dublagem_dubladores', 'equipe_editores', 'equipe_conferentes',
+    'equipe_revisores', 'equipe_outros', 'dublagem_papeis',
+    'cfg_clientes', 'cfg_admins', 'cfg_perfis', 'cfg_perfis_proj'
+];
+// OBJETO/TEXTO simples: o Drive substitui o local quando presente (configurações
+// administrativas que normalmente só o Sydney mexe, sem necessidade de mesclar)
+const _DRIVE_BACKUP_CHAVES_OBJETO = [
+    'cfg_geral', 'cfg_links', 'cfg_servicos', 'cfg_servicos_var',
+    'cfg_funcoes_var', 'senhaPadraoEquipe', 'cfg_google'
+];
+
+function _driveColetarBackupExtra() {
+    var extra = {};
+    _DRIVE_BACKUP_CHAVES_ARRAY.concat(_DRIVE_BACKUP_CHAVES_OBJETO).forEach(function(chave) {
+        var raw = localStorage.getItem(chave);
+        if (raw !== null) extra[chave] = raw; // guarda como string crua, igual está no localStorage
+    });
+    return extra;
+}
+
+// Mescla um array de cadastro vindo do Drive com o array local — mesma lógica
+// já usada para projetos: Drive vence em itens que existem nos dois lados,
+// mas itens que só existem localmente (criados offline) não são perdidos
+function _driveMesclarArray(localRaw, driveRaw) {
+    var local = [], drive = [];
+    try { local = localRaw ? JSON.parse(localRaw) : []; } catch(e) {}
+    try { drive = driveRaw ? JSON.parse(driveRaw) : []; } catch(e) {}
+    if (!Array.isArray(local)) local = [];
+    if (!Array.isArray(drive)) drive = [];
+    var idsLocal = new Set(local.map(function(x){ return x.id; }));
+    var idsDrive = new Set(drive.map(function(x){ return x.id; }));
+    var apenasLocais = local.filter(function(x){ return !idsDrive.has(x.id); });
+    var novosDoDrive = drive.filter(function(x){ return !idsLocal.has(x.id); });
+    var atualizados  = drive.filter(function(x){ return idsLocal.has(x.id); });
+    return atualizados.concat(apenasLocais, novosDoDrive);
+}
+
+function _driveAplicarBackupExtra(extra) {
+    if (!extra) return;
+    _DRIVE_BACKUP_CHAVES_ARRAY.forEach(function(chave) {
+        if (extra[chave] === undefined) return;
+        var mesclado = _driveMesclarArray(localStorage.getItem(chave), extra[chave]);
+        localStorage.setItem(chave, JSON.stringify(mesclado));
+    });
+    _DRIVE_BACKUP_CHAVES_OBJETO.forEach(function(chave) {
+        if (extra[chave] === undefined) return;
+        localStorage.setItem(chave, extra[chave]);
+    });
+}
+
 async function driveCarregarDados() {
     const cfg = cfgGet();
     if (!cfg.pastaRaizId) {
@@ -15621,7 +15879,7 @@ async function driveCarregarDados() {
         if (!arquivo) {
             // Primeira vez neste computador — Drive sem dados ainda
             driveAtualizarStatusUI(t('cfg.drive.statusNenhum'));
-            const conteudo = JSON.stringify({ versao: 'v12.46', projetos });
+            const conteudo = JSON.stringify({ versao: 'v12.46', projetos, ..._driveColetarBackupExtra() });
             var sistemaId = await _driveGetSistemaId();
             arquivo = await _driveCriarArquivo(sistemaId, conteudo);
             _driveFileId = arquivo.id;
@@ -15650,6 +15908,9 @@ async function driveCarregarDados() {
         let _driveMigrou = false;
         projetos.forEach(p => { if (_migrarPersonagensCombinados(p)) _driveMigrou = true; });
         localStorage.setItem('projetos_dublagem', JSON.stringify(projetos));
+        // Cadastros e configurações (dubladores, equipe, clientes, etc.) — mesma
+        // lógica de segurança: nada que só existe localmente é perdido
+        _driveAplicarBackupExtra(dados);
 
         // Se havia projetos só locais ou migrações, sincronizar de volta pro Drive
         if (apenasLocais.length > 0 || _driveMigrou) await _driveSalvarInterno();
@@ -15672,7 +15933,7 @@ async function _driveSalvarInterno() {
     if (!cfg.pastaRaizId || !_driveToken()) return;
     _driveSyncing = true;
     try {
-        const conteudo = JSON.stringify({ versao: 'v12.46', data: new Date().toISOString(), projetos });
+        const conteudo = JSON.stringify({ versao: 'v12.46', data: new Date().toISOString(), projetos, ..._driveColetarBackupExtra() });
         if (!_driveFileId) {
             const arquivo = await _driveEncontrarArquivo(cfg.pastaRaizId);
             if (arquivo) { _driveFileId = arquivo.id; }
@@ -17956,8 +18217,7 @@ async function prodGerarSRTRevisao() {
     if (!projetoAtual) return;
     var eps  = Object.keys(projetoAtual.episodios||{}).sort(function(a,b){ return +a-+b; });
     var proj = (projetoAtual.nome||'PROJ').replace(/[^a-zA-Z0-9]/g,'_');
-    var cfg  = JSON.parse(localStorage.getItem('cfg_google') || '{}');
-    var pastaRaizId = cfg.pastaRaizId || '';
+    var LK   = projetoAtual.links || {};
     if (!eps.length) { mostrarNotificacao(t('map.notif.nenhumEpEncontrado'), 'info', 2000); return; }
     var srts = [];
     eps.forEach(function(epNum) {
@@ -17975,17 +18235,29 @@ async function prodGerarSRTRevisao() {
         srts.push({ nome: 'EP' + String(epNum).padStart(3,'0') + '_' + proj + '_FINAL.srt', conteudo: '\uFEFF' + conteudo });
     });
     if (!srts.length) { mostrarNotificacao(t('membro.dub.nenhumConteudoSRT'), 'info', 2000); return; }
-    if (pastaRaizId) {
+    // Pasta de destino: "SRT para Revisão" DENTRO da pasta deste projeto específico
+    // (nunca na pasta raiz global do sistema, que é compartilhada por todos os projetos)
+    var subpastaId = (LK.pastaSRTRevisao || '').match(/folders\/([a-zA-Z0-9_-]+)/);
+    subpastaId = subpastaId ? subpastaId[1] : null;
+    var pastaProjId = (LK.pastaProjeto || '').match(/folders\/([a-zA-Z0-9_-]+)/);
+    pastaProjId = pastaProjId ? pastaProjId[1] : null;
+    if (subpastaId || pastaProjId) {
         try {
             var token = (typeof gapi !== 'undefined') && gapi.client && gapi.client.getToken && gapi.client.getToken() ? gapi.client.getToken().access_token : null;
             if (token) {
                 mostrarNotificacao(t('notif.enviandoSRTs',{n:srts.length}), 'info', 4000);
-                var qResp = await fetch('https://www.googleapis.com/drive/v3/files?q=' + encodeURIComponent("name='SRT para Revisão' and '" + pastaRaizId + "' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false") + '&fields=files(id)', { headers: { Authorization: 'Bearer ' + token } });
-                var qData = await qResp.json();
-                var subpastaId = qData.files && qData.files[0] ? qData.files[0].id : null;
                 if (!subpastaId) {
-                    var crResp = await fetch('https://www.googleapis.com/drive/v3/files', { method: 'POST', headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' }, body: JSON.stringify({ name: 'SRT para Revisão', mimeType: 'application/vnd.google-apps.folder', parents: [pastaRaizId] }) });
-                    subpastaId = (await crResp.json()).id;
+                    // Projeto ainda não tinha essa subpasta mapeada — cria dentro da pasta DO PROJETO e salva o link para a próxima vez
+                    var qResp = await fetch('https://www.googleapis.com/drive/v3/files?q=' + encodeURIComponent("name='SRT para Revisão' and '" + pastaProjId + "' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false") + '&fields=files(id)', { headers: { Authorization: 'Bearer ' + token } });
+                    var qData = await qResp.json();
+                    subpastaId = qData.files && qData.files[0] ? qData.files[0].id : null;
+                    if (!subpastaId) {
+                        var crResp = await fetch('https://www.googleapis.com/drive/v3/files', { method: 'POST', headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' }, body: JSON.stringify({ name: 'SRT para Revisão', mimeType: 'application/vnd.google-apps.folder', parents: [pastaProjId] }) });
+                        subpastaId = (await crResp.json()).id;
+                    }
+                    projetoAtual.links = projetoAtual.links || {};
+                    projetoAtual.links.pastaSRTRevisao = 'https://drive.google.com/drive/folders/' + subpastaId;
+                    salvarProjetos();
                 }
                 for (var i = 0; i < srts.length; i++) {
                     var srt = srts[i], boundary = 'srt_' + Date.now() + '_' + i;
@@ -23340,7 +23612,7 @@ function cliMostrarEscalacaoFinal() {
     // Fotos async
     aprovados.forEach(function(pa) {
         if (!pa.dubId) return;
-        _idbLer('foto_'+pa.dubId).then(function(foto) {
+        _dubMidiaCarregarPorId('foto',pa.dubId).then(function(foto) {
             if (!foto) return;
             var el = document.getElementById('escFCard_'+pa.id+'_foto');
             if (el) el.outerHTML = '<img id="escFCard_'+pa.id+'_foto" src="'+foto+'" style="width:100%;height:100%;object-fit:cover;object-position:top;">';
@@ -23433,7 +23705,7 @@ function _cliVerEscalacaoFinal() {
     // Fotos async
     aprovados.forEach(function(pa) {
         if (!pa.dubId) return;
-        _idbLer('foto_'+pa.dubId).then(function(foto) {
+        _dubMidiaCarregarPorId('foto',pa.dubId).then(function(foto) {
             if (!foto) return;
             var el = document.getElementById('escF_'+pa.id+'_foto');
             if (el) el.outerHTML = '<img id="escF_'+pa.id+'_foto" src="'+foto+'" style="width:100%;height:100%;object-fit:cover;object-position:top;">';
@@ -23513,7 +23785,7 @@ function _cliRenderListaCasting() {
             '</div>' +
             // Descrição — altura maior para mostrar mais texto
             '<div style="margin:2px 10px 0;height:128px;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:rgba(201,168,76,.2) transparent;">' +
-            '<div style="font-size:10px;color:rgba(232,228,220,.42);line-height:1.65;word-break:break-word;text-align:left;">'+(p.descricao||'')+'</div>' +
+            '<div style="font-size:10px;color:rgba(232,228,220,.42);line-height:1.65;word-break:break-word;text-align:left;">'+(_txtBi(p.descricao,p.descricaoEn))+'</div>' +
             '</div>' +
             '</div>' +
             // Badge fixo no rodapé
@@ -23567,7 +23839,7 @@ function _cliRenderListaCasting() {
     persList.forEach(function(p) {
         var cands = (cast.candidatos[p.id]||[]).map(function(id){ return _cliDubById(id); }).filter(Boolean);
         cands.forEach(function(d) {
-            _idbLer('foto_'+d.id).then(function(foto) {
+            _dubMidiaCarregarPorId('foto',d.id).then(function(foto) {
                 if (!foto) return;
                 var el = document.getElementById('cliCandFoto_'+p.id+'_'+d.id);
                 if (el) el.outerHTML = '<img id="cliCandFoto_'+p.id+'_'+d.id+'" class="cli-cand-foto" src="'+foto+'" onclick="cliAbrirFicha(\''+d.id+'\',\''+p.id+'\')">'; 
@@ -23637,7 +23909,7 @@ function _cliCandCard(d, persId, escolhas, permit2) {
         '</div>' +
         // Bio — altura fixa 64px, flex-shrink:0
         '<div style="margin:0 10px 0;height:64px;flex-shrink:0;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:rgba(201,168,76,.25) transparent;">' +
-        '<div style="font-size:10px;color:rgba(232,228,220,.48);line-height:1.65;word-break:break-word;">'+(pf.bio||'')+'</div>' +
+        '<div style="font-size:10px;color:rgba(232,228,220,.48);line-height:1.65;word-break:break-word;">'+(_txtBi(pf.bio,pf.bioEn))+'</div>' +
         '</div>' +
         // Rodapé — margin-top:auto empurra para o fundo
         '<div style="padding:8px 8px 8px;margin-top:auto;">' +
@@ -23742,7 +24014,7 @@ function cliAbrirFichaPersonagem(persId) {
         '<div style="height:1px;background:rgba(255,255,255,.08);margin-bottom:10px;"></div>' +
         // Descrição ao lado da foto — scroll vertical
         '<div style="font-size:9px;color:rgba(201,168,76,.6);font-weight:700;letter-spacing:.07em;text-transform:uppercase;margin-bottom:5px;"><span data-i18n="misc.descricao">Descrição</span></div>' +
-        '<div style="font-size:12px;color:rgba(232,228,220,.7);line-height:1.7;height:110px;overflow-y:auto;overflow-x:hidden;word-break:break-word;white-space:pre-wrap;scrollbar-width:thin;scrollbar-color:rgba(201,168,76,.3) transparent;padding-right:6px;border-left:2px solid rgba(201,168,76,.3);padding-left:10px;">'+(p.descricao||'<span style="color:rgba(232,228,220,.2);">Sem descrição.</span>')+'</div>' +
+        '<div style="font-size:12px;color:rgba(232,228,220,.7);line-height:1.7;height:110px;overflow-y:auto;overflow-x:hidden;word-break:break-word;white-space:pre-wrap;scrollbar-width:thin;scrollbar-color:rgba(201,168,76,.3) transparent;padding-right:6px;border-left:2px solid rgba(201,168,76,.3);padding-left:10px;">'+(_txtBi(p.descricao,p.descricaoEn)||'<span style="color:rgba(232,228,220,.2);">'+(_getIdioma()==='en'?'No description.':'Sem descrição.')+'</span>')+'</div>' +
         '</div></div>' +
         // ── Candidatos escalados ──
         (cands.length ?
@@ -23857,7 +24129,7 @@ function cliAbrirFicha(dubId, persId) {
         '<div style="height:1px;background:rgba(255,255,255,.1);margin-bottom:8px;"></div>' +
         // ── Bio em destaque ──
         '<div style="font-size:9px;color:rgba(201,168,76,.6);font-weight:700;letter-spacing:.07em;text-transform:uppercase;margin-bottom:5px;">Bio</div>' +
-        '<div style="font-size:12px;color:rgba(232,228,220,.8);line-height:1.75;height:140px;overflow-y:auto;overflow-x:hidden;word-break:break-word;white-space:pre-wrap;scrollbar-width:thin;scrollbar-color:rgba(201,168,76,.3) transparent;border-left:2px solid rgba(201,168,76,.3);padding-left:10px;margin-bottom:12px;">'+(pf.bio||'<span style="color:rgba(232,228,220,.22);font-size:11px;">Sem bio cadastrada.</span>')+'</div>' +
+        '<div style="font-size:12px;color:rgba(232,228,220,.8);line-height:1.75;height:140px;overflow-y:auto;overflow-x:hidden;word-break:break-word;white-space:pre-wrap;scrollbar-width:thin;scrollbar-color:rgba(201,168,76,.3) transparent;border-left:2px solid rgba(201,168,76,.3);padding-left:10px;margin-bottom:12px;">'+(_txtBi(pf.bio,pf.bioEn)||'<span style="color:rgba(232,228,220,.22);font-size:11px;">'+(_getIdioma()==='en'?'No bio registered.':'Sem bio cadastrada.')+'</span>')+'</div>' +
         // ── Linha separadora ──
         '<div style="height:1px;background:rgba(255,255,255,.1);margin-bottom:10px;"></div>' +
         // ── Players ──
@@ -23875,7 +24147,7 @@ function cliAbrirFicha(dubId, persId) {
         '<button onclick="cliFecharFicha()" style="width:100%;margin-top:8px;padding:9px;border:1px solid rgba(255,255,255,.08);border-radius:9px;background:none;color:rgba(232,228,220,.38);font-size:12px;cursor:pointer;font-family:DM Sans,sans-serif;">Fechar</button>';
 
     // Foto async portrait
-    _idbLer('foto_'+d.id).then(function(foto){
+    _dubMidiaCarregarPorId('foto',d.id).then(function(foto){
         if (!foto) return;
         var el = document.getElementById('cliModalFoto');
         if (el) el.outerHTML = '<img id="cliModalFoto" src="'+foto+'" style="width:110px;height:147px;border-radius:10px;object-fit:cover;object-position:top center;border:2px solid rgba(201,168,76,.3);flex-shrink:0;">';
@@ -23894,7 +24166,7 @@ function cliOuvirCard(dubId, btn) {
     var area = document.getElementById('cliAudioCard_'+dubId);
     if (!area) return;
     if (area.querySelector('audio')) { area.innerHTML = ''; btn.textContent = '▶ Demo'; return; }
-    _idbLer('audio_'+dubId).then(function(src){
+    _dubMidiaCarregarPorId('audio', dubId).then(function(src){
         if (!src) { mostrarNotificacao(t('membro.dub.audioIndisponivel'),'aviso',1500); return; }
         area.innerHTML = '<audio src="'+src+'" controls autoplay style="width:100%;height:28px;margin-top:2px;border-radius:6px;"></audio>';
         btn.textContent = '⏹ Fechar';
@@ -23905,7 +24177,7 @@ function cliOuvirModal(dubId) {
     var area = document.getElementById('cliModalAudio_'+dubId);
     if (!area) return;
     if (area.querySelector('audio')) { area.innerHTML = ''; return; }
-    _idbLer('audio_'+dubId).then(function(src){
+    _dubMidiaCarregarPorId('audio', dubId).then(function(src){
         if (!src) { mostrarNotificacao(t('membro.dub.audioIndisponivel'),'aviso',1500); return; }
         area.innerHTML = '<audio src="'+src+'" controls autoplay style="width:100%;border-radius:7px;"></audio>';
     }).catch(function(){ mostrarNotificacao(t('membro.dub.audioIndisponivel'),'aviso',1500); });
@@ -23915,7 +24187,7 @@ function cliVerVideoModal(dubId) {
     var area = document.getElementById('cliModalVideo_'+dubId);
     if (!area) return;
     if (area.querySelector('video')) { area.innerHTML = ''; return; }
-    _idbLer('video_'+dubId).then(function(src){
+    _dubMidiaCarregarPorId('video', dubId).then(function(src){
         if (!src) { mostrarNotificacao(t('membro.dub.videoIndisponivel'),'aviso',1500); return; }
         area.innerHTML = '<video src="'+src+'" controls style="width:100%;border-radius:7px;background:#000;"></video>';
     }).catch(function(){ mostrarNotificacao(t('membro.dub.videoIndisponivel'),'aviso',1500); });
@@ -23923,7 +24195,7 @@ function cliVerVideoModal(dubId) {
 
 // ── Legados mantidos para modo catálogo ──────────────────────────────────
 function cliOuvir(dubId) {
-    _idbLer('audio_'+dubId).then(function(src){
+    _dubMidiaCarregarPorId('audio', dubId).then(function(src){
         if (!src) { mostrarNotificacao(t('membro.dub.audioIndisponivel'),'aviso',1500); return; }
         var old = document.getElementById('_cliAudioPlayer');
         if (old) { old.remove(); return; }
@@ -24265,7 +24537,7 @@ function catAtualizarGrid() {
 
     // Fotos async
     filtrados.forEach(function(d) {
-        _idbLer('foto_'+d.id).then(function(foto) {
+        _dubMidiaCarregarPorId('foto',d.id).then(function(foto) {
             if (!foto) return;
             var el = document.getElementById('catFoto_'+d.id);
             if (el) el.outerHTML = '<img id="catFoto_'+d.id+'" src="'+foto+'" style="width:100%;height:100%;object-fit:cover;object-position:top;">';
@@ -24330,7 +24602,7 @@ function _catAbrirAddModal(dub) {
     document.getElementById('_catAddNome').focus();
 
     // Foto do dub
-    _idbLer('foto_'+dub.id).then(function(foto) {
+    _dubMidiaCarregarPorId('foto',dub.id).then(function(foto) {
         if (!foto) return;
         var el = document.getElementById('_catAddFoto');
         if (el) el.innerHTML = '<img src="'+foto+'" style="width:100%;height:100%;object-fit:cover;object-position:top;">';
@@ -25177,10 +25449,14 @@ window.addEventListener('load', function() {
                 <div>
                     <label style="font-size:11px;font-weight:700;color:#555;display:block;margin-bottom:3px;" data-i18n="ficha.descVoz">DESCRIÇÃO DA VOZ</label>
                     <textarea id="fichaVoz" rows="2" placeholder="Ex: Voz grave, autoritária, madura..." data-i18n-placeholder="ficha.placeholder.voz" style="width:100%;padding:8px;border:2px solid #eee;border-radius:7px;font-size:13px;resize:vertical;box-sizing:border-box;font-family:inherit;"></textarea>
+                    <label style="font-size:10px;font-weight:700;color:#5dade2;display:block;margin:6px 0 3px;" data-i18n="ficha.descVozEn">🇺🇸 DESCRIÇÃO DA VOZ (EN) — opcional</label>
+                    <textarea id="fichaVozEn" rows="2" placeholder="Ex: Deep, authoritative, mature voice..." data-i18n-placeholder="ficha.placeholder.vozEn" style="width:100%;padding:8px;border:2px dashed #aed6f1;border-radius:7px;font-size:13px;resize:vertical;box-sizing:border-box;font-family:inherit;background:#f7fbfe;"></textarea>
                 </div>
                 <div>
                     <label style="font-size:11px;font-weight:700;color:#555;display:block;margin-bottom:3px;" data-i18n="ficha.papel">PAPEL NA HISTÓRIA</label>
                     <textarea id="fichaPapel" rows="2" placeholder="Ex: Protagonista, antagonista, coadjuvante..." data-i18n-placeholder="ficha.placeholder.papel" style="width:100%;padding:8px;border:2px solid #eee;border-radius:7px;font-size:13px;resize:vertical;box-sizing:border-box;font-family:inherit;"></textarea>
+                    <label style="font-size:10px;font-weight:700;color:#5dade2;display:block;margin:6px 0 3px;" data-i18n="ficha.papelEn">🇺🇸 PAPEL NA HISTÓRIA (EN) — opcional</label>
+                    <textarea id="fichaPapelEn" rows="2" placeholder="Ex: Protagonist, antagonist, supporting..." data-i18n-placeholder="ficha.placeholder.papelEn" style="width:100%;padding:8px;border:2px dashed #aed6f1;border-radius:7px;font-size:13px;resize:vertical;box-sizing:border-box;font-family:inherit;background:#f7fbfe;"></textarea>
                 </div>
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
                     <div>
