@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.581</title>
+    <title>Sistema de Dublagem v12.582</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.581</p>
+        <p>v12.582</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.581</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.582</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1740,7 +1740,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.581</footer>
+    <footer>🎬 Sistema de Dublagem v12.582</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -10299,6 +10299,10 @@ async function salvarDublador() {
     (async function(){
         try {
             var idAlvo = editId;
+            // Busca o nome atual do dublador para nomear os arquivos no Drive
+            var _listaNomeRef = carregarDubladores();
+            var _dubRef = _listaNomeRef.find(function(x){ return x.id === idAlvo; });
+            var nomeDub = _dubRef ? (_dubRef.nome || '') : '';
             var algumaCoisaMudou = false;
             if (fotoRemovidaCapturada) {
                 await _driveExcluirMidiaDub(idAlvo, 'foto');
@@ -10306,7 +10310,7 @@ async function salvarDublador() {
                 var dPos1 = listaPos1.find(function(x){ return x.id===idAlvo; });
                 if (dPos1 && dPos1.driveFotoId) { delete dPos1.driveFotoId; algumaCoisaMudou = true; salvarDubladores(listaPos1); }
             } else if (temFoto) {
-                var fid = await _driveSalvarMidiaDub(idAlvo, 'foto', fotoCapturada);
+                var fid = await _driveSalvarMidiaDub(idAlvo, 'foto', fotoCapturada, nomeDub);
                 if (fid) {
                     var listaPos2 = carregarDubladores();
                     var dPos2 = listaPos2.find(function(x){ return x.id===idAlvo; });
@@ -10314,7 +10318,7 @@ async function salvarDublador() {
                 }
             }
             if (temAudio) {
-                var aid = await _driveSalvarMidiaDub(idAlvo, 'audio', audioCapturado);
+                var aid = await _driveSalvarMidiaDub(idAlvo, 'audio', audioCapturado, nomeDub);
                 if (aid) {
                     var listaPos3 = carregarDubladores();
                     var dPos3 = listaPos3.find(function(x){ return x.id===idAlvo; });
@@ -10322,7 +10326,7 @@ async function salvarDublador() {
                 }
             }
             if (temVideo) {
-                var vid = await _driveSalvarMidiaDub(idAlvo, 'video', videoCapturado);
+                var vid = await _driveSalvarMidiaDub(idAlvo, 'video', videoCapturado, nomeDub);
                 if (vid) {
                     var listaPos4 = carregarDubladores();
                     var dPos4 = listaPos4.find(function(x){ return x.id===idAlvo; });
@@ -15739,21 +15743,32 @@ async function _driveGetMidiaDubladoresId() {
 // Envia (ou atualiza, se já existir) a mídia de um dublador no Drive.
 // tipo: 'foto' | 'audio' | 'video'. Retorna o fileId do Drive, ou null se o
 // Drive não estiver configurado/autenticado (não bloqueia o salvamento local).
-async function _driveSalvarMidiaDub(dubId, tipo, dataUrl) {
+async function _driveSalvarMidiaDub(dubId, tipo, dataUrl, nomeDub) {
     var cfg = cfgGet();
     if (!cfg.pastaRaizId || !_driveToken()) return null;
     try {
         var pastaId = await _driveGetMidiaDubladoresId();
         var blob = _dataUrlParaBlob(dataUrl);
         var ext = (blob.type.split('/')[1] || 'bin').replace('jpeg','jpg').split(';')[0];
-        var prefixo = dubId + '_' + tipo;
-        var nomeArquivo = prefixo + '.' + ext;
-        var qResp = await _driveFetch('https://www.googleapis.com/drive/v3/files?q=' + encodeURIComponent("name contains '" + prefixo + "' and '" + pastaId + "' in parents and trashed=false") + '&orderBy=createdTime&fields=files(id,name)');
+        // Nome legível: "NomeDoblador_foto.jpg", "NomeDublador_audio.mp3", etc.
+        // O prefixo de busca ainda usa o ID para encontrar arquivos existentes
+        // independente de o nome ter mudado
+        var nomeSeguro = nomeDub
+            ? nomeDub.normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+                     .replace(/[^a-zA-Z0-9_\- ]/g,'').trim().replace(/\s+/g,'_')
+            : dubId;
+        var prefixoBusca = dubId + '_' + tipo;     // busca por ID (estável)
+        var nomeArquivo  = nomeSeguro + '_' + tipo + '.' + ext; // exibe nome legível
+        var qResp = await _driveFetch('https://www.googleapis.com/drive/v3/files?q=' + encodeURIComponent("name contains '" + prefixoBusca + "' and '" + pastaId + "' in parents and trashed=false") + '&orderBy=createdTime&fields=files(id,name)');
         var qData = await qResp.json();
         var existente = (qData.files||[])[0];
         var fileId;
         if (existente) {
             await _driveFetch('https://www.googleapis.com/upload/drive/v3/files/' + existente.id + '?uploadType=media', { method:'PATCH', headers:{'Content-Type': blob.type}, body: blob });
+            // Renomeia se nome mudou (ex: dublador foi renomeado desde o último upload)
+            if (existente.name !== nomeArquivo) {
+                await _driveFetch('https://www.googleapis.com/drive/v3/files/' + existente.id, { method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ name: nomeArquivo }) });
+            }
             fileId = existente.id;
         } else {
             var meta = { name: nomeArquivo, parents: [pastaId] };
