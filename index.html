@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.573</title>
+    <title>Sistema de Dublagem v12.574</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.573</p>
+        <p>v12.574</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.573</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.574</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1740,7 +1740,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.573</footer>
+    <footer>🎬 Sistema de Dublagem v12.574</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -2822,7 +2822,7 @@ var _i18n = {
         'cfg.admins.modalPhNome':        'Nome do administrador',
         'cfg.admins.modalPhEmail':       'email@exemplo.com',
         'cfg.admins.modalBtnSalvar':     '💾 Salvar',
-        'cfg.admins.rolesDesc':          '<strong>Roles disponíveis:</strong><br>🔴 <strong>Superadmin</strong> — acesso total, não pode ser removido (você)<br>🟠 <strong>Admin</strong> — acesso total ao sistema, pode ser gerenciado<br>🔵 <strong>Visualizador</strong> — apenas leitura, sem poder editar ou excluir dados',
+        'cfg.admins.rolesDesc':          '<strong>Roles disponíveis:</strong><br>🔴 <strong>Superadmin</strong> — acesso total, não pode ser removido (você)<br>🟠 <strong>Admin</strong> — acesso total ao sistema, inclusive Drive e configurações<br>🟢 <strong>Usuário</strong> — acesso operacional completo, sem configurações do sistema',
         'cfg.admins.tituloSuperadmin':   '👑 Meu Perfil (Superadmin)',
         'cfg.admins.notifNomeObrig':     'Nome obrigatório.',
         'cfg.admins.notifSenhaObrig':    'Senha obrigatória para novo admin.',
@@ -4554,7 +4554,7 @@ var _i18n = {
         'cfg.admins.modalPhNome':        'Administrator name',
         'cfg.admins.modalPhEmail':       'email@example.com',
         'cfg.admins.modalBtnSalvar':     '💾 Save',
-        'cfg.admins.rolesDesc':          '<strong>Available roles:</strong><br>🔴 <strong>Superadmin</strong> — full access, cannot be removed (you)<br>🟠 <strong>Admin</strong> — full system access, can be managed<br>🔵 <strong>Viewer</strong> — read only, cannot edit or delete data',
+        'cfg.admins.rolesDesc':          '<strong>Available roles:</strong><br>🔴 <strong>Superadmin</strong> — full access, cannot be removed (you)<br>🟠 <strong>Admin</strong> — full system access, including Drive and settings<br>🟢 <strong>User</strong> — full operational access, no system configuration',
         'cfg.admins.tituloSuperadmin':   '👑 My Profile (Superadmin)',
         'cfg.admins.notifNomeObrig':     'Name is required.',
         'cfg.admins.notifSenhaObrig':    'Password required for new admin.',
@@ -26146,7 +26146,6 @@ window.addEventListener('load', function() {
         <select id="admModalRole" style="width:100%;padding:9px 12px;border:1px solid #d1d5db;border-radius:7px;font-size:13px;color:#1e293b;background:white;outline:none;">
           <option value="admin" data-i18n="cfg.admins.modalOptAdmin">🟠 Admin — acesso total</option>
           <option value="usuario" data-i18n="cfg.admins.modalOptUsuario">🟢 Usuário — acesso operacional</option>
-          <option value="visualizador" data-i18n="cfg.admins.modalOptVisualizador">🔵 Visualizador — somente leitura</option>
         </select>
       </div>
       <div style="margin-bottom:14px;">
