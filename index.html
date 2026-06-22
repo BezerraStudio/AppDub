@@ -16083,14 +16083,13 @@ function _driveMesclarArray(localRaw, driveRaw) {
     if (local.length === 0) return drive.slice();
     var idsLocal = new Set(local.map(function(x){ return x.id; }));
     var idsDrive = new Set(drive.map(function(x){ return x.id; }));
-    // Itens apenas no local (não existem no Drive): preserva
-    var apenasLocais = local.filter(function(x){ return !idsDrive.has(x.id); });
-    // Itens que existem nos dois: Drive vence (mais recente)
-    var atualizados  = drive.filter(function(x){ return idsLocal.has(x.id); });
-    // Itens apenas no Drive (ausentes no local): NÃO restaura — ausência local
-    // significa deleção intencional, não ausência por falta de sync
-    // (o Supabase cuida de novos itens criados em outros computadores)
-    return atualizados.concat(apenasLocais);
+    // Itens existentes no local: LOCAL VENCE — o usuário pode ter editado desde
+    // o último backup, e não temos timestamp por item para saber qual é mais novo
+    var existentes = local.slice(); // mantém a versão local de todos os itens locais
+    // Itens só no Drive (não existem no local): NÃO restaura — ausência local
+    // indica deleção intencional. Novos itens de outros computadores chegam
+    // via Supabase (polling de 45s), não via restore do Drive.
+    return existentes;
 }
 
 function _driveAplicarBackupExtra(extra) {
@@ -16102,7 +16101,11 @@ function _driveAplicarBackupExtra(extra) {
     });
     _DRIVE_BACKUP_CHAVES_OBJETO.forEach(function(chave) {
         if (extra[chave] === undefined) return;
-        localStorage.setItem(chave, extra[chave]);
+        // Só sobrescreve se local estiver vazio/nulo — local sempre vence
+        var localVal = localStorage.getItem(chave);
+        if (!localVal || localVal === '{}' || localVal === '[]' || localVal === 'null') {
+            localStorage.setItem(chave, extra[chave]);
+        }
     });
 }
 
@@ -16218,7 +16221,11 @@ async function driveSincronizar() {
         cfgCarregarGapi(() => cfgAutenticar(() => driveSincronizar()));
         return;
     }
-    await driveCarregarDados();
+    // Salva apenas — NÃO carrega do Drive antes de salvar.
+    // O padrão antigo (carregar → salvar) causava regressão de dados: o Drive
+    // tinha versões antigas de cfg_servicos, equipe, etc., que ao serem
+    // restauradas e mescladas sobrescreviam as alterações locais mais recentes.
+    // Carregar do Drive é ação explícita (botão "Carregar") ou instalação nova.
     await _driveSalvarInterno();
 }
 
