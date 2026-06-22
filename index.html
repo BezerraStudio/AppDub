@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.570</title>
+    <title>Sistema de Dublagem v12.573</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.570</p>
+        <p>v12.573</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.570</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.573</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1219,11 +1219,13 @@
                 <button onclick="_cfgSubAba('servicos')"  id="cfgTabServicos" data-i18n="cfg.tab.servicos"   style="flex:0 0 auto;padding:7px 14px;border:none;border-bottom:3px solid transparent;background:#f1f3f5;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;text-align:center;color:#7f8c8d;">💰 Serviços</button>
                 <button onclick="_cfgSubAba('clientes')"  id="cfgTabClientes" data-i18n="cfg.tab.clientes"   style="flex:0 0 auto;padding:7px 14px;border:none;border-bottom:3px solid transparent;background:#f1f3f5;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;text-align:center;color:#7f8c8d;">🏢 Clientes</button>
                 <button onclick="_cfgSubAba('externos')"  id="cfgTabExternos" data-i18n="cfg.tab.externos"   style="flex:0 0 auto;padding:7px 14px;border:none;border-bottom:3px solid transparent;background:#f1f3f5;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;text-align:center;color:#7f8c8d;">🎯 Externos</button>
-                <button onclick="_cfgSubAba('estudio')"   id="cfgTabEstudio" data-i18n="cfg.tab.estudio"    style="flex:0 0 auto;padding:7px 14px;border:none;border-bottom:3px solid transparent;background:#f1f3f5;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;text-align:center;color:#7f8c8d;">🏛️ Estúdio</button>
                 <button onclick="_cfgSubAba('logcasting')" id="cfgTabLogcasting" data-i18n="cfg.tab.log" style="flex:0 0 auto;padding:7px 14px;border:none;border-bottom:3px solid transparent;background:#f1f3f5;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;text-align:center;color:#7c3aed;font-weight:700;">📋 Log</button>
+                <!-- separador visual: zona de configurações de sistema (admin/superadmin) -->
+                <div id="cfgTabSeparadorAdmin" style="width:1px;background:#e2e8f0;margin:6px 4px;flex-shrink:0;"></div>
+                <button onclick="_cfgSubAba('estudio')"   id="cfgTabEstudio" data-i18n="cfg.tab.estudio"    style="flex:0 0 auto;padding:7px 14px;border:none;border-bottom:3px solid transparent;background:#f1f3f5;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;text-align:center;color:#7f8c8d;">🏛️ Estúdio</button>
                 <button onclick="_cfgSubAba('links')"     id="cfgTabLinks" data-i18n="cfg.tab.links"      style="flex:0 0 auto;padding:7px 14px;border:none;border-bottom:3px solid transparent;background:#f1f3f5;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;text-align:center;color:#7f8c8d;">🔗 Links</button>
-                <button onclick="_cfgSubAba('admins')"    id="cfgTabAdmins" data-i18n="cfg.tab.admins"     style="flex:0 0 auto;padding:7px 14px;border:none;border-bottom:3px solid transparent;background:#f1f3f5;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;text-align:center;color:#c0392b;font-weight:700;">🔐 Admins</button>
                 <button onclick="_cfgSubAba('drive')"     id="cfgTabDrive" data-i18n="cfg.tab.drive"      style="flex:0 0 auto;padding:7px 14px;border:none;border-bottom:3px solid transparent;background:#f1f3f5;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;text-align:center;color:#3498db;font-weight:700;">☁️ Drive</button>
+                <button onclick="_cfgSubAba('admins')"    id="cfgTabAdmins" data-i18n="cfg.tab.admins"     style="flex:0 0 auto;padding:7px 14px;border:none;border-bottom:3px solid transparent;background:#f1f3f5;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;text-align:center;color:#c0392b;font-weight:700;">🔐 Admins</button>
                 <!-- espaços reservados fim -->
                 <button disabled style="flex:0 0 auto;padding:7px 28px;border:none;border-bottom:3px solid transparent;background:#f1f3f5;font-size:11px;cursor:default;white-space:nowrap;opacity:0;">·</button>
                 <button disabled style="flex:0 0 auto;padding:7px 28px;border:none;border-bottom:3px solid transparent;background:#f1f3f5;font-size:11px;cursor:default;white-space:nowrap;opacity:0;">·</button>
@@ -1738,7 +1740,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.570</footer>
+    <footer>🎬 Sistema de Dublagem v12.573</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -2678,6 +2680,8 @@ var _i18n = {
         'cfg.admins.superadmin':         '🔴 Superadmin',
         'cfg.admins.admin':              '🟠 Admin',
         'cfg.admins.visualizador':       '🔵 Visualizador',
+        'cfg.admins.usuario':            '🟢 Usuário',
+        'cfg.admins.modalOptUsuario':    '🟢 Usuário — acesso operacional (sem configs do sistema)',
         'cfg.estudio.h3':                '🏛️ Identidade do Estúdio',
         'cfg.estudio.subtitle':          'Essas informações aparecem na página do cliente, tela de abertura e materiais exportados.',
         'cfg.estudio.labelNome':         '🏷️ Nome do Estúdio',
@@ -4408,6 +4412,8 @@ var _i18n = {
         'cfg.admins.superadmin':         '🔴 Superadmin',
         'cfg.admins.admin':              '🟠 Admin',
         'cfg.admins.visualizador':       '🔵 Viewer',
+        'cfg.admins.usuario':            '🟢 User',
+        'cfg.admins.modalOptUsuario':    '🟢 User — operational access (no system config)',
         'cfg.estudio.h3':                '🏛️ Studio Identity',
         'cfg.estudio.subtitle':          'This information appears on the client page, opening screen and exported materials.',
         'cfg.estudio.labelNome':         '🏷️ Studio Name',
@@ -5833,7 +5839,31 @@ function _trocarAba(abaDestino) {
     const btnEl = document.querySelector('[data-aba="' + abaDestino + '"]');
     if (btnEl) btnEl.classList.add('active');
     if (abaDestino === 'mapeamento') inicializarMapeamento();
-    if (abaDestino === 'configuracoes') _avisarDriveSeNecessario();
+    if (abaDestino === 'configuracoes') {
+        _avisarDriveSeNecessario();
+        _cfgAplicarPermissoesAbas();
+    }
+}
+
+// Abas restritas — visíveis apenas para admin e superadmin; usuário e
+// visualizador veem só as abas operacionais (dubladores, equipe, serviços,
+// clientes, externos, log)
+var _CFG_ABAS_ADMIN = ['cfgTabEstudio','cfgTabLinks','cfgTabDrive','cfgTabAdmins','cfgTabSeparadorAdmin'];
+
+function _cfgAplicarPermissoesAbas() {
+    var ehAdmin = _admEhSuperadmin() || (function(){ var s=_admSessao(); return s && s.role==='admin'; })();
+    _CFG_ABAS_ADMIN.forEach(function(id){
+        var el = document.getElementById(id);
+        if (el) el.style.display = ehAdmin ? '' : 'none';
+    });
+    // Se a aba atual ficou oculta, redireciona para Dubladores
+    if (!ehAdmin) {
+        var abaAtiva = document.querySelector('#cfgWrapper button[style*="background:white"]');
+        var abasRestritas = ['cfgTabEstudio','cfgTabLinks','cfgTabDrive','cfgTabAdmins'];
+        if (abaAtiva && abasRestritas.indexOf(abaAtiva.id) !== -1) {
+            _cfgSubAba('dubladores');
+        }
+    }
 }
 
 // Aviso ao entrar em Configurações quando o Google Drive não está conectado
@@ -10624,14 +10654,25 @@ function _adminsGarantirSuperadmin() {
     }
 }
 
+// Retorna a sessão do admin atualmente logado
+function _admSessao() {
+    try { return JSON.parse(sessionStorage.getItem('adm_logado') || 'null'); }
+    catch(e) { return null; }
+}
+// Retorna true se o admin logado for superadmin
+function _admEhSuperadmin() {
+    var s = _admSessao();
+    return s && s.role === 'superadmin';
+}
+
 function cfgAdminsRenderizar() {
     _adminsGarantirSuperadmin();
     var lista = _adminsGet();
     var cont = document.getElementById('cfgAdminsLista');
     if (!cont) return;
-    var roleLabel = { superadmin:t('cfg.admins.superadmin'), admin:t('cfg.admins.admin'), visualizador:t('cfg.admins.visualizador') };
-    var roleBg    = { superadmin:'#fef2f2', admin:'#fff7ed', visualizador:'#eff6ff' };
-    var roleColor = { superadmin:'#991b1b', admin:'#92400e', visualizador:'#1e40af' };
+    var roleLabel = { superadmin:t('cfg.admins.superadmin'), admin:t('cfg.admins.admin'), usuario:t('cfg.admins.usuario'), visualizador:t('cfg.admins.visualizador') };
+    var roleBg    = { superadmin:'#fef2f2', admin:'#fff7ed', usuario:'#f0fdf4', visualizador:'#eff6ff' };
+    var roleColor = { superadmin:'#991b1b', admin:'#92400e', usuario:'#15803d', visualizador:'#1e40af' };
     var html = '';
     lista.forEach(function(adm, i) {
         var isSa = adm.role === 'superadmin';
@@ -10648,7 +10689,12 @@ function cfgAdminsRenderizar() {
         html += '<span style="padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:' + stBg + ';color:' + stCor + ';">' + stLbl + '</span>';
         html += '<div style="display:flex;gap:6px;flex-shrink:0;">';
         if (isSa) {
-            html += '<button onclick="cfgAdminsEditarSuperadmin()" style="padding:5px 12px;background:#fef2f2;border:1px solid #fecaca;border-radius:6px;font-size:11px;font-weight:600;color:#991b1b;cursor:pointer;">'+t('cfg.admins.minhaSenha')+'</button>';
+            // Só o próprio superadmin pode alterar a própria senha
+            if (_admEhSuperadmin()) {
+                html += '<button onclick="cfgAdminsEditarSuperadmin()" style="padding:5px 12px;background:#fef2f2;border:1px solid #fecaca;border-radius:6px;font-size:11px;font-weight:600;color:#991b1b;cursor:pointer;">'+t('cfg.admins.minhaSenha')+'</button>';
+            } else {
+                html += '<span style="font-size:11px;color:#94a3b8;font-style:italic;">🔒 protegido</span>';
+            }
         } else {
             html += '<button onclick="cfgAdminsEditar(' + i + ')" style="padding:5px 12px;background:#f1f5f9;border:1px solid #cbd5e1;border-radius:6px;font-size:11px;font-weight:600;color:#334155;cursor:pointer;">'+t('cfg.admins.editar')+'</button>';
             html += '<button onclick="cfgAdminsToggleAtivo(' + i + ')" style="padding:5px 12px;background:#fff7ed;border:1px solid #fed7aa;border-radius:6px;font-size:11px;font-weight:600;color:#c2410c;cursor:pointer;">' + (adm.ativo ? t('cfg.admins.desativar') : t('cfg.admins.ativar')) + '</button>';
@@ -10684,10 +10730,19 @@ function cfgAdminsEditar(idx) {
     var lista = _adminsGet();
     var adm = lista[idx];
     if (!adm) return;
+    // Admin comum não pode editar a conta do superadmin
+    if (adm.role === 'superadmin' && !_admEhSuperadmin()) {
+        mostrarNotificacao('Acesso negado — somente o superadmin pode alterar sua própria conta.', 'erro', 3000);
+        return;
+    }
     _adminsAbrirModal('Editar Admin', adm.nome, adm.email, adm.role, idx, false);
 }
 
 function cfgAdminsEditarSuperadmin() {
+    if (!_admEhSuperadmin()) {
+        mostrarNotificacao('Acesso negado — somente o superadmin pode alterar sua própria conta.', 'erro', 3000);
+        return;
+    }
     var lista = _adminsGet();
     var idx = -1;
     for (var i = 0; i < lista.length; i++) { if (lista[i].role === 'superadmin') { idx = i; break; } }
@@ -10716,6 +10771,12 @@ function cfgAdminsSalvarModal() {
     if (isEdicao) {
         var adm = lista[parseInt(idx)];
         if (!adm) { mostrarNotificacao(t('cfg.admins.notifNaoEncontrado'), 'erro', 2000); return; }
+        // Apenas o próprio superadmin pode editar a conta de superadmin
+        if (adm.role === 'superadmin' && !_admEhSuperadmin()) {
+            mostrarNotificacao('Acesso negado — somente o superadmin pode alterar sua própria conta.', 'erro', 3000);
+            cfgAdminsFecharModal();
+            return;
+        }
         adm.nome  = nome;
         adm.email = email;
         if (adm.role !== 'superadmin') adm.role = role;
@@ -25587,8 +25648,42 @@ function _sbInit() {
         return;
     }
     _sbClient = window.supabase.createClient(_SB_URL, _SB_KEY);
-    console.log('Supabase conectado (anon).');
 }
+
+// ── Retry automático ao reconectar ───────────────────────────────────────────
+// Se a internet caiu durante a sessão, o browser dispara 'online' quando
+// volta. Reaproveitamos _driveAutoConectar (já usada no login) pra re-sincronizar
+// tudo do mesmo jeito que faria ao entrar no sistema — sem o usuário precisar
+// fazer nada.
+(function() {
+    var _offlineAvisado = false;
+
+    window.addEventListener('offline', function() {
+        _offlineAvisado = true;
+        // Aviso discreto — só aparece se o usuário já estiver logado
+        if (typeof mostrarNotificacao === 'function' && sessionStorage.getItem('adm_logado')) {
+            mostrarNotificacao('⚠️ Sem conexão — seus dados continuam salvos localmente. Sincronizará automaticamente ao reconectar.', 'aviso', 6000);
+        }
+    });
+
+    window.addEventListener('online', function() {
+        if (!_offlineAvisado) return; // só reconecta se realmente havia caído
+        _offlineAvisado = false;
+        if (!sessionStorage.getItem('adm_logado')) return; // só se logado
+        mostrarNotificacao('🔄 Conexão restaurada — sincronizando...', 'info', 3000);
+        // Pequeno delay pra garantir que o browser já estabilizou a conexão
+        setTimeout(function() {
+            // 1) Supabase: força um ciclo imediato (não esperar os 45s)
+            if (typeof _sbCarregarDados === 'function') {
+                _sbCarregarDados().catch(function(){});
+            }
+            // 2) Drive: reconecta e sincroniza, igual ao que faz no login
+            if (typeof _driveAutoConectar === 'function') {
+                _driveAutoConectar();
+            }
+        }, 1500);
+    });
+})();
 
 // Inicializar ao carregar a página
 window.addEventListener('load', function() {
@@ -26050,6 +26145,7 @@ window.addEventListener('load', function() {
         <label style="display:block;font-size:12px;font-weight:700;color:#374151;margin-bottom:5px;" data-i18n="cfg.admins.modalLabelRole">Role</label>
         <select id="admModalRole" style="width:100%;padding:9px 12px;border:1px solid #d1d5db;border-radius:7px;font-size:13px;color:#1e293b;background:white;outline:none;">
           <option value="admin" data-i18n="cfg.admins.modalOptAdmin">🟠 Admin — acesso total</option>
+          <option value="usuario" data-i18n="cfg.admins.modalOptUsuario">🟢 Usuário — acesso operacional</option>
           <option value="visualizador" data-i18n="cfg.admins.modalOptVisualizador">🔵 Visualizador — somente leitura</option>
         </select>
       </div>
