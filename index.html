@@ -5736,7 +5736,19 @@ function _driveAutoConectar() {
     if (!cfg.clientId || !cfg.apiKey || !cfg.pastaRaizId) return; // primeira configuração ainda não foi feita
     _garantirDriveConectado().then(function(ok) {
         if (ok) {
-            driveCarregarDados();
+            // Verifica se já existem dados locais (instalação existente) ou se é
+            // um computador novo/limpo sem nada ainda (precisa restaurar do Drive)
+            var admins   = JSON.parse(localStorage.getItem('cfg_admins') || '[]');
+            var projetos = JSON.parse(localStorage.getItem('projetos_dublagem') || '[]');
+            var temDadosLocais = admins.length > 0 || projetos.length > 0;
+            if (temDadosLocais) {
+                // Computador já tem dados: apenas faz backup pro Drive
+                // NÃO restaura do Drive — evita ressuscitar itens deletados localmente
+                driveSincronizar();
+            } else {
+                // Instalação nova / computador limpo: carrega tudo do Drive
+                driveCarregarDados();
+            }
         } else {
             irParaAba('configuracoes');
         }
@@ -16067,12 +16079,18 @@ function _driveMesclarArray(localRaw, driveRaw) {
     try { drive = driveRaw ? JSON.parse(driveRaw) : []; } catch(e) {}
     if (!Array.isArray(local)) local = [];
     if (!Array.isArray(drive)) drive = [];
+    // Se local está vazio (instalação nova), aceita tudo do Drive
+    if (local.length === 0) return drive.slice();
     var idsLocal = new Set(local.map(function(x){ return x.id; }));
     var idsDrive = new Set(drive.map(function(x){ return x.id; }));
+    // Itens apenas no local (não existem no Drive): preserva
     var apenasLocais = local.filter(function(x){ return !idsDrive.has(x.id); });
-    var novosDoDrive = drive.filter(function(x){ return !idsLocal.has(x.id); });
+    // Itens que existem nos dois: Drive vence (mais recente)
     var atualizados  = drive.filter(function(x){ return idsLocal.has(x.id); });
-    return atualizados.concat(apenasLocais, novosDoDrive);
+    // Itens apenas no Drive (ausentes no local): NÃO restaura — ausência local
+    // significa deleção intencional, não ausência por falta de sync
+    // (o Supabase cuida de novos itens criados em outros computadores)
+    return atualizados.concat(apenasLocais);
 }
 
 function _driveAplicarBackupExtra(extra) {
