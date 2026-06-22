@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.582</title>
+    <title>Sistema de Dublagem v12.584</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.582</p>
+        <p>v12.584</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.582</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.584</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -720,6 +720,11 @@
                             <span style="font-size:11px;color:#1a5276;font-weight:600;">☁️ Drive:</span>
                             <a id="srtDriveLink" href="#" target="_blank" style="font-size:11px;color:#2471a3;text-decoration:underline;word-break:break-all;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="">📂 SRTs do Projeto</a>
                             <button id="btnCarregarSRTsDrive" onclick="carregarSRTsDrive()" style="font-size:11px;padding:4px 10px;background:#2471a3;color:#fff;border:none;border-radius:5px;cursor:pointer;font-weight:700;white-space:nowrap;">📥 Carregar do Drive</button>
+                        </div>
+                        <!-- Botão de criar/recriar pastas no Drive (aparece quando projeto existe mas links não estão configurados) -->
+                        <div id="driveCriarPastasRow" style="display:none;align-items:center;gap:6px;margin-bottom:6px;padding:6px 8px;background:#fef9e7;border:1px solid #f9e79f;border-radius:6px;">
+                            <span style="font-size:11px;color:#7d6608;">⚠️ Pastas do Drive ainda não criadas para este projeto.</span>
+                            <button onclick="_criarPastasProjetoAtual()" style="font-size:11px;padding:4px 10px;background:#f39c12;color:#fff;border:none;border-radius:5px;cursor:pointer;font-weight:700;white-space:nowrap;">🔍 Buscar pasta no Drive</button>
                         </div>
                         <!-- Linha local (sempre visível) -->
                         <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
@@ -1740,7 +1745,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.582</footer>
+    <footer>🎬 Sistema de Dublagem v12.584</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -16051,9 +16056,11 @@ async function driveCriarPastaProjeto(nomeProjeto, nomeCliente) {
                 projetos[idx].links.pastaSRTsProjetoId = ids['SRTs do Projeto'];
             }
             salvarProjetos();
-            // Atualizar UI do Drive SRT se este for o projeto atual
+            // Atualizar UI — re-busca projetoAtual do array fresquinho (a referência
+            // pode ter ficado stale se o polling reconstruiu projetos[] enquanto as
+            // pastas do Drive eram criadas, que é o motivo do botão não aparecer)
             if (projetoAtual && projetoAtual.id === projetos[idx].id) {
-                projetoAtual.links = projetos[idx].links;
+                projetoAtual = projetos[idx];
                 _atualizarSRTDriveUI();
             }
         }
@@ -25438,20 +25445,49 @@ function novoProjetoLimpar() {
 function _atualizarSRTDriveUI() {
     var row  = document.getElementById('srtDriveRow');
     var link = document.getElementById('srtDriveLink');
+    var rowCriar = document.getElementById('driveCriarPastasRow');
     if (!row || !link) return;
     var url = projetoAtual && projetoAtual.links && projetoAtual.links.pastaSRTsProjeto
               ? projetoAtual.links.pastaSRTsProjeto : '';
     if (url) {
-        link.href        = url;
-        link.textContent = '📂 SRTs do Projeto';
-        link.title       = url;
+        link.href         = url;
+        link.textContent  = '📂 SRTs do Projeto';
+        link.title        = url;
         row.style.display = 'flex';
+        if (rowCriar) rowCriar.style.display = 'none';
     } else {
         row.style.display = 'none';
+        // Mostra botão de criar pastas se: projeto existe + Drive configurado + não é projeto novo
+        var cfg = cfgGet();
+        var temProjeto = projetoAtual && projetoAtual.id;
+        var temDrive   = !!(cfg.pastaRaizId);
+        if (rowCriar) rowCriar.style.display = (temProjeto && temDrive) ? 'flex' : 'none';
     }
 }
 
-// ─── IMPORTAR SRTs A PARTIR DE DADOS (Drive) ────────────────────────────────
+// Cria (ou recria) as pastas do Drive para o projeto atual — útil quando o
+// projeto foi criado sem Drive conectado, ou quando as pastas foram deletadas
+async function _criarPastasProjetoAtual() {
+    if (!projetoAtual) return;
+    var btn = document.querySelector('#driveCriarPastasRow button');
+    if (btn) { btn.disabled = true; btn.textContent = '⏳ Buscando pasta...'; }
+    var conectado = await _garantirDriveConectado();
+    if (!conectado) {
+        mostrarNotificacao('Drive não conectado. Conecte em Configurações.', 'aviso', 3000);
+        if (btn) { btn.disabled = false; btn.textContent = '🔍 Buscar pasta no Drive'; }
+        return;
+    }
+    var nomeCliente = '';
+    if (projetoAtual.clienteId) {
+        var cli = carregarClientes().find(function(c){ return String(c.id)===String(projetoAtual.clienteId); });
+        if (cli) nomeCliente = cli.nome || '';
+    }
+    await driveCriarPastaProjeto(projetoAtual.nome, nomeCliente);
+    // _atualizarSRTDriveUI é chamada dentro de driveCriarPastaProjeto
+    if (btn) { btn.disabled = false; btn.textContent = '🔍 Buscar pasta no Drive'; }
+}
+
+
 async function _importarSRTsDados(items) {
     if (!projetoAtual) return 0;
     if (!items || !items.length) return 0;
