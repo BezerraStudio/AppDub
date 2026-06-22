@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.588</title>
+    <title>Sistema de Dublagem v12.587</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.588</p>
+        <p>v12.587</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.588</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.587</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1745,7 +1745,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.588</footer>
+    <footer>🎬 Sistema de Dublagem v12.587</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -5869,57 +5869,6 @@ function _trocarAba(abaDestino) {
         _avisarDriveSeNecessario();
         _cfgAplicarPermissoesAbas();
     }
-    // Abas que usam vídeo: tenta reconectar a pasta silenciosamente se ainda
-    // não houver vídeos carregados — sem interrupção, sem popup forçado
-    if (['mapeamento','escalacao','gravacao'].indexOf(abaDestino) >= 0) {
-        _tentarReconectarPastaSilencioso();
-    }
-}
-
-// Tenta reconectar a pasta de vídeos do projeto atual de forma silenciosa.
-// Se a permissão já foi concedida nesta sessão → carrega sem perguntar nada.
-// Se ainda precisa de permissão → mostra um aviso discreto com botão de 1 clique.
-async function _tentarReconectarPastaSilencioso() {
-    if (!projetoAtual) return;
-    // Já tem vídeos carregados nesta sessão → nada a fazer
-    var temVideos = Object.keys(videosCache).some(function(k){ return k.startsWith(projetoAtual.id + '_'); });
-    if (temVideos) return;
-    // Sem pasta salva → nada a fazer
-    var handle = await idbGet('pasta_' + projetoAtual.id);
-    if (!handle) return;
-    try {
-        var perm = await handle.queryPermission({ mode: 'read' });
-        if (perm === 'granted') {
-            // Permissão já concedida nesta sessão → carrega silenciosamente
-            await carregarArquivosDaPasta(handle);
-        } else {
-            // Precisa pedir permissão → mostra aviso discreto em vez de forçar popup
-            _mostrarAvisoReconectarPasta(handle);
-        }
-    } catch(e) { /* handle inválido ou browser sem suporte — ignora */ }
-}
-
-// Aviso discreto que aparece nas abas com vídeo quando a pasta precisa de permissão
-var _avisoReconectarId = '_avisoReconectarPasta';
-function _mostrarAvisoReconectarPasta(handle) {
-    if (document.getElementById(_avisoReconectarId)) return; // já está visível
-    var nomePasta = projetoAtual.pastaNome || 'pasta de vídeos';
-    var div = document.createElement('div');
-    div.id = _avisoReconectarId;
-    div.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:9000;background:#2c3e50;color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;display:flex;align-items:center;gap:12px;box-shadow:0 4px 16px rgba(0,0,0,.4);';
-    div.innerHTML = '📁 Pasta "<strong>' + nomePasta + '</strong>" — <button onclick="_concederPermissaoPasta()" style="background:#3498db;color:#fff;border:none;border-radius:5px;padding:4px 12px;cursor:pointer;font-weight:700;">Reconectar vídeos</button> <span onclick="this.parentElement.remove()" style="cursor:pointer;opacity:.6;margin-left:4px;">✕</span>';
-    document.body.appendChild(div);
-}
-async function _concederPermissaoPasta() {
-    var div = document.getElementById(_avisoReconectarId);
-    if (div) div.remove();
-    if (!projetoAtual) return;
-    var handle = await idbGet('pasta_' + projetoAtual.id);
-    if (!handle) return;
-    try {
-        var perm = await handle.requestPermission({ mode: 'read' });
-        if (perm === 'granted') await carregarArquivosDaPasta(handle);
-    } catch(e) { console.warn('_concederPermissaoPasta:', e.message); }
 }
 
 // Abas restritas — visíveis apenas para admin e superadmin; usuário e
@@ -16569,15 +16518,32 @@ iniciarEscalacao = function() {
     setTimeout(escVideoInit, 50);
 };
 
-// Abre seletor de PASTA de vídeos (File System Access API).
-// Salva o FileSystemDirectoryHandle no IndexedDB — leve, persiste entre sessões.
-// O sistema varre a pasta automaticamente e carrega todos os vídeos encontrados.
+// Abre o seletor de vídeos usando File System Access API quando disponível
+// (Chrome/Edge) — salva FileSystemFileHandle no IndexedDB, que é muito menor
+// que o File inteiro e persiste entre sessões sem re-seleção.
+// Fallback para <input type="file"> em browsers sem suporte (Firefox/Safari).
 async function _abrirSeletorVideos() {
-    if ('showDirectoryPicker' in window) {
-        // Usa a função já existente de selecionar pasta
-        await selecionarPastaVideos();
+    if ('showOpenFilePicker' in window) {
+        try {
+            const handles = await window.showOpenFilePicker({
+                multiple: true,
+                types: [{
+                    description: 'Vídeos',
+                    accept: { 'video/*': ['.mp4','.mkv','.avi','.mov','.webm','.m4v','.wmv','.flv'] }
+                }]
+            });
+            const files = await Promise.all(handles.map(function(h){ return h.getFile(); }));
+            // Salva os handles (leves) no IndexedDB — não o conteúdo dos arquivos
+            if (projetoAtual) {
+                await idbSet('video_handles_' + projetoAtual.id, handles);
+            }
+            // Processa os arquivos normalmente
+            await _processarArquivosVideos(files);
+        } catch(e) {
+            if (e.name !== 'AbortError') console.error('_abrirSeletorVideos:', e);
+        }
     } else {
-        // Fallback: seleção de arquivo clássica (Firefox/Safari)
+        // Fallback: abre o input file clássico
         document.getElementById('uploadVideos').click();
     }
 }
