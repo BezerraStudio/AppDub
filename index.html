@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.585</title>
+    <title>Sistema de Dublagem v12.586</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.585</p>
+        <p>v12.586</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.585</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.586</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1745,7 +1745,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.585</footer>
+    <footer>🎬 Sistema de Dublagem v12.586</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -5726,6 +5726,13 @@ function _admAbrir(adm) {
     _atualizarTabLabels();
     _i18nScan();
     carregarProjetos();
+    // Restaurar o último projeto que estava aberto neste dispositivo (F5, reload)
+    // sem isso o usuário perde o status dos vídeos e precisa re-clicar no projeto
+    var ultimoId = localStorage.getItem('_ultimo_projeto_id');
+    if (ultimoId) {
+        var idxUltimo = projetos.findIndex(function(p){ return String(p.id) === ultimoId; });
+        if (idxUltimo >= 0) selecionarProjeto(idxUltimo);
+    }
     verificarUltimoBackup();
     _sbIniciarPolling();
     _driveAutoConectar();
@@ -6272,6 +6279,11 @@ async function criarProjeto() {
 
 async function selecionarProjeto(idx) {
     projetoAtual = projetos[idx];
+    // Guardar qual projeto está aberto neste dispositivo — usado para
+    // restaurar automaticamente após F5 sem precisar re-clicar no card
+    if (projetoAtual && projetoAtual.id != null) {
+        localStorage.setItem('_ultimo_projeto_id', String(projetoAtual.id));
+    }
     // Nome e data no header
     var badge = document.getElementById('headerNomeSerie');
     var badgeData = document.getElementById('headerDataInicio');
@@ -25612,7 +25624,8 @@ const _SB_KEY = 'sb_publishable_n0EYA2mDXVqDlJoQsXqFBA_Htxx0nUg';
 const _SB_LOCAL_ONLY = new Set([
     'app_token', 'cfg_google_token', 'adm_lembrar_usuario',
     'adm_lembrar_senha', 'app_lang', 'adm_logado',
-    '_driveFileId', '_driveSistemaId', '_sb_last_sync'
+    '_driveFileId', '_driveSistemaId', '_sb_last_sync',
+    '_ultimo_projeto_id'  // por dispositivo: qual projeto estava aberto no F5
 ]);
 
 let _sbClient   = null;
