@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.600</title>
+    <title>Sistema de Dublagem v12.602</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.600</p>
+        <p>v12.602</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.600</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.602</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1746,7 +1746,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.600</footer>
+    <footer>🎬 Sistema de Dublagem v12.602</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -20443,9 +20443,10 @@ function confAbrirModalBaixar() {
     });
 
     var html = '<div style="margin-bottom:10px;display:flex;align-items:center;gap:10px;">' +
-        '<label style="font-size:12px;color:#94a3b8;font-weight:600;">Selecionar completos:</label>' +
+        '<label style="font-size:12px;color:#94a3b8;font-weight:600;">Selecionar:</label>' +
         '<button onclick="confSelecionarTodosEps(true)" style="padding:2px 9px;background:#334155;color:#94a3b8;border:1px solid #475569;border-radius:5px;font-size:11px;cursor:pointer;">✔ Todos</button>' +
         '<button onclick="confSelecionarTodosEps(false)" style="padding:2px 9px;background:#334155;color:#94a3b8;border:1px solid #475569;border-radius:5px;font-size:11px;cursor:pointer;">✕ Nenhum</button>' +
+        (((_dubProjeto&&_dubProjeto.links&&(_dubProjeto.links.pastaMateriais||_dubProjeto.links.pastaVideos))||'') ? '<a href="'+((_dubProjeto&&_dubProjeto.links&&(_dubProjeto.links.pastaMateriais||_dubProjeto.links.pastaVideos))||'')+ '" target=\"_blank\" style=\"margin-left:auto;font-size:11px;padding:3px 10px;background:#1e3a5f;color:#60a5fa;border:1px solid #3b82f6;border-radius:5px;text-decoration:none;font-weight:600;\">📁 Vídeos no Drive</a>' : '') +
         '</div>';
 
     // ── Completos: checkbox marcado, disponíveis para baixar ──
@@ -20573,54 +20574,91 @@ async function confConfirmarEnviarSRT() {
         mostrarNotificacao(t('membro.dub.selArquivo'), 'info', 1500);
         return;
     }
-    var lk  = _dubProjeto && _dubProjeto.links;
-    var url = lk && lk.pastaSRTsFinais;
-    if (!url) {
-        // Fallback: abre a pasta do projeto para envio manual
-        var pastaProj = lk && lk.pastaProjeto;
-        if (pastaProj) window.open(pastaProj, '_blank');
-        mostrarNotificacao('⚠️ Pasta "SRTs Revisada - Final" não configurada — configure via Buscar pasta no Drive.', 'aviso', 5000);
+
+    var lk        = _dubProjeto && _dubProjeto.links || {};
+    var url       = lk.pastaSRTsFinais || '';
+    var m         = url.match(/folders\/([a-zA-Z0-9_-]+)/);
+    var pastaId   = m ? m[1] : null;
+    var proj      = (_dubProjeto.nome||'PROJ').replace(/[^a-zA-Z0-9]/g,'_');
+    var token     = _driveToken();
+    var lista     = Array.from(input.files).sort(function(a,b){ return a.name.localeCompare(b.name); });
+
+    // Renomear arquivos
+    var renomeados = lista.map(function(f) {
+        var ep = _confExtrairEp(f.name.replace(/\.[^.]+$/,''));
+        if (ep === null) return { f:f, nome:null, ep:null };
+        var epPad = String(ep).padStart(3,'0');
+        return { f:f, nome:'EP'+epPad+'_'+proj+'_FINAL.srt', ep:ep };
+    }).filter(function(x){ return x.nome; });
+
+    if (!renomeados.length) {
+        mostrarNotificacao('Nenhum arquivo com EP identificável.', 'aviso', 2500);
         return;
     }
-    // Extrair ID da pasta do link
-    var m = url.match(/folders\/([a-zA-Z0-9_-]+)/);
-    var pastaId = m ? m[1] : null;
-    if (!pastaId) {
-        window.open(url, '_blank');
-        mostrarNotificacao('📁 Pasta aberta — arraste os SRTs finais para lá.', 'info', 4000);
-        confFecharModalEnviarSRT();
+
+    // Sem Drive → download local dos arquivos renomeados
+    if (!token || !pastaId) {
+        var aviso = !url
+            ? '⚠️ Pasta "SRTs Revisada - Final" não configurada no projeto.'
+            : '⚠️ Drive não conectado neste dispositivo.';
+        log.innerHTML = '<div style="color:#fbbf24;margin-bottom:8px;">'+aviso+'</div>' +
+            '<div style="color:#94a3b8;font-size:11px;margin-bottom:8px;">Baixando arquivos renomeados localmente:</div>';
+        renomeados.forEach(function(item) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var blob = new Blob([e.target.result], {type:'text/plain;charset=utf-8'});
+                var a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = item.nome;
+                document.body.appendChild(a); a.click(); document.body.removeChild(a);
+                setTimeout(function(){ URL.revokeObjectURL(a.href); }, 2000);
+            };
+            reader.readAsText(item.f, 'utf-8');
+            log.innerHTML += '<div style="font-size:11px;color:#4ade80;">⬇️ '+item.nome+'</div>';
+        });
+        if (url) log.innerHTML += '<div style="margin-top:8px;"><a href="'+url+'" target="_blank" style="color:#60a5fa;font-size:11px;">📁 Envie manualmente para: SRTs Revisada - Final</a></div>';
+        log.dataset.pronto = '0';
+        mostrarNotificacao('⬇️ SRTs baixados localmente — envie-os para o Drive manualmente.', 'info', 5000);
         return;
     }
-    // Upload de cada arquivo renomeado
-    var proj = (_dubProjeto.nome||'PROJ').replace(/[^a-zA-Z0-9]/g,'_');
-    var lista = Array.from(input.files).sort(function(a,b){ return a.name.localeCompare(b.name); });
+
+    // Com Drive → upload direto com progresso
+    log.innerHTML = '<div style="color:#94a3b8;font-size:11px;margin-bottom:6px;">Enviando para: <strong style="color:#4ade80;">SRTs Revisada - Final</strong></div>';
+    var btn = document.querySelector('#confModalEnviarSRT button[onclick*="confConfirmarEnviarSRT"]');
+    if (btn) { btn.disabled = true; btn.textContent = '⏳ Enviando...'; }
+
     var enviados = 0, erros = 0;
-    mostrarNotificacao('⬆️ Enviando SRTs para o Drive...', 'info', 3000);
-    for (var i = 0; i < lista.length; i++) {
-        var f = lista[i];
-        var ep = _confExtrairEp(f.name.replace(/\.[^.]+$/, ''));
-        if (ep === null) { erros++; continue; }
-        var epPad = String(ep).padStart(3, '0');
-        var nomeArq = 'EP' + epPad + '_' + proj + '_FINAL.srt';
+    for (var i = 0; i < renomeados.length; i++) {
+        var item = renomeados[i];
+        log.innerHTML += '<div id="conf-srt-'+i+'" style="font-size:11px;color:#94a3b8;">⏳ '+item.nome+'…</div>';
+        document.getElementById('confModalEnviarSRT').scrollTop = 9999;
         try {
             var txt = await new Promise(function(res, rej) {
                 var r = new FileReader();
                 r.onload = function(e){ res(e.target.result); };
                 r.onerror = function(){ rej(new Error('read')); };
-                r.readAsText(f, 'utf-8');
+                r.readAsText(item.f, 'utf-8');
             });
-            var blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
-            var meta = { name: nomeArq, parents: [pastaId] };
+            var blob = new Blob([txt], {type:'text/plain;charset=utf-8'});
+            var meta = {name: item.nome, parents: [pastaId]};
             var form = new FormData();
-            form.append('metadata', new Blob([JSON.stringify(meta)], { type: 'application/json' }));
+            form.append('metadata', new Blob([JSON.stringify(meta)], {type:'application/json'}));
             form.append('file', blob);
-            await _driveFetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', { method:'POST', body: form });
+            await _driveFetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {method:'POST', body:form});
+            var el = document.getElementById('conf-srt-'+i);
+            if (el) el.innerHTML = '<span style="color:#4ade80;">✅ '+item.nome+'</span>';
             enviados++;
-        } catch(e) { erros++; }
+        } catch(e) {
+            var el2 = document.getElementById('conf-srt-'+i);
+            if (el2) el2.innerHTML = '<span style="color:#f87171;">❌ '+item.nome+' — '+e.message+'</span>';
+            erros++;
+        }
     }
-    confFecharModalEnviarSRT();
-    if (enviados > 0) mostrarNotificacao('✅ ' + enviados + ' SRT(s) enviados para "SRTs Revisada - Final"!', 'sucesso', 4000);
-    if (erros > 0)   mostrarNotificacao('⚠️ ' + erros + ' arquivo(s) não puderam ser identificados.', 'aviso', 3000);
+
+    if (btn) { btn.disabled = false; btn.textContent = '✅ Confirmar'; }
+    log.dataset.pronto = '0';
+    if (enviados > 0) mostrarNotificacao('✅ '+enviados+' SRT(s) enviados para "SRTs Revisada - Final"!', 'sucesso', 4000);
+    if (erros > 0)   mostrarNotificacao('⚠️ '+erros+' arquivo(s) com erro.', 'aviso', 3000);
 }
 
 // Seleciona vídeos locais para o conferente usar no download de pares SRT+vídeo
