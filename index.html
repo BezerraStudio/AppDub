@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.591</title>
+    <title>Sistema de Dublagem v12.592</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.591</p>
+        <p>v12.592</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.591</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.592</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1746,7 +1746,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.591</footer>
+    <footer>🎬 Sistema de Dublagem v12.592</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -3373,6 +3373,13 @@ var _i18n = {
         'prat.tab.aprovacao':            '✅ Approval',
         'prat.pers.count':               '{n} character(s) registered',
         'prat.pers.btnAdicionar':        '➕ Add character',
+        'prat.pers.sortNome':            'Sort: A-Z',
+        'prat.pers.sortPalavras':        'Sort: words',
+        'prat.pers.ocultos':             'hidden',
+        'prat.pers.verOcultos':          'Show hidden',
+        'prat.pers.ocultarOcultos':      'Hide hidden',
+        'prat.pers.ocultar':             'Hide from casting',
+        'prat.pers.mostrar':             'Show in casting',
         'prat.pers.semDescricao':        'No description',
         'prat.pers.empty':               'No characters yet.<br>Add the characters that the client will need to choose voice actors for.',
         'prat.form.tituloNovo':          '➕ New Character',
@@ -3685,6 +3692,13 @@ var _i18n = {
         'prat.tab.aprovacao':            '✅ Aprovação',
         'prat.pers.count':               '{n} personagem(ns) cadastrado(s)',
         'prat.pers.btnAdicionar':        '➕ Adicionar personagem',
+        'prat.pers.sortNome':            'Ordenar: A-Z',
+        'prat.pers.sortPalavras':        'Ordenar: palavras',
+        'prat.pers.ocultos':             'ocultos',
+        'prat.pers.verOcultos':          'Ver ocultos',
+        'prat.pers.ocultarOcultos':      'Esconder ocultos',
+        'prat.pers.ocultar':             'Ocultar do casting',
+        'prat.pers.mostrar':             'Mostrar no casting',
         'prat.pers.semDescricao':        'Sem descrição',
         'prat.pers.empty':               'Nenhum personagem ainda.<br>Adicione os personagens que o cliente precisará escolher os dubladores.',
         'prat.form.tituloNovo':          '➕ Novo Personagem',
@@ -7439,18 +7453,54 @@ function _pratAba(aba) {
 
 // ── ABA: PERSONAGENS ─────────────────────────────────────────────────────────
 // ── ABA: PERSONAGENS ─────────────────────────────────────────────────────────
-function _pratRenderPersonagens(cont) {
+// Toggle visibilidade do personagem na prateleira
+function _pratToggleOcultoPers(idx) {
     var lista = projetoAtual.personagensCasting || [];
+    if (!lista[idx]) return;
+    lista[idx].oculto = !lista[idx].oculto;
+    salvarProjetos();
+    var cont = document.getElementById('_pratConteudo');
+    if (cont) _pratRenderPersonagens(cont);
+}
+
+function _pratRenderPersonagens(cont) {
+    var todos = projetoAtual.personagensCasting || [];
+    var totalPalavras = _pratTotalPalavras();
+    var mostrarOcultos = false; // estado local gerenciado via DOM
+    var btnMostrar = cont.querySelector('[data-mostrar-ocultos]');
+    if (btnMostrar) mostrarOcultos = btnMostrar.dataset.mostrarOcultos === '1';
+
+    // Calcula palavras e ordena
+    var comPalavras = todos.map(function(p, i) {
+        return { p: p, i: i, palavras: _pratPalavrasPers(p.nome) };
+    });
+    if (_pratSortPers === 'palavras') {
+        comPalavras.sort(function(a, b) { return b.palavras - a.palavras; });
+    }
+
+    var visiveis  = comPalavras.filter(function(x){ return !x.p.oculto; });
+    var ocultos   = comPalavras.filter(function(x){ return !!x.p.oculto; });
+    var exibidos  = mostrarOcultos ? comPalavras : visiveis;
+
     var perfilTot = {}, perfilIdx2 = {};
-    lista.forEach(function(p){ perfilTot[p.perfil] = (perfilTot[p.perfil]||0)+1; });
+    todos.forEach(function(p){ perfilTot[p.perfil] = (perfilTot[p.perfil]||0)+1; });
+
     var html =
-        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">' +
-        '<span style="font-size:13px;color:#555;">' + t('prat.pers.count', {n: lista.length}) + '</span>' +
-        '<button onclick="_pratAddPersonagem()" style="padding:7px 16px;background:#27ae60;color:white;border:none;border-radius:7px;cursor:pointer;font-weight:600;font-size:13px;">'+t('prat.pers.btnAdicionar')+'</button>' +
-        '</div>' +
-        (lista.length === 0
+        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:8px;flex-wrap:wrap;">' +
+        '<span style="font-size:13px;color:#555;">' + t('prat.pers.count', {n: todos.length}) +
+            (ocultos.length ? ' <span style="font-size:11px;color:#94a3b8;">(' + ocultos.length + ' ' + t('prat.pers.ocultos') + ')</span>' : '') + '</span>' +
+        '<div style="display:flex;gap:6px;align-items:center;">' +
+        '<select onchange="_pratSortPers=this.value;var co=document.getElementById(\'_pratConteudo\');if(co)_pratRenderPersonagens(co);" style="font-size:11px;padding:3px 6px;border:1px solid #dde;border-radius:5px;background:white;">' +
+        '<option value="nome"' + (_pratSortPers==='nome'?' selected':'') + '>'+t('prat.pers.sortNome')+'</option>' +
+        '<option value="palavras"' + (_pratSortPers==='palavras'?' selected':'') + '>'+t('prat.pers.sortPalavras')+'</option>' +
+        '</select>' +
+        (ocultos.length ? '<button data-mostrar-ocultos="'+(mostrarOcultos?'0':'1')+'" onclick="var co=document.getElementById(\'_pratConteudo\');if(co){this.dataset.mostrarOcultos=this.dataset.mostrarOcultos===\'1\'?\'0\':\'1\';_pratRenderPersonagens(co);}" style="font-size:11px;padding:3px 8px;border:1px solid #dde;border-radius:5px;background:white;cursor:pointer;">'+(mostrarOcultos?'🙈 '+t('prat.pers.ocultarOcultos'):'👁 '+t('prat.pers.verOcultos'))+'</button>' : '') +
+        '<button onclick="_pratAddPersonagem()" style="padding:5px 14px;background:#27ae60;color:white;border:none;border-radius:7px;cursor:pointer;font-weight:600;font-size:13px;">'+t('prat.pers.btnAdicionar')+'</button>' +
+        '</div></div>' +
+        (todos.length === 0
             ? '<div style="text-align:center;padding:40px;color:#94a3b8;"><div style="font-size:40px;margin-bottom:10px;">🎭</div><div>'+t('prat.pers.empty')+'</div></div>'
-            : lista.map(function(p,i){
+            : exibidos.map(function(item){
+                var p = item.p, i = item.i, palavras = item.palavras;
                 if (!perfilIdx2[p.perfil]) perfilIdx2[p.perfil] = 0;
                 perfilIdx2[p.perfil]++;
                 var letra = perfilTot[p.perfil] > 1 ? ' (' + String.fromCharCode(64 + perfilIdx2[p.perfil]) + ')' : '';
@@ -7458,11 +7508,16 @@ function _pratRenderPersonagens(cont) {
                 var fotoHtml  = p.foto
                     ? '<img src="'+p.foto+'" style="width:100%;height:100%;object-fit:cover;">'
                     : '<span style="font-size:20px;">🎭</span>';
-                return '<div style="display:flex;gap:12px;padding:12px 14px;border:1px solid #e2e8f0;border-radius:10px;margin-bottom:8px;align-items:flex-start;">' +
+                var pct = totalPalavras > 0 ? Math.round(palavras / totalPalavras * 100) : 0;
+                var palavrasHtml = palavras > 0
+                    ? '<span style="font-size:10px;padding:2px 7px;border-radius:8px;background:#f0fdf4;color:#15803d;font-weight:600;">'+palavras+' pal. ('+pct+'%)</span>'
+                    : '';
+                var ocultoStyle = p.oculto ? 'opacity:.5;background:#f8f8f8;' : '';
+                return '<div style="display:flex;gap:12px;padding:12px 14px;border:1px solid #e2e8f0;border-radius:10px;margin-bottom:8px;align-items:flex-start;'+ocultoStyle+'">' +
                     '<div onclick="_pratFotoPersonagem('+i+')" title="'+t('tooltip.cliqueAdicionarFoto')+'" style="width:56px;height:56px;border-radius:8px;border:2px dashed #cbd5e1;cursor:pointer;overflow:hidden;background:#f8fafc;flex-shrink:0;display:flex;align-items:center;justify-content:center;">'+fotoHtml+'</div>' +
                     '<div style="flex:1;">' +
                     '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">' +
-                    '<span style="font-size:14px;font-weight:700;color:#1e293b;">'+p.nome+letra+'</span>' + perfBadge +
+                    '<span style="font-size:14px;font-weight:700;color:#1e293b;">'+p.nome+letra+'</span>' + perfBadge + palavrasHtml +
                     '</div>' +
                     '<div style="font-size:12px;color:#64748b;margin-bottom:4px;">'+( p.descricao||'<em>'+t('prat.pers.semDescricao')+'</em>' )+'</div>' +
                     '<div style="display:flex;gap:6px;flex-wrap:wrap;">' +
@@ -7470,6 +7525,7 @@ function _pratRenderPersonagens(cont) {
                     (p.faixas&&p.faixas.length?p.faixas.map(function(f){ return '<span style="font-size:10px;padding:2px 7px;border-radius:8px;background:#f1f5f9;color:#475569;">'+f+'</span>'; }).join(''):'') +
                     '</div></div>' +
                     '<div style="display:flex;gap:6px;flex-shrink:0;">' +
+                    '<button onclick="_pratToggleOcultoPers('+i+')" title="'+(p.oculto?t('prat.pers.mostrar'):t('prat.pers.ocultar'))+'" style="padding:5px 10px;border:1px solid #cbd5e1;border-radius:6px;background:white;cursor:pointer;font-size:12px;">'+(p.oculto?'👁':'🙈')+'</button>' +
                     '<button onclick="_pratEditarPersonagem('+i+')" style="padding:5px 10px;border:1px solid #cbd5e1;border-radius:6px;background:white;cursor:pointer;font-size:12px;">✏️</button>' +
                     '<button onclick="_pratRemoverPersonagem('+i+')" style="padding:5px 10px;border:1px solid #fca5a5;border-radius:6px;background:white;color:#dc2626;cursor:pointer;font-size:12px;">🗑️</button>' +
                     '</div></div>';
@@ -7676,7 +7732,7 @@ function _pratRenderCasting(cont) {
         '<div id="_pratListaDubs" style="flex:1;overflow-y:auto;"></div></div>' +
         '<div style="flex:1;display:flex;flex-direction:column;background:#fafafa;">' +
         '<div style="padding:8px 12px;background:'+(_pratCastAtual()&&_pratCastAtual().status==='respondido'?'#7f1d1d':'#1a7abf')+';color:white;font-size:13px;font-weight:700;flex-shrink:0;">'+(_pratCastAtual()&&_pratCastAtual().status==='respondido'?t('prat.cast.bloqueado'):t('prat.cast.instrucao'))+'</div>' +
-        '<div style="flex:1;overflow-y:auto;padding:8px;">' +
+        '<div id="_pratPersListPanel" style="flex:1;overflow-y:auto;padding:8px;">' +
         persList.map(function(p,i){
             var letra=letraPers(i), ativo=i===_pratPersAtivo;
             var cands=_pratCandsPers(p.id);
@@ -7769,6 +7825,34 @@ function _pratRenderListaDubs() {
     }).join('')||'<div style="padding:16px;text-align:center;color:#94a3b8;font-size:12px;">'+t('membro.dub.nenhumDubEncontrado').replace('.','')+'</div>';
 }
 
+// Conta palavras de um personagem em todo o projeto (roteiro)
+function _pratPalavrasPers(nomePers) {
+    var total = 0;
+    Object.values(projetoAtual.episodios || {}).forEach(function(ep) {
+        (ep.linhas || []).forEach(function(l) {
+            if (l.personagem === nomePers) {
+                var txt = (l.texto_editado || l.texto || '').trim();
+                if (txt) total += txt.split(/\s+/).filter(Boolean).length;
+            }
+        });
+    });
+    return total;
+}
+
+function _pratTotalPalavras() {
+    var total = 0;
+    Object.values(projetoAtual.episodios || {}).forEach(function(ep) {
+        (ep.linhas || []).forEach(function(l) {
+            var txt = (l.texto_editado || l.texto || '').trim();
+            if (txt) total += txt.split(/\s+/).filter(Boolean).length;
+        });
+    });
+    return total;
+}
+
+// Sort atual da aba personagens: 'nome' | 'palavras'
+var _pratSortPers = 'nome';
+
 function _pratClicarDub(dubId) {
     _pratEnsureCastings();
     var p=(projetoAtual.personagensCasting||[])[_pratPersAtivo]; if(!p) return;
@@ -7777,7 +7861,14 @@ function _pratClicarDub(dubId) {
     var idx=c.candidatos[p.id].indexOf(dubId);
     if(idx>=0) c.candidatos[p.id].splice(idx,1); else c.candidatos[p.id].push(dubId);
     salvarProjetos();
-    var cont=document.getElementById('_pratConteudo'); if(cont)_pratRenderCasting(cont);
+    var cont=document.getElementById('_pratConteudo'); if(!cont) return;
+    // Salva posição de scroll antes de re-renderizar
+    var panel = document.getElementById('_pratPersListPanel');
+    var scrollSalvo = panel ? panel.scrollTop : 0;
+    _pratRenderCasting(cont);
+    // Restaura posição de scroll — sem isso a lista volta ao topo a cada clique
+    var panelNovo = document.getElementById('_pratPersListPanel');
+    if (panelNovo) panelNovo.scrollTop = scrollSalvo;
 }
 
 function _pratRemoverCandidato2(persId, dubId) {
