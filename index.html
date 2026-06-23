@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.598</title>
+    <title>Sistema de Dublagem v12.600</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.598</p>
+        <p>v12.600</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.598</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.600</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1746,7 +1746,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.598</footer>
+    <footer>🎬 Sistema de Dublagem v12.600</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -20437,7 +20437,8 @@ function confAbrirModalBaixar() {
     listaEps.forEach(function(ep) {
         var temVideo = !!(typeof videosCache !== 'undefined' && videosCache[_dubProjeto.id+'_'+ep] && videosCache[_dubProjeto.id+'_'+ep].url);
         var temSRT   = !!(_dubProjeto.episodios[ep] && (_dubProjeto.episodios[ep].linhas||[]).length);
-        if (temVideo && temSRT) completos.push(ep);
+        // SRT sozinho já é suficiente para baixar — vídeo local é bônus (opcional)
+        if (temSRT) completos.push({ ep: ep, temVideo: temVideo });
         else pendentes.push({ ep: ep, temVideo: temVideo, temSRT: temSRT });
     });
 
@@ -20450,14 +20451,14 @@ function confAbrirModalBaixar() {
     // ── Completos: checkbox marcado, disponíveis para baixar ──
     if (completos.length) {
         html += '<div style="max-height:220px;overflow-y:auto;border:1px solid #334155;border-radius:8px;padding:6px;margin-bottom:14px;">';
-        completos.forEach(function(ep) {
-            var epPad = String(ep).padStart(2,'0');
+        completos.forEach(function(item) {
+            var epPad = String(item.ep).padStart(2,'0');
             html += '<label style="display:flex;align-items:center;gap:10px;padding:7px 6px;border-bottom:1px solid #1e293b;cursor:pointer;">' +
-                '<input type="checkbox" class="conf-ep-check" value="'+ep+'" checked style="width:15px;height:15px;cursor:pointer;">' +
+                '<input type="checkbox" class="conf-ep-check" value="'+item.ep+'" checked style="width:15px;height:15px;cursor:pointer;">' +
                 '<span style="font-size:13px;color:#e2e8f0;font-weight:600;min-width:55px;">EP '+epPad+'</span>' +
                 '<span style="font-size:11px;color:#4ade80;">📄 SRT</span>' +
-                '<span style="font-size:11px;color:#818cf8;">🎬 Vídeo</span>' +
-                '<span style="font-size:10px;color:#22c55e;margin-left:auto;font-weight:700;">✔ Par completo</span>' +
+                (item.temVideo ? '<span style="font-size:11px;color:#818cf8;">🎬 Vídeo local</span>' : '<span style="font-size:11px;color:#475569;">🎬 sem vídeo local</span>') +
+                '<span style="font-size:10px;color:#22c55e;margin-left:auto;font-weight:700;">✔ Disponível</span>' +
                 '</label>';
         });
         html += '</div>';
@@ -26407,12 +26408,10 @@ window.addEventListener('load', function() {
       <button class="dub-btn conf-hide" style="border-color:#3b82f6;color:#93c5fd;" onclick="dubAbrirHubEnvio('unificado')" data-i18n="membro.dub.enviarUnif">🎵 Enviar Unificado</button>
       <button class="dub-btn conf-hide" style="border-color:#22c55e;color:#4ade80;" onclick="dubAbrirHubEnvio('ep')" data-i18n="membro.dub.enviarEp">📁 Enviar por EP</button>
       <!-- Botões conferente -->
-      <button class="dub-btn dub-only-conf" style="display:none;border-color:#a78bfa;color:#c4b5fd;" onclick="_confSelecionarVideos()" title="Selecionar vídeos locais para conferência">📂 Vídeos</button>
       <button class="dub-btn dub-only-conf" style="display:none;border-color:#818cf8;color:#c4b5fd;" onclick="confAbrirModalBaixar()" data-i18n="membro.conf.baixarMat">⬇️ Baixar Materiais</button>
       <button class="dub-btn dub-only-conf" style="display:none;border-color:#22c55e;color:#4ade80;" onclick="confAbrirModalEnviarSRT()" data-i18n="membro.conf.enviarSRT">📤 Enviar SRT</button>
-      <!-- Botões editor -->
-      <button class="dub-btn dub-only-editor" style="display:none;border-color:#f59e0b;color:#fcd34d;" onclick="editorAbrirModalBaixar()" data-i18n="membro.edit.baixarMat">⬇️ Baixar Materiais</button>
-      <button class="dub-btn dub-only-editor" style="display:none;border-color:#22c55e;color:#4ade80;" onclick="editorAbrirModalEnviar()" data-i18n="membro.edit.enviarArq">📤 Enviar Arquivos</button>
+      <!-- Botão editor -->
+      <button class="dub-btn dub-only-editor" style="display:none;border-color:#f59e0b;color:#fcd34d;" onclick="editorAbrirModalBaixar()">🔗 Link do Projeto</button>
       <input type="file" id="dubAudioInput" multiple accept="audio/*,.wav,.mp3,.aiff,.flac" style="display:none" onchange="dubHandleAudioFiles(this.files)">
     </div>
   </div>
