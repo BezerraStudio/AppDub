@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.606</title>
+    <title>Sistema de Dublagem v12.607</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.606</p>
+        <p>v12.607</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.606</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.607</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1747,7 +1747,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.606</footer>
+    <footer>🎬 Sistema de Dublagem v12.607</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -16170,13 +16170,12 @@ async function _driveCompartilharParaEnvio(pastaId) {
 }
 
 // Aplica compartilhamento nas pastas de envio de TODOS os projetos existentes
-async function _driveCompartilharTodosProjetos() {
+async function _driveCompartilharTodosProjetos(silencioso) {
     var btn = document.getElementById('btnCompartilharTodos');
-    if (btn) { btn.disabled = true; btn.textContent = '⏳ Aplicando...'; }
+    if (btn && !silencioso) { btn.disabled = true; btn.textContent = '⏳ Aplicando...'; }
     var total = 0, ok = 0;
     for (var i = 0; i < projetos.length; i++) {
         var lk = projetos[i].links || {};
-        // Extrai IDs das pastas de envio dos links
         var pastasParaCompartilhar = [lk.pastaDubladores||lk.pastaUpload, lk.pastaSRTsFinais]
             .filter(Boolean)
             .map(function(url){ var m=url.match(/folders\/([a-zA-Z0-9_-]+)/); return m?m[1]:null; })
@@ -16186,9 +16185,10 @@ async function _driveCompartilharTodosProjetos() {
             if (await _driveCompartilharParaEnvio(pastasParaCompartilhar[j])) ok++;
         }
     }
-    if (btn) { btn.disabled = false; btn.textContent = '🔗 Compartilhar pastas de todos os projetos'; }
-    mostrarNotificacao('✅ Compartilhamento aplicado em '+ok+'/'+total+' pastas.', 'sucesso', 5000);
+    if (btn && !silencioso) { btn.disabled = false; btn.textContent = '🔗 Compartilhar pastas de todos os projetos'; }
+    if (!silencioso && total > 0) mostrarNotificacao('✅ Compartilhamento aplicado em '+ok+'/'+total+' pastas.', 'sucesso', 5000);
 }
+
 
 async function driveCriarPastaProjeto(nomeProjeto, nomeCliente) {
     const cfg = cfgGet();
@@ -16451,11 +16451,10 @@ async function driveSincronizar() {
         return;
     }
     // Salva apenas — NÃO carrega do Drive antes de salvar.
-    // O padrão antigo (carregar → salvar) causava regressão de dados: o Drive
-    // tinha versões antigas de cfg_servicos, equipe, etc., que ao serem
-    // restauradas e mescladas sobrescreviam as alterações locais mais recentes.
-    // Carregar do Drive é ação explícita (botão "Carregar") ou instalação nova.
     await _driveSalvarInterno();
+    // Garante compartilhamento das pastas de upload em projetos que ainda não têm
+    // (roda silenciosamente, não bloqueia nem mostra erro ao usuário)
+    _driveCompartilharTodosProjetos(true).catch(function(){});
 }
 
 // ── UI ────────────────────────────────────────────────────────────────────────
