@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.604</title>
+    <title>Sistema de Dublagem v12.606</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.604</p>
+        <p>v12.606</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.604</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.606</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1306,6 +1306,7 @@
               <div style="display:flex;gap:10px;margin-top:12px;align-items:center;flex-wrap:wrap;">
                 <button onclick="driveSincronizar()" style="padding:7px 14px;background:#27ae60;color:white;border:none;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;" data-i18n="cfg.drive.btnSincronizar">🔄 Sincronizar Drive</button>
                 <button onclick="driveCarregarDados()" style="padding:7px 14px;background:#5dade2;color:#1a5276;border:none;border-radius:6px;cursor:pointer;font-size:12px;" data-i18n="cfg.drive.btnCarregar">⬇️ Carregar do Drive</button>
+                <button id="btnCompartilharTodos" onclick="_driveCompartilharTodosProjetos()" style="padding:7px 14px;background:#7c3aed;color:white;border:none;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;" title="Libera as pastas de upload de todos os projetos para que membros da equipe possam enviar arquivos com a própria conta Google">🔗 Compartilhar pastas de todos os projetos</button>
                 <div id="cfgDriveStatus" style="font-size:11px;color:#7f8c8d;min-height:14px;"></div>
               </div>
 
@@ -1746,7 +1747,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.604</footer>
+    <footer>🎬 Sistema de Dublagem v12.606</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -16145,6 +16146,50 @@ async function _driveRenomearPasta(folderId, novoNome) {
 // ── Criar estrutura de pastas para um projeto ─────────────────────────────────
 // Estrutura: [Raiz] / [Cliente] / [Projeto] / subpastas padrão
 
+// Compartilha uma pasta do Drive como "Qualquer pessoa com o link pode adicionar arquivos"
+// Isso permite que membros da equipe (dubladores, conferentes) façam upload sem
+// precisar ser admin do Drive — cada um usa a própria conta Google.
+async function _driveCompartilharParaEnvio(pastaId) {
+    if (!pastaId || !_driveToken()) return false;
+    try {
+        await _driveFetch(
+            'https://www.googleapis.com/drive/v3/files/' + pastaId + '/permissions?sendNotificationEmail=false',
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ role: 'writer', type: 'anyone' })
+            }
+        );
+        return true;
+    } catch(e) {
+        // Ignora erro se a permissão já existe
+        if (e.message && e.message.indexOf('already') >= 0) return true;
+        console.warn('_driveCompartilharParaEnvio:', e.message);
+        return false;
+    }
+}
+
+// Aplica compartilhamento nas pastas de envio de TODOS os projetos existentes
+async function _driveCompartilharTodosProjetos() {
+    var btn = document.getElementById('btnCompartilharTodos');
+    if (btn) { btn.disabled = true; btn.textContent = '⏳ Aplicando...'; }
+    var total = 0, ok = 0;
+    for (var i = 0; i < projetos.length; i++) {
+        var lk = projetos[i].links || {};
+        // Extrai IDs das pastas de envio dos links
+        var pastasParaCompartilhar = [lk.pastaDubladores||lk.pastaUpload, lk.pastaSRTsFinais]
+            .filter(Boolean)
+            .map(function(url){ var m=url.match(/folders\/([a-zA-Z0-9_-]+)/); return m?m[1]:null; })
+            .filter(Boolean);
+        for (var j = 0; j < pastasParaCompartilhar.length; j++) {
+            total++;
+            if (await _driveCompartilharParaEnvio(pastasParaCompartilhar[j])) ok++;
+        }
+    }
+    if (btn) { btn.disabled = false; btn.textContent = '🔗 Compartilhar pastas de todos os projetos'; }
+    mostrarNotificacao('✅ Compartilhamento aplicado em '+ok+'/'+total+' pastas.', 'sucesso', 5000);
+}
+
 async function driveCriarPastaProjeto(nomeProjeto, nomeCliente) {
     const cfg = cfgGet();
     if (!cfg.pastaRaizId || !_driveToken()) return null;
@@ -16201,6 +16246,16 @@ async function driveCriarPastaProjeto(nomeProjeto, nomeCliente) {
                 projetos[idx].links.pastaSRTsProjetoId = ids['SRTs do Projeto'];
             }
             salvarProjetos();
+            // Compartilhar pastas de envio automaticamente (Dubladores + SRTs Revisada - Final)
+            // para que membros da equipe possam fazer upload sem precisar ser admin do Drive
+            var _pastasEnvio = ['Dubladores', 'SRTs Revisada - Final'];
+            _pastasEnvio.forEach(function(nomePasta) {
+                if (ids[nomePasta]) {
+                    _driveCompartilharParaEnvio(ids[nomePasta]).catch(function(e){
+                        console.warn('Compartilhamento de '+nomePasta+':', e.message);
+                    });
+                }
+            });
             // Atualizar UI — re-busca projetoAtual do array fresquinho (a referência
             // pode ter ficado stale se o polling reconstruiu projetos[] enquanto as
             // pastas do Drive eram criadas, que é o motivo do botão não aparecer)
@@ -19411,6 +19466,10 @@ function _dubAbrirTela() {
     }
     document.getElementById('dubProjetoLabel').textContent = _dubProjeto ? _dubProjeto.nome || '' : '';
     document.getElementById('dubScreen').classList.add('ativo');
+    // Inicia Drive silenciosamente para membros que precisam enviar arquivos
+    if (_dubPapel === 'dub' || _dubPapel === 'conferente' || _dubPapel === 'editor') {
+        setTimeout(_membroIniciarDrive, 500);
+    }
 
     // Registrar acesso (só para dubladores)
     if (_dubPapel === 'dub' && _dubProjeto && _dubDubId) {
@@ -20432,24 +20491,34 @@ function confAbrirModalBaixar() {
     var meusEps = eps.filter(function(ep){ var c = conf[ep]; return c && c.confId === _dubDubId; });
     var listaEps = meusEps.length ? meusEps : eps;
     var proj = (_dubProjeto.nome||'PROJ').replace(/[^a-zA-Z0-9]/g,'_');
+    var lk = _dubProjeto.links || {};
+    var urlVideos = lk.pastaMateriais || '';
 
     var completos = [], pendentes = [];
     listaEps.forEach(function(ep) {
         var temVideo = !!(typeof videosCache !== 'undefined' && videosCache[_dubProjeto.id+'_'+ep] && videosCache[_dubProjeto.id+'_'+ep].url);
         var temSRT   = !!(_dubProjeto.episodios[ep] && (_dubProjeto.episodios[ep].linhas||[]).length);
-        // SRT sozinho já é suficiente para baixar — vídeo local é bônus (opcional)
         if (temSRT) completos.push({ ep: ep, temVideo: temVideo });
         else pendentes.push({ ep: ep, temVideo: temVideo, temSRT: temSRT });
     });
 
-    var html = '<div style="margin-bottom:10px;display:flex;align-items:center;gap:10px;">' +
+    // Info de pastas
+    var infoHtml =
+        '<div style="background:#0f172a;border:1px solid #334155;border-radius:6px;padding:7px 10px;margin-bottom:10px;font-size:11px;">' +
+        '<div style="color:#94a3b8;margin-bottom:3px;">📍 <strong style="color:#e2e8f0;">Fontes:</strong></div>' +
+        '<div style="margin-bottom:2px;">📄 SRT: <span style="color:#4ade80;">roteiro do projeto (Supabase)</span></div>' +
+        (urlVideos
+            ? '<div>🎬 Vídeos: <a href="'+urlVideos+'" target="_blank" style="color:#60a5fa;text-decoration:underline;">Videos Para Revisão ↗</a></div>'
+            : '<div>🎬 Vídeos: <span style="color:#fbbf24;">⚠️ pasta não configurada — admin: clique em 🔍 Buscar pasta no Drive</span></div>') +
+        '</div>';
+
+    var html = infoHtml +
+        '<div style="margin-bottom:10px;display:flex;align-items:center;gap:10px;">' +
         '<label style="font-size:12px;color:#94a3b8;font-weight:600;">Selecionar:</label>' +
         '<button onclick="confSelecionarTodosEps(true)" style="padding:2px 9px;background:#334155;color:#94a3b8;border:1px solid #475569;border-radius:5px;font-size:11px;cursor:pointer;">✔ Todos</button>' +
         '<button onclick="confSelecionarTodosEps(false)" style="padding:2px 9px;background:#334155;color:#94a3b8;border:1px solid #475569;border-radius:5px;font-size:11px;cursor:pointer;">✕ Nenhum</button>' +
-        (((_dubProjeto&&_dubProjeto.links&&_dubProjeto.links.pastaMateriais)||'') ? '<a href="'+((_dubProjeto&&_dubProjeto.links&&_dubProjeto.links.pastaMateriais)||'')+ '" target=\"_blank\" style=\"margin-left:auto;font-size:11px;padding:3px 10px;background:#1e3a5f;color:#60a5fa;border:1px solid #3b82f6;border-radius:5px;text-decoration:none;font-weight:600;\">📁 Vídeos no Drive</a>' : '') +
+        (urlVideos ? '<a href="'+urlVideos+'" target="_blank" style="margin-left:auto;font-size:11px;padding:3px 10px;background:#1e3a5f;color:#60a5fa;border:1px solid #3b82f6;border-radius:5px;text-decoration:none;font-weight:600;">📁 Vídeos no Drive</a>' : '') +
         '</div>';
-
-    // ── Completos: checkbox marcado, disponíveis para baixar ──
     if (completos.length) {
         html += '<div style="max-height:220px;overflow-y:auto;border:1px solid #334155;border-radius:8px;padding:6px;margin-bottom:14px;">';
         completos.forEach(function(item) {
@@ -20586,88 +20655,129 @@ async function confConfirmarEnviarSRT() {
         return;
     }
 
+    var btn = document.querySelector('#confModalEnviarSRT button[onclick*="confConfirmarEnviarSRT"]');
+    if (btn) { btn.disabled = true; btn.textContent = '⏳ Aguarde...'; }
+    if (log) log.innerHTML = '<div style="color:#94a3b8;font-size:11px;">🔑 Verificando conexão com Drive...</div>';
+
+    // Tenta restaurar token do localStorage (sessão admin do mesmo navegador)
+    var conectado = await _garantirDriveConectado().catch(function(){ return false; });
+    var token = _driveToken();
+
     var lk      = _dubProjeto && _dubProjeto.links || {};
     var url     = lk.pastaSRTsFinais || '';
     var m       = url.match(/folders\/([a-zA-Z0-9_-]+)/);
     var pastaId = m ? m[1] : null;
-    var token   = _driveToken();
-
-    var btn = document.querySelector('#confModalEnviarSRT button[onclick*="confConfirmarEnviarSRT"]');
 
     // ── SEM DRIVE: baixa localmente ──────────────────────────────────────────
     if (!token || !pastaId) {
         if (log) log.innerHTML =
             '<div style="color:#fbbf24;font-size:12px;margin-bottom:8px;">' +
-            (!url ? '⚠️ Pasta destino não configurada.' : '⚠️ Drive não conectado — baixando localmente.') +
+            (!url
+                ? '⚠️ Pasta "SRTs Revisada - Final" não configurada — clique em Buscar pasta no Drive.'
+                : '⚠️ Drive não conectado — baixando localmente.') +
             '</div>';
         var baixados = 0;
         for (var i = 0; i < _confArquivosSelecionados.length; i++) {
             var item = _confArquivosSelecionados[i];
             try {
-                var txt = await new Promise(function(res, rej){
-                    var r = new FileReader();
-                    r.onload = function(e){ res(e.target.result); };
-                    r.onerror = function(){ rej(new Error('Erro de leitura')); };
-                    r.readAsText(item.file, 'utf-8');
-                });
-                var blob = new Blob([txt], {type:'text/plain;charset=utf-8'});
-                var a = document.createElement('a');
-                a.href = URL.createObjectURL(blob);
-                a.download = item.nome;
-                document.body.appendChild(a); a.click(); document.body.removeChild(a);
-                setTimeout(function(){ URL.revokeObjectURL(a.href); }, 2000);
+                var blob0 = new Blob([await new Promise(function(res,rej){
+                    var r=new FileReader(); r.onload=function(e){res(e.target.result);}; r.onerror=rej;
+                    r.readAsText(item.file,'utf-8');
+                })], {type:'text/plain;charset=utf-8'});
+                var a0 = document.createElement('a');
+                a0.href = URL.createObjectURL(blob0);
+                a0.download = item.nome;
+                document.body.appendChild(a0); a0.click(); document.body.removeChild(a0);
+                setTimeout(function(){ URL.revokeObjectURL(a0.href); }, 2000);
                 if (log) log.innerHTML += '<div style="color:#4ade80;font-size:11px;">⬇️ '+item.nome+'</div>';
                 baixados++;
-            } catch(e) {
+            } catch(e2) {
                 if (log) log.innerHTML += '<div style="color:#f87171;font-size:11px;">❌ '+item.nome+'</div>';
             }
         }
         if (url && log) log.innerHTML += '<div style="margin-top:8px;"><a href="'+url+'" target="_blank" style="color:#60a5fa;font-size:11px;">📁 Envie manualmente: SRTs Revisada - Final ↗</a></div>';
+        if (btn) { btn.disabled=false; btn.textContent='📤 Confirmar'; }
         _confArquivosSelecionados = [];
         if (log) log.dataset.pronto = '0';
-        mostrarNotificacao('⬇️ '+baixados+' SRT(s) baixados localmente.', 'sucesso', 4000);
+        mostrarNotificacao('⬇️ '+baixados+' SRT(s) baixado(s) localmente.', 'sucesso', 4000);
         return;
     }
 
-    // ── COM DRIVE: upload direto ─────────────────────────────────────────────
-    if (btn) { btn.disabled = true; btn.textContent = '⏳ Enviando...'; }
+    // ── COM DRIVE: upload direto com progresso ───────────────────────────────
     if (log) log.innerHTML = '<div style="color:#94a3b8;font-size:11px;margin-bottom:8px;">⬆️ Enviando para <strong style="color:#4ade80;">SRTs Revisada - Final</strong>...</div>';
+    if (btn) btn.textContent = '⏳ Enviando...';
 
     var enviados = 0, erros = 0;
     for (var j = 0; j < _confArquivosSelecionados.length; j++) {
-        var item2 = _confArquivosSelecionados[j];
+        var itJ = _confArquivosSelecionados[j];
         var rowId = 'conf-row-'+j;
-        if (log) log.innerHTML += '<div id="'+rowId+'" style="font-size:11px;color:#94a3b8;">⏳ '+item2.nome+'</div>';
+        if (log) log.innerHTML += '<div id="'+rowId+'" style="font-size:11px;color:#94a3b8;">⏳ '+itJ.nome+'</div>';
         try {
-            var txt2 = await new Promise(function(res, rej){
-                var r2 = new FileReader();
-                r2.onload = function(e){ res(e.target.result); };
-                r2.onerror = function(){ rej(new Error('Erro de leitura')); };
-                r2.readAsText(item2.file, 'utf-8');
+            var txt2 = await new Promise(function(res,rej){
+                var r2=new FileReader(); r2.onload=function(e){res(e.target.result);}; r2.onerror=rej;
+                r2.readAsText(itJ.file,'utf-8');
             });
-            var blob2 = new Blob([txt2], {type:'text/plain;charset=utf-8'});
-            var meta2 = {name: item2.nome, parents: [pastaId]};
+            var blob2 = new Blob([txt2],{type:'text/plain;charset=utf-8'});
+            var meta2 = {name:itJ.nome, parents:[pastaId]};
             var form2 = new FormData();
-            form2.append('metadata', new Blob([JSON.stringify(meta2)], {type:'application/json'}));
+            form2.append('metadata', new Blob([JSON.stringify(meta2)],{type:'application/json'}));
             form2.append('file', blob2);
-            await _driveFetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {method:'POST', body:form2});
+            await _driveFetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',{method:'POST',body:form2});
             var row = document.getElementById(rowId);
-            if (row) row.innerHTML = '<span style="color:#4ade80;">✅ '+item2.nome+'</span>';
+            if (row) row.innerHTML = '<span style="color:#4ade80;">✅ '+itJ.nome+'</span>';
             enviados++;
-        } catch(e) {
+        } catch(eJ) {
             var row2 = document.getElementById(rowId);
-            if (row2) row2.innerHTML = '<span style="color:#f87171;">❌ '+item2.nome+' ('+e.message+')</span>';
+            if (row2) row2.innerHTML = '<span style="color:#f87171;">❌ '+itJ.nome+' ('+eJ.message+')</span>';
             erros++;
         }
     }
 
-    if (btn) { btn.disabled = false; btn.textContent = '📤 Confirmar'; }
+    if (btn) { btn.disabled=false; btn.textContent='📤 Confirmar'; }
     _confArquivosSelecionados = [];
     if (log) log.dataset.pronto = '0';
     if (enviados) mostrarNotificacao('✅ '+enviados+' SRT(s) enviados para o Drive!', 'sucesso', 4000);
     if (erros)    mostrarNotificacao('⚠️ '+erros+' arquivo(s) com erro.', 'aviso', 3000);
 }
 
+
+// ── Drive para membros da equipe ─────────────────────────────────────────────
+async function _membroConectarDrive() {
+    var btn = document.getElementById('btnMembroDrive');
+    if (btn) { btn.disabled = true; btn.textContent = '⏳ Conectando...'; }
+    var ok = await _garantirDriveConectado().catch(function(){ return false; });
+    _membroAtualizarStatusDrive();
+    if (ok) {
+        mostrarNotificacao('✅ Google Drive conectado! Agora você pode enviar arquivos.', 'sucesso', 4000);
+    } else {
+        if (btn) { btn.disabled = false; btn.textContent = '🔗 Conectar Drive'; }
+        mostrarNotificacao('❌ Não foi possível conectar o Drive. Tente novamente.', 'erro', 3000);
+    }
+}
+
+function _membroAtualizarStatusDrive() {
+    var btn = document.getElementById('btnMembroDrive');
+    var ok  = document.getElementById('spanMembroDriveOk');
+    var tem = !!_driveToken();
+    if (btn) { btn.style.display = tem ? 'none' : ''; btn.disabled = false; btn.textContent = '🔗 Conectar Drive'; }
+    if (ok)  ok.style.display = tem ? '' : 'none';
+}
+
+function _membroIniciarDrive() {
+    _membroAtualizarStatusDrive();
+    if (!_driveToken()) {
+        _garantirDriveConectado().then(function(){ _membroAtualizarStatusDrive(); }).catch(function(){});
+    }
+}
+
+// Seleciona vídeos locais para o conferente
+async function _confSelecionarVideos() {
+    if (!_dubProjeto) { mostrarNotificacao('Nenhum projeto ativo.', 'aviso', 2000); return; }
+    var _prevProj = (typeof projetoAtual !== 'undefined') ? projetoAtual : null;
+    if (typeof projetoAtual !== 'undefined') projetoAtual = _dubProjeto;
+    await _abrirSeletorVideos();
+    if (typeof projetoAtual !== 'undefined') projetoAtual = _prevProj;
+}
 
 function _dubGerarLinkSRT(epNum) {
     if (!_dubProjeto) return '';
@@ -26443,7 +26553,10 @@ window.addEventListener('load', function() {
       <button class="dub-btn conf-hide" style="border-color:#60a5fa;color:#93c5fd;" onclick="dubAbrirBaixarVideos()" data-i18n="membro.dub.baixarVideos">📥 Baixar Vídeos</button>
       <button class="dub-btn conf-hide" style="border-color:#3b82f6;color:#93c5fd;" onclick="dubAbrirHubEnvio('unificado')" data-i18n="membro.dub.enviarUnif">🎵 Enviar Unificado</button>
       <button class="dub-btn conf-hide" style="border-color:#22c55e;color:#4ade80;" onclick="dubAbrirHubEnvio('ep')" data-i18n="membro.dub.enviarEp">📁 Enviar por EP</button>
-      <!-- Botões conferente -->
+      <!-- Botão conectar Drive — aparece para qualquer membro sem token -->
+      <button id="btnMembroDrive" onclick="_membroConectarDrive()" style="display:none;padding:4px 12px;background:#1e3a5f;color:#60a5fa;border:1px solid #3b82f6;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;">🔗 Conectar Drive</button>
+      <!-- Indicador Drive conectado -->
+      <span id="spanMembroDriveOk" style="display:none;font-size:11px;color:#4ade80;font-weight:600;">☁️ Drive ✓</span>
       <button class="dub-btn dub-only-conf" style="display:none;border-color:#818cf8;color:#c4b5fd;" onclick="confAbrirModalBaixar()" data-i18n="membro.conf.baixarMat">⬇️ Baixar Materiais</button>
       <button class="dub-btn dub-only-conf" style="display:none;border-color:#22c55e;color:#4ade80;" onclick="confAbrirModalEnviarSRT()" data-i18n="membro.conf.enviarSRT">📤 Enviar SRT</button>
       <!-- Botão editor -->
