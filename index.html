@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.592</title>
+    <title>Sistema de Dublagem v12.593</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.592</p>
+        <p>v12.593</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.592</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.593</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1746,7 +1746,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.592</footer>
+    <footer>🎬 Sistema de Dublagem v12.593</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -3378,8 +3378,9 @@ var _i18n = {
         'prat.pers.ocultos':             'hidden',
         'prat.pers.verOcultos':          'Show hidden',
         'prat.pers.ocultarOcultos':      'Hide hidden',
-        'prat.pers.ocultar':             'Hide from casting',
-        'prat.pers.mostrar':             'Show in casting',
+        'prat.pers.excluirCasting':      'Exclude from casting',
+        'prat.pers.incluirCasting':      'Include in casting',
+        'prat.pers.foraCasting':         'out of casting',
         'prat.pers.semDescricao':        'No description',
         'prat.pers.empty':               'No characters yet.<br>Add the characters that the client will need to choose voice actors for.',
         'prat.form.tituloNovo':          '➕ New Character',
@@ -3697,8 +3698,9 @@ var _i18n = {
         'prat.pers.ocultos':             'ocultos',
         'prat.pers.verOcultos':          'Ver ocultos',
         'prat.pers.ocultarOcultos':      'Esconder ocultos',
-        'prat.pers.ocultar':             'Ocultar do casting',
-        'prat.pers.mostrar':             'Mostrar no casting',
+        'prat.pers.excluirCasting':      'Excluir do casting',
+        'prat.pers.incluirCasting':      'Incluir no casting',
+        'prat.pers.foraCasting':         'fora do casting',
         'prat.pers.semDescricao':        'Sem descrição',
         'prat.pers.empty':               'Nenhum personagem ainda.<br>Adicione os personagens que o cliente precisará escolher os dubladores.',
         'prat.form.tituloNovo':          '➕ Novo Personagem',
@@ -7480,7 +7482,7 @@ function _pratRenderPersonagens(cont) {
 
     var visiveis  = comPalavras.filter(function(x){ return !x.p.oculto; });
     var ocultos   = comPalavras.filter(function(x){ return !!x.p.oculto; });
-    var exibidos  = mostrarOcultos ? comPalavras : visiveis;
+    var exibidos  = comPalavras; // sempre mostra todos na aba Personagens
 
     var perfilTot = {}, perfilIdx2 = {};
     todos.forEach(function(p){ perfilTot[p.perfil] = (perfilTot[p.perfil]||0)+1; });
@@ -7488,13 +7490,12 @@ function _pratRenderPersonagens(cont) {
     var html =
         '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:8px;flex-wrap:wrap;">' +
         '<span style="font-size:13px;color:#555;">' + t('prat.pers.count', {n: todos.length}) +
-            (ocultos.length ? ' <span style="font-size:11px;color:#94a3b8;">(' + ocultos.length + ' ' + t('prat.pers.ocultos') + ')</span>' : '') + '</span>' +
+            (ocultos.length ? ' <span style="font-size:11px;color:#e67e22;font-weight:600;">(' + ocultos.length + ' ' + t('prat.pers.foraCasting') + ')</span>' : '') + '</span>' +
         '<div style="display:flex;gap:6px;align-items:center;">' +
         '<select onchange="_pratSortPers=this.value;var co=document.getElementById(\'_pratConteudo\');if(co)_pratRenderPersonagens(co);" style="font-size:11px;padding:3px 6px;border:1px solid #dde;border-radius:5px;background:white;">' +
         '<option value="nome"' + (_pratSortPers==='nome'?' selected':'') + '>'+t('prat.pers.sortNome')+'</option>' +
         '<option value="palavras"' + (_pratSortPers==='palavras'?' selected':'') + '>'+t('prat.pers.sortPalavras')+'</option>' +
         '</select>' +
-        (ocultos.length ? '<button data-mostrar-ocultos="'+(mostrarOcultos?'0':'1')+'" onclick="var co=document.getElementById(\'_pratConteudo\');if(co){this.dataset.mostrarOcultos=this.dataset.mostrarOcultos===\'1\'?\'0\':\'1\';_pratRenderPersonagens(co);}" style="font-size:11px;padding:3px 8px;border:1px solid #dde;border-radius:5px;background:white;cursor:pointer;">'+(mostrarOcultos?'🙈 '+t('prat.pers.ocultarOcultos'):'👁 '+t('prat.pers.verOcultos'))+'</button>' : '') +
         '<button onclick="_pratAddPersonagem()" style="padding:5px 14px;background:#27ae60;color:white;border:none;border-radius:7px;cursor:pointer;font-weight:600;font-size:13px;">'+t('prat.pers.btnAdicionar')+'</button>' +
         '</div></div>' +
         (todos.length === 0
@@ -7525,7 +7526,7 @@ function _pratRenderPersonagens(cont) {
                     (p.faixas&&p.faixas.length?p.faixas.map(function(f){ return '<span style="font-size:10px;padding:2px 7px;border-radius:8px;background:#f1f5f9;color:#475569;">'+f+'</span>'; }).join(''):'') +
                     '</div></div>' +
                     '<div style="display:flex;gap:6px;flex-shrink:0;">' +
-                    '<button onclick="_pratToggleOcultoPers('+i+')" title="'+(p.oculto?t('prat.pers.mostrar'):t('prat.pers.ocultar'))+'" style="padding:5px 10px;border:1px solid #cbd5e1;border-radius:6px;background:white;cursor:pointer;font-size:12px;">'+(p.oculto?'👁':'🙈')+'</button>' +
+                    '<button onclick="_pratToggleOcultoPers('+i+')" title="'+(p.oculto?t('prat.pers.incluirCasting'):t('prat.pers.excluirCasting'))+'" style="padding:5px 10px;border:1px solid '+(p.oculto?'#86efac':'#fca5a5')+';border-radius:6px;background:'+(p.oculto?'#f0fdf4':'#fff5f5')+';cursor:pointer;font-size:12px;">'+(p.oculto?'✅':'🚫')+'</button>' +
                     '<button onclick="_pratEditarPersonagem('+i+')" style="padding:5px 10px;border:1px solid #cbd5e1;border-radius:6px;background:white;cursor:pointer;font-size:12px;">✏️</button>' +
                     '<button onclick="_pratRemoverPersonagem('+i+')" style="padding:5px 10px;border:1px solid #fca5a5;border-radius:6px;background:white;color:#dc2626;cursor:pointer;font-size:12px;">🗑️</button>' +
                     '</div></div>';
@@ -7733,10 +7734,12 @@ function _pratRenderCasting(cont) {
         '<div style="flex:1;display:flex;flex-direction:column;background:#fafafa;">' +
         '<div style="padding:8px 12px;background:'+(_pratCastAtual()&&_pratCastAtual().status==='respondido'?'#7f1d1d':'#1a7abf')+';color:white;font-size:13px;font-weight:700;flex-shrink:0;">'+(_pratCastAtual()&&_pratCastAtual().status==='respondido'?t('prat.cast.bloqueado'):t('prat.cast.instrucao'))+'</div>' +
         '<div id="_pratPersListPanel" style="flex:1;overflow-y:auto;padding:8px;">' +
-        persList.map(function(p,i){
-            var letra=letraPers(i), ativo=i===_pratPersAtivo;
+        // Filtra personagens marcados como fora do casting (oculto=true)
+        persList.filter(function(p){ return !p.oculto; }).map(function(p){
+            var idxOriginal = persList.indexOf(p);
+            var letra=letraPers(idxOriginal), ativo=idxOriginal===_pratPersAtivo;
             var cands=_pratCandsPers(p.id);
-            return '<div onclick="_pratSelecionarPers('+i+')" style="border:2px solid '+(ativo?'#1a7abf':'#e2e8f0')+';border-radius:8px;padding:8px 10px;margin-bottom:6px;cursor:pointer;background:'+(ativo?'#eff6ff':'white')+';transition:border-color .15s;">' +
+            return '<div onclick="_pratSelecionarPers('+idxOriginal+')" style="border:2px solid '+(ativo?'#1a7abf':'#e2e8f0')+';border-radius:8px;padding:8px 10px;margin-bottom:6px;cursor:pointer;background:'+(ativo?'#eff6ff':'white')+';transition:border-color .15s;">' +
                 '<div style="display:flex;align-items:center;gap:8px;margin-bottom:'+(cands.length?'5':'0')+'px;">' +
                 // Foto do personagem
                 '<div style="width:38px;height:38px;border-radius:6px;overflow:hidden;flex-shrink:0;background:#e2e8f0;border:1px solid #cbd5e1;display:flex;align-items:center;justify-content:center;font-size:16px;">' +
@@ -7764,9 +7767,14 @@ function _pratRenderCasting(cont) {
 }
 
 function _pratSelecionarPers(i) {
-    _pratPersAtivo=i;
-    var cont=document.getElementById('_pratConteudo');
-    if(cont) _pratRenderCasting(cont);
+    _pratPersAtivo = i;
+    var cont = document.getElementById('_pratConteudo');
+    if (!cont) return;
+    var panel = document.getElementById('_pratPersListPanel');
+    var scrollSalvo = panel ? panel.scrollTop : 0;
+    _pratRenderCasting(cont);
+    var panelNovo = document.getElementById('_pratPersListPanel');
+    if (panelNovo) panelNovo.scrollTop = scrollSalvo;
 }
 
 function _pratRenderListaDubs() {
