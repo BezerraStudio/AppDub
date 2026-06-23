@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.595</title>
+    <title>Sistema de Dublagem v12.597</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.595</p>
+        <p>v12.597</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.595</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.597</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1746,7 +1746,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.595</footer>
+    <footer>🎬 Sistema de Dublagem v12.597</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -16258,13 +16258,14 @@ function _driveMesclarArray(localRaw, driveRaw) {
     if (local.length === 0) return drive.slice();
     var idsLocal = new Set(local.map(function(x){ return x.id; }));
     var idsDrive = new Set(drive.map(function(x){ return x.id; }));
-    // Itens existentes no local: LOCAL VENCE — o usuário pode ter editado desde
-    // o último backup, e não temos timestamp por item para saber qual é mais novo
-    var existentes = local.slice(); // mantém a versão local de todos os itens locais
-    // Itens só no Drive (não existem no local): NÃO restaura — ausência local
-    // indica deleção intencional. Novos itens de outros computadores chegam
-    // via Supabase (polling de 45s), não via restore do Drive.
-    return existentes;
+    // Itens existentes no local: LOCAL VENCE (edições recentes não são perdidas)
+    var existentes  = local.slice();
+    // Itens só no Drive: ADICIONA — podem ser itens que o Supabase perdeu e o
+    // Drive tem. Como o restore automático está desativado (driveSincronizar só
+    // salva, nunca carrega), este caminho só é atingido em restauração manual
+    // explícita pelo usuário, que é exatamente quando queremos recuperar esses itens.
+    var novosDoDrive = drive.filter(function(x){ return !idsLocal.has(x.id); });
+    return existentes.concat(novosDoDrive);
 }
 
 function _driveAplicarBackupExtra(extra) {
@@ -25920,31 +25921,34 @@ async function _sbCarregarDados() {
                 if (row.atualizado_em && (!maiorData || row.atualizado_em > maiorData)) maiorData = row.atualizado_em;
                 continue;
             }
-            // Para chaves de arrays de cadastro: protege dados locais contra
-            // sobrescritas do Supabase com versões desatualizadas/menores.
-            // Se local tem MAIS itens → preserva local e re-envia ao Supabase.
-            // Se Supabase tem mais → aceita (novos itens de outro dispositivo).
+            // Arrays de cadastro (dubladores, equipe, clientes, etc.): MERGE SEGURO.
+            // Regra: itens locais NUNCA são removidos pelo polling do Supabase.
+            // Supabase só pode ADICIONAR itens novos (de outro dispositivo/admin).
+            // Deleções locais propagam via push (não via pull).
             if (_DRIVE_BACKUP_CHAVES_ARRAY && _DRIVE_BACKUP_CHAVES_ARRAY.indexOf(row.chave) >= 0) {
-                var _localRaw = localStorage.getItem(row.chave);
-                if (_localRaw) {
-                    try {
-                        var _localArr = JSON.parse(_localRaw);
-                        var _sbArrTmp = JSON.parse(serialized);
-                        if (Array.isArray(_localArr) && Array.isArray(_sbArrTmp) && _localArr.length > _sbArrTmp.length) {
-                            // Local tem mais — re-envia ao Supabase e não sobrescreve local
-                            if (!(_sbPendente && _sbPendente[row.chave])) {
-                                _sbPendente[row.chave] = _localRaw;
-                                clearTimeout(_sbTimer);
-                                _sbTimer = setTimeout(_sbFlush, 2000);
-                            }
-                            if (row.atualizado_em && (!maiorData || row.atualizado_em > maiorData)) maiorData = row.atualizado_em;
-                            continue; // não sobrescreve localStorage
+                try {
+                    var _sbArr2  = JSON.parse(serialized);
+                    var _locRaw2 = localStorage.getItem(row.chave);
+                    var _locArr2 = _locRaw2 ? JSON.parse(_locRaw2) : [];
+                    if (Array.isArray(_sbArr2) && Array.isArray(_locArr2)) {
+                        var _locIds = new Set(_locArr2.map(function(x){ return String(x.id); }));
+                        var _novosDoSB = _sbArr2.filter(function(x){ return !_locIds.has(String(x.id)); });
+                        if (_novosDoSB.length > 0) {
+                            // Tem itens novos do Supabase (outro dispositivo adicionou) — incorpora
+                            var _merged2 = _locArr2.concat(_novosDoSB);
+                            _lsSetOrig(row.chave, JSON.stringify(_merged2));
                         }
-                    } catch(_e) {}
-                }
+                        // Sem itens novos: NÃO faz nada — não sobrescreve local
+                        // (isso previne que versão desatualizada do Supabase apague cadastros locais)
+                        if (typeof _invalidarCacheDubladores === 'function' && row.chave === 'dublagem_dubladores') {
+                            _invalidarCacheDubladores();
+                        }
+                        if (row.atualizado_em && (!maiorData || row.atualizado_em > maiorData)) maiorData = row.atualizado_em;
+                        continue;
+                    }
+                } catch(_e2) {}
             }
             _lsSetOrig(row.chave, serialized); // usa original para não re-disparar sync
-            // Invalida cache de dubladores se essa chave foi atualizada
             if (row.chave === 'dublagem_dubladores' && typeof _invalidarCacheDubladores === 'function') {
                 _invalidarCacheDubladores();
             }
