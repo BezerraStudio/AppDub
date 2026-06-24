@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.612</title>
+    <title>Sistema de Dublagem v12.614</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.612</p>
+        <p>v12.614</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.612</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.614</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1747,7 +1747,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.612</footer>
+    <footer>🎬 Sistema de Dublagem v12.614</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -3133,7 +3133,342 @@ var _i18n = {
         'notif.retakeMarcado':        '🔁 Retake marcado — linha {linha} do EP {ep}',
         'notif.confirmarEPs':         '✅ Confirmar {n} EP(s) Selecionado(s)',
         'notif.nenhPar':              'Nenhum par completo disponível ainda.',
-        'notif.retakeGravado':        '✅ Retake marcado como gravado! O gerente do projeto está sendo informado.'
+        'notif.retakeGravado':        '✅ Retake marcado como gravado! O gerente do projeto está sendo informado.',
+        // ── Telas de membros ─────────────────────────────────────────────────
+        'membro.dub.olaLabel':           '{icone} Olá, {nome}!',
+        'membro.dub.todosPersonagens':   'Todos os personagens',
+        'membro.dub.todosMeus':          'Todos os meus',
+        'membro.dub.todosEPs':           'Todos os EPs',
+        'membro.dub.badgeLivre':         '🔓 Livre',
+        'membro.dub.badgeMeu':           '👤 Meu',
+        'membro.dub.badgeMeuEditor':     '✂️ Meu',
+        'membro.dub.badgeOcupado':       '🔒 Ocupado',
+        'membro.dub.badgeConferido':     '✅ Conferido',
+        'membro.dub.badgeConcluido':     '✔ Concluído',
+        'membro.dub.badgeRevisado':      '📝 Revisado',
+        'membro.dub.thPersonagem':       'Personagem',
+        'membro.dub.thDialogo':          'Diálogo',
+        'membro.dub.thRetake':           'Retake',
+        'membro.dub.tcUnif':             'TC Unif.',
+        'membro.dub.tcInicioFim':        'TC Início — Fim',
+        'membro.dub.tcEP':               'TC EP',
+        'membro.dub.tcAmbos':            'TC Ambos',
+        'membro.dub.falas':              'fala(s)',
+        'membro.dub.subProjeto':         'sub-projeto',
+        'membro.dub.modoCompacto':       'Compacto',
+        'membro.dub.buscar':             'Buscar...',
+        'membro.dub.filtrando':          'Filtrando',
+        'membro.dub.seleciona':          'Selecione',
+        'membro.dub.selecioneEp':        'Selecione um EP',
+        'membro.dub.proximoEp':          'Próximo EP',
+        'membro.dub.nenhumEpProj':       'Nenhum EP encontrado neste projeto.',
+        'membro.dub.nenhumDubEncontrado': 'Nenhum dublador encontrado.',
+        'membro.dub.nenhumResultFiltro': 'Nenhum resultado para o filtro.',
+        'membro.dub.nenhumVideo':        'Nenhum vídeo disponível.',
+        'membro.dub.nenhumVideoPronto':  'Nenhum vídeo pronto para reprodução.',
+        'membro.dub.persSemDub':         'Sem dublador',
+        'membro.dub.personSemDub':       'Personagem sem dublador escalado.',
+        'membro.dub.bemVindoRev':        '📝 Bem-vindo(a), {nome}! Aba Revisão de Roteiro aberta.',
+        'membro.dub.projetoNaoEnc':      'Projeto não encontrado. Verifique o link.',
+        'membro.dub.epConcluidos':       'EP(s) concluído(s)',
+        'membro.dub.epEnviado':          '✅ EP {ep} enviado!',
+        'membro.dub.epDesmarcado':       'EP {ep} desmarcado — agora está livre.',
+        'membro.dub.epReset':            'EP {ep} resetado.',
+        'membro.dub.epRevisar':          'EP {ep} — revise o roteiro e marque como revisado.',
+        'membro.dub.epEmRevisao':        'EP {ep} está sendo revisado por você.',
+        'membro.dub.epJaTravado':        'EP já travado.',
+        'membro.dub.epJaConferido':      '✅ EP {ep} já conferido.',
+        'membro.dub.epJaEditado':        '✅ EP {ep} já marcado como editado.',
+        'membro.dub.epJaEmRevisao':      'EP já em revisão por {nome}',
+        'membro.dub.epJaTravadoPor':     'EP já travado por {nome}',
+        'membro.dub.epJaRevisado':       '✅ EP {ep} já revisado.',
+        'membro.dub.epLiberado':         '🔓 EP {ep} liberado!',
+        'membro.dub.epLibBloq':          'EP {ep}{status}',
+        'membro.dub.epBloqDuploCl':      'EP {ep} bloqueado — duplo clique no botão para liberar.',
+        'membro.dub.epsConfirmados':     '✅ {n} episódio(s) confirmado(s)!',
+        'membro.dub.epsLibEmBloco':      '🔓 {n} ep(s) liberado(s) em bloco!',
+        'membro.dub.marcadoGravado':     'Marcado como gravado.',
+        'membro.dub.srtEnviadasDrive':   '✅ {n} SRT(s) enviadas para "SRTs para revisão" no Drive!',
+        'membro.dub.cliqueMarcar':       'Clique no botão para marcar o EP {ep} como gravado.',
+        'membro.dub.cliqueEditar':       'Clique no botão para marcar o EP {ep} como editado.',
+        'membro.dub.concluirConf':       'Clique para concluir a conferência deste EP.',
+        'membro.dub.concluirEdicao':     'Clique para concluir a edição deste EP.',
+        'membro.dub.configureDriveSRT':  'Configure o Drive para envio automático de SRTs.',
+        'membro.dub.confirmarQtd':       'Confirmar {n} EP(s)',
+        'membro.dub.driveDesconectadoSRT': 'Drive não conectado — SRT baixado localmente.',
+        'membro.dub.duploCliqueEp':      'Duplo clique para marcar/desmarcar o EP.',
+        'membro.dub.enviarVideo':        'Enviar vídeo de retake',
+        'membro.dub.retakeMarcado':      '🔁 Retake marcado na linha {linha} do EP {ep}',
+        'membro.dub.senhaPadraoSalva':   '✅ Senha padrão salva: "{val}"',
+        'membro.dub.btnEditar':          'Editar',
+        'membro.dub.jaAprovado':         '{nome} já foi aprovado(a).',
+        'membro.dub.castingAprovado':    '🔒 {nome} já foi aprovado e não pode ser alterado.',
+        'membro.dub.pastaAberta':        '📁 Pasta aberta: "{dir}" — arraste os áudios finais.',
+        'membro.dub.seleciona':          'Selecione...',
+        'membro.dub.epBloqStatus':       ' bloqueado 🔒',
+        'membro.dub.epLibStatus':        ' liberado ▶',
+        'membro.dub.textoFonte.pp':      'Texto XP',
+        'membro.dub.textoFonte.p':       'Texto P',
+        'membro.dub.textoFonte.m':       'Texto M',
+        'membro.dub.textoFonte.g':       'Texto G',
+        'membro.dub.textoFonte.xg':      'Texto XG',
+        // ── Papéis ────────────────────────────────────────────────────────────
+        'membro.papel.dublador':         'Dublador',
+        'membro.papel.conferente':       'Conferente de SRT',
+        'membro.papel.editor':           'Editor',
+        'membro.papel.revisor':          'Revisor de Roteiro',
+        // ── Tela de seleção de membro ─────────────────────────────────────────
+        'membro.selecione.secDubs':      '🎙️ Dubladores',
+        'membro.selecione.secConfs':     '📋 Conferentes',
+        'membro.selecione.secEdits':     '✂️ Editores',
+        'membro.selecione.secRevs':      '📝 Revisores',
+        'membro.senha.ola':              'Olá!',
+        'membro.senha.desc':             'Digite a senha para acessar o projeto.',
+        // ── Misc ──────────────────────────────────────────────────────────────
+        'misc.aguardandoMaterial':       'Aguardando material...',
+        'misc.cadastrePrimeiro':         'Cadastre primeiro.',
+        'misc.eps':                      'eps',
+        'misc.nenhPersMapeado':          'Nenhum personagem mapeado.',
+        'misc.nenhumDublador':           'Nenhum dublador cadastrado.',
+        'misc.personagensEscolhidos':    'personagens escolhidos',
+        'misc.selecione':                'Selecione...',
+        'misc.video.selecionados':       'vídeo(s) selecionado(s)',
+        'misc.notif.erroAuthGoogle':     '❌ Erro de autenticação Google: {msg}',
+        'misc.notif.erroGenerico':       'Erro: {msg}',
+        'misc.notif.informeToken':       'Informe o token do catálogo.',
+        'misc.notif.naoConfig':          'Não configurado',
+        'misc.notif.nenhumProjDisp':     'Nenhum projeto disponível.',
+        'misc.notif.nenhumVideoValido':  '❌ Nenhum vídeo válido selecionado',
+        'misc.notif.selProjPrimeiro':    'Selecione um projeto primeiro.',
+        'misc.notif.estruturaDriveCriada': '✅ Estrutura de pastas criada no Drive!',
+        'misc.notif.estruturaSalva':     '✅ Estrutura salva.',
+        'misc.notif.formatando':         '⏳ Formatando...',
+        'misc.notif.identidadeSalva':    '✅ Identidade salva.',
+        // ── Notificações ─────────────────────────────────────────────────────
+        'notif.carregandoCaptura':       '⏳ Carregando captura...',
+        'notif.carregandoGerador':       '⏳ Carregando gerador...',
+        'notif.carregandoLeitor':        '⏳ Carregando leitor...',
+        'notif.epConferido':             '✅ EP {n} marcado como conferido!',
+        'notif.epEditado':               '✅ EP {n} marcado como editado!',
+        'notif.epRevisado':              '✅ EP {n} marcado como revisado!',
+        'notif.epRegistrado':            '✅ EP {n} registrado para envio!',
+        'notif.erroCaptura':             '❌ Erro na captura.',
+        'notif.erroGerPlanilha':         '❌ Erro ao gerar planilha.',
+        'notif.erroSheetJS':             'Erro ao carregar SheetJS.',
+        'notif.externosRemov':           '✅ {n} externo(s) removido(s)!',
+        'notif.listaSalvaDrive':         '✅ Lista salva no Drive!',
+        'notif.marcarEPRevisado':        '✅ Marcar EP {n} como Revisado',
+        'notif.textoAtualizado':         '✅ Texto atualizado.',
+        'notif.textoAtualizadoSRT':      '✅ Texto do SRT atualizado.',
+        'notif.semRetakes':              'Nenhum retake',
+        'notif.semRetakesPend':          'Nenhum retake pendente.',
+        'notif.semRetakesRes':           'Nenhum retake resolvido.',
+        'notif.senhasResetadas':         '✅ Todas as senhas resetadas para "{padrao}"!',
+        'notif.srtsBaixadas':            '✅ {n} SRT(s) baixadas em ZIP!',
+        'notif.srtsBaixadasN':           '✅ {n} SRT(s) baixado(s)!',
+        'notif.epGravado':               '✅ EP {n} gravado. O gerente está informado.',
+        'notif.srtsRegistradas':         '✅ SRTs registradas.',
+        'notif.srtsEnviadas':            '✅ {n} SRT(s) enviadas!',
+        'notif.erroMsg':                 '❌ Erro: {msg}',
+        // ── Ordenação ────────────────────────────────────────────────────────
+        'ord.nome':                      'Nome',
+        'ord.chars':                     'Chars',
+        'ord.palavras':                  'Palavras',
+        'ord.percentual':                'Percentual',
+        'ord.usd':                       'USD',
+        // ── Prateleira de Vozes ───────────────────────────────────────────────
+        'prat.titulo':                   'Prateleira de Vozes',
+        'prat.subtitle':                 'Gerencie o casting e o catálogo de vozes',
+        'prat.btnFechar':                'Fechar Prateleira',
+        'prat.tab.personagens':          'Personagens',
+        'prat.tab.casting':              'Casting',
+        'prat.tab.catalogo':             'Catálogo',
+        'prat.tab.envio':                'Envio',
+        'prat.tab.aprovacao':            'Aprovação',
+        'prat.pers.btnAdicionar':        '➕ Adicionar personagem',
+        'prat.pers.confirmarRemover':    'Remover este personagem?',
+        'prat.pers.tituloRemover':       'Remover Personagem',
+        'prat.pers.count':               '{n} personagens',
+        'prat.pers.empty':               'Nenhum personagem adicionado.',
+        'prat.pers.semDescricao':        'Sem descrição.',
+        'prat.pers.ocultos':             'ocultos',
+        'prat.pers.verOcultos':          'Ver ocultos',
+        'prat.pers.ocultarOcultos':      'Ocultar ocultos',
+        'prat.pers.sortNome':            'Ordenar: A-Z',
+        'prat.pers.sortPalavras':        'Ordenar: palavras',
+        'prat.aprov.aprovadoPor':        'Aprovado por',
+        'prat.aprov.em':                 'em',
+        'prat.aprov.aguardando':         'Aguardando aprovação...',
+        'prat.aprov.confirmar':          'Confirmar aprovação',
+        'prat.aprov.deCastings':         'de castings',
+        'prat.aprov.instrucao':          'Revise as vozes selecionadas',
+        'prat.aprov.liberado':           '✅ Aprovado',
+        'prat.aprov.nenhumCasting':      'Nenhum casting para aprovar.',
+        'prat.aprov.observacoes':        'Observações',
+        'prat.aprov.semAprovacao':       'Sem aprovação.',
+        'prat.aprov.todosResp':          'Todos responderam.',
+        'prat.cast.approvalAdmin':       'Aguardando aprovação do gerente',
+        'prat.cast.bloqueado':           'Casting bloqueado',
+        'prat.cast.btnNovo':             'Novo Casting',
+        'prat.cast.btnResumo':           'Resumo',
+        'prat.cast.confirmarReabrir':    'Reabrir este casting?',
+        'prat.cast.confirmarRemover':    'Remover este casting?',
+        'prat.cast.hDubladores':         'Dubladores',
+        'prat.cast.instrucao':           'Selecione um dublador por personagem',
+        'prat.cast.jaEm':                'Já em',
+        'prat.cast.label':               'Casting',
+        'prat.cast.optFaixa':            'Faixa etária',
+        'prat.cast.optGenero':           'Gênero',
+        'prat.cast.optPapel':            'Papel',
+        'prat.cast.optQualidade':        'Qualidade',
+        'prat.cast.phNome':              'Nome do casting',
+        'prat.cast.semCandidatos':       'Sem candidatos.',
+        'prat.cast.semCandsPers':        'Sem candidatos para este personagem.',
+        'prat.cast.semChoque':           'Sem conflito',
+        'prat.cast.semPers':             'Sem personagens.',
+        'prat.cast.serieAtiva':          'Série ativa',
+        'prat.cast.tituloReabrir':       'Reabrir Casting',
+        'prat.cast.tituloRemover':       'Remover Casting',
+        'prat.cat.btnBuscar':            'Buscar',
+        'prat.cat.btnConfirmar':         'Confirmar lista',
+        'prat.cat.btnRemover':           'Remover',
+        'prat.cat.btnXlsx':              'Exportar XLSX',
+        'prat.cat.cabecalho':            'Catálogo de Vozes',
+        'prat.cat.desc':                 'Gerencie o catálogo de vozes do estúdio.',
+        'prat.cat.importarTitulo':       'Importar lista de personagens',
+        'prat.cat.labelCliente':         'Cliente',
+        'prat.cat.obs':                  'Observações',
+        'prat.cat.opt1':                 'Opção 1',
+        'prat.cat.opt1Desc':             'Descrição da opção 1',
+        'prat.cat.opt2':                 'Opção 2',
+        'prat.cat.opt2Desc':             'Descrição da opção 2',
+        'prat.cat.phNomePers':           'Nome do personagem',
+        'prat.cat.phRef':                'Referência',
+        'prat.cat.phToken':              'Token do catálogo',
+        'prat.cat.prazo':                'Prazo',
+        'prat.cat.semListas':            'Nenhuma lista encontrada.',
+        'prat.cat.semNomeProjeto':       'Informe o nome do projeto.',
+        'prat.envio.adicioneCands':      'Adicione candidatos para enviar.',
+        'prat.envio.btnGerar':           'Gerar link',
+        'prat.envio.btnRegerar':         'Regerar link',
+        'prat.envio.descCasting':        'Link para casting',
+        'prat.envio.descCatalogo':       'Link para catálogo',
+        'prat.envio.descEscFinal':       'Link para escalação final',
+        'prat.envio.h4Casting':          'Casting',
+        'prat.envio.h4Catalogo':         'Catálogo',
+        'prat.envio.h4EscFinal':         'Escalação Final',
+        'prat.envio.h4Resumo':           'Resumo',
+        'prat.envio.permitir2op':        'Permitir 2 opções',
+        'prat.envio.semCands':           'Sem candidatos.',
+        'prat.envio.statusEnv':          'Enviado',
+        'prat.envio.statusRasc':         'Rascunho',
+        'prat.envio.statusResp':         'Respondido',
+        'prat.form.labelDesc':           'Descrição (PT)',
+        'prat.form.labelDescEn':         'Descrição (EN)',
+        'prat.form.labelFaixas':         'Faixas etárias',
+        'prat.form.labelGenero':         'Gênero',
+        'prat.form.labelPerfil':         'Perfil',
+        'prat.form.phDesc':              'Descreva o personagem...',
+        'prat.form.phDescEn':            'Describe the character...',
+        'prat.form.tituloEditar':        'Editar personagem',
+        'prat.form.tituloNovo':          'Novo personagem',
+        'prat.resumo.irEnvio':           'Ir para Envio',
+        'prat.resumo.titulo':            'Resumo do casting',
+        'prat.resumo.voltar':            'Voltar',
+        // ── Catálogo cliente ──────────────────────────────────────────────────
+        'cli.badge.catalogoVozes':       'Catálogo de Vozes',
+        'cli.badge.escalacaoFinal':      'Escalação Final',
+        'cli.bar.progresso':             'progresso',
+        'cli.cast.aprovado':             'Aprovado',
+        'cli.cast.aprovadoCliente':      'Aprovado pelo cliente',
+        'cli.cast.aprovar':              'Aprovar',
+        'cli.cast.nenhumCandidato':      'Nenhum candidato.',
+        'cli.casting.badge':             'Casting',
+        'cli.cat.addALista':             'Adicionar à lista',
+        'cli.cat.btnLimpar':             'Limpar',
+        'cli.cat.desc':                  'Descrição',
+        'cli.cat.faixaEtaria':           'Faixa etária',
+        'cli.cat.genero':                'Gênero',
+        'cli.cat.optEstilo':             'Estilo',
+        'cli.cat.optIdioma':             'Idioma',
+        'cli.cat.phBusca':               'Buscar dublador...',
+        'cli.cat.qualidade':             'Qualidade',
+        'cli.cat.titulo':                'Catálogo de Vozes',
+        'cli.escFinal.aDefinir':         'A definir',
+        'cli.escFinal.baixarImg':        'Baixar imagem',
+        'cli.escFinal.castingAprovado':  'Casting aprovado',
+        'cli.escFinal.cliente':          'Cliente',
+        'cli.escFinal.gestor':           'Gestor',
+        'cli.escFinal.inicio':           'Início',
+        'cli.escFinal.naoDisp':          'Não disponível',
+        'cli.escFinal.nota':             'Nota',
+        'cli.escFinal.titulo':           'Escalação Final',
+        'cli.escFinal.voltar':           'Voltar',
+        'cli.form.btnEnviar':            'Enviar',
+        'cli.form.btnVoltar':            'Voltar',
+        'cli.form.castingAprovNome':     'Aprovação do casting — {nome}',
+        'cli.form.informeNome':          'Informe seu nome.',
+        'cli.form.obrigado':             'Obrigado pela resposta!',
+        'cli.form.phContato':            'Seu contato (e-mail ou WhatsApp)',
+        'cli.form.phNome':               'Seu nome',
+        'cli.form.phObs':                'Observações (opcional)',
+        'cli.form.subtitulo':            'Revise as opções e confirme.',
+        'cli.form.titulo':               'Aprovação de Casting',
+        'cli.form.todosAprov':           'Todos aprovados.',
+        'cli.hero.desc':                 'Selecione os dubladores de sua preferência.',
+        'cli.semCasting':                'Nenhum casting disponível.',
+        'cli.semCastingDica':            'Aguarde o envio do casting.',
+        'cli.semLink':                   'Link inválido ou expirado.',
+        'cli.semLinkDica':               'Verifique o link recebido.',
+        // ── Mapa / Revisão de Roteiro ─────────────────────────────────────────
+        'map.notif.coresAtualizadas':    '✅ Cores atualizadas.',
+        'map.notif.dubSerieAtiva':       '✅ Série do dublador ativada.',
+        'map.notif.epNaoEncontrado':     'EP não encontrado.',
+        'map.notif.erroReproduzir':      '❌ Erro ao reproduzir.',
+        'map.notif.facaContagem':        'Faça a contagem primeiro.',
+        'map.notif.linhaSalva':          '✅ Linha salva.',
+        'map.notif.nenhumDubEscalado':   'Nenhum dublador escalado.',
+        'map.notif.nenhumEpEncontrado':  'Nenhum EP encontrado.',
+        'map.notif.nenhumEpProj':        'Nenhum EP neste projeto.',
+        'map.notif.nenhumEpSel':         'Nenhum EP selecionado.',
+        'map.notif.planilhaSheetsGerada':'✅ Planilha Sheets gerada!',
+        'map.notif.selEpisodio':         'Selecione um episódio.',
+        'map.notif.selProjPrimeiro':     'Selecione um projeto primeiro.',
+        'map.notif.selProjeto':          'Selecione um projeto.',
+        // ── Projetos ─────────────────────────────────────────────────────────
+        'proj.label.projeto':            'Projeto',
+        // ── Tooltips ─────────────────────────────────────────────────────────
+        'tooltip.adicionarSubpasta':     'Adicionar subpasta',
+        'tooltip.alterarStatus':         'Alterar status',
+        'tooltip.arrastar':              'Arrastar',
+        'tooltip.castingRespondido':     'Casting respondido',
+        'tooltip.choque':                'Conflito de personagens',
+        'tooltip.cliqueAdicionarFoto':   'Clique para adicionar foto',
+        'tooltip.cliqueTC':              'Clique para ir ao timecode',
+        'tooltip.conexaoOK':             'Conexão OK',
+        'tooltip.corFundo':              'Cor de fundo',
+        'tooltip.corLetra':              'Cor da letra',
+        'tooltip.dubEscalado':           'Dublador escalado',
+        'tooltip.duploClikqueRenomear':  'Duplo clique para renomear',
+        'tooltip.duploCliqueFeito':      'Duplo clique para marcar como feito',
+        'tooltip.duploCliqueVincular':   'Duplo clique para vincular',
+        'tooltip.duplocliqueAtribuir':   'Duplo clique para atribuir',
+        'tooltip.editarTexto':           'Editar texto',
+        'tooltip.expandirTela':          'Expandir tela',
+        'tooltip.fichaDe':               'Ficha de',
+        'tooltip.fichaDublador':         'Ficha do dublador',
+        'tooltip.fichaPersonagem':       'Ficha do personagem',
+        'tooltip.marcarRetake':          'Marcar retake',
+        'tooltip.ouvirAmostra':          'Ouvir amostra',
+        'tooltip.ouvirAudioAmostra':     'Ouvir áudio de amostra',
+        'tooltip.palavrasPersonagem':    'Palavras do personagem',
+        'tooltip.removerEscalacao':      'Remover escalação',
+        'tooltip.renomear':              'Renomear',
+        'tooltip.resolver':              'Resolver',
+        'tooltip.salveProjeto':          'Salve o projeto primeiro',
+        'tooltip.verEpsPendentes':       'Ver EPs pendentes',
+        'tooltip.verHistorico':          'Ver histórico',
+        'tooltip.verPctFalas':           'Ver % de falas',
     },
     en: {
         // ── Navigation tabs ─────────────────────────────────────────────────
@@ -3169,7 +3504,7 @@ var _i18n = {
         'membro.dub.selAoMenosUmEp':     'Select at least one EP.',
         'membro.dub.selEpLista':         'Select an episode from the list.',
         'membro.dub.selEpPrimeiro':      'Select the episode first.',
-        'membro.dub.soMeusEPs':          '🗂️ My EPs only',
+        'membro.dub.soMeusEPs':          '🗂️ Só meus EPs',
         'membro.dub.todosEpsLib':        '▶ All EPs released for recording',
         'membro.dub.primeiroEpAuto':     'The first EP is always released automatically.',
         'membro.dub.videoParaDubs':      'Video for voice actors during recording.',
@@ -18465,7 +18800,9 @@ function confAbrirModalBaixar() {
                 '<input type="checkbox" class="conf-ep-check" value="'+item.ep+'" checked style="width:15px;height:15px;cursor:pointer;">' +
                 '<span style="font-size:13px;color:#e2e8f0;font-weight:600;min-width:55px;">EP '+epPad+'</span>' +
                 '<span style="font-size:11px;color:#4ade80;">📄 SRT</span>' +
-                (item.temVideo ? '<span style="font-size:11px;color:#818cf8;">🎬 Vídeo local</span>' : '<span style="font-size:11px;color:#475569;">🎬 sem vídeo local</span>') +
+                (urlVideos
+                    ? '<span style="font-size:11px;color:#818cf8;">🎬 Drive</span>'
+                    : '<span style="font-size:11px;color:#475569;">🎬 —</span>') +
                 '<span style="font-size:10px;color:#22c55e;margin-left:auto;font-weight:700;">✔ Disponível</span>' +
                 '</label>';
         });
@@ -18503,31 +18840,94 @@ function confFecharModalBaixar() { document.getElementById('confModalBaixar').st
 function confSelecionarTodosEps(val) {
     document.querySelectorAll('.conf-ep-check').forEach(function(c){ c.checked = val; });
 }
-function confExecutarBaixar() {
+async function confExecutarBaixar() {
     var checks = document.querySelectorAll('.conf-ep-check:checked');
     if (!checks.length) { mostrarNotificacao(t('membro.dub.selAoMenosUmEp'), 'info', 1500); return; }
-    var proj = (_dubProjeto.nome||'PROJ').replace(/[^a-zA-Z0-9]/g,'_');
-    var baixados = 0;
-    checks.forEach(function(c) {
-        var ep = c.value;
-        var epPad = String(ep).padStart(2,'0');
-        // Baixar SRT
+
+    var proj   = (_dubProjeto.nome||'PROJ').replace(/[^a-zA-Z0-9]/g,'_');
+    var lk     = _dubProjeto && _dubProjeto.links || {};
+    var urlVid = lk.pastaMateriais || '';
+    var mVid   = (urlVid||'').match(/folders\/([a-zA-Z0-9_-]+)/);
+    var pastaVidId = mVid ? mVid[1] : null;
+    var eps    = Array.from(checks).map(function(c){ return c.value; });
+
+    // Mostrar progresso
+    var btnBaixar = document.querySelector('#confModalBaixar button[onclick*="confExecutarBaixar"]');
+    if (btnBaixar) { btnBaixar.disabled = true; btnBaixar.textContent = '⏳ Baixando...'; }
+
+    // 1. Baixar SRTs (sempre funciona — vêm do roteiro em memória)
+    var srtsBaixados = 0;
+    eps.forEach(function(ep) {
+        var epPad  = String(ep).padStart(2,'0');
         var srtUrl = _dubGerarLinkSRT(ep);
         if (srtUrl) {
             var a = document.createElement('a');
             a.href = srtUrl; a.download = 'EP'+epPad+'_'+proj+'.srt';
             document.body.appendChild(a); a.click(); document.body.removeChild(a);
             setTimeout(function(){ URL.revokeObjectURL(srtUrl); }, 2000);
-            baixados++;
-        }
-        // Abrir vídeo em nova aba se disponível
-        if (typeof videosCache !== 'undefined') {
-            var vc = videosCache[_dubProjeto.id+'_'+ep];
-            if (vc && vc.url) window.open(vc.url, '_blank');
+            srtsBaixados++;
         }
     });
+
+    // 2. Baixar vídeos do Drive se pasta configurada
+    if (pastaVidId) {
+        var conectado = await _garantirDriveConectado().catch(function(){ return false; });
+        if (conectado && _driveToken()) {
+            try {
+                // Listar arquivos da pasta "Videos Para Revisão"
+                var resp = await _driveFetch(
+                    'https://www.googleapis.com/drive/v3/files' +
+                    '?q=' + encodeURIComponent("'" + pastaVidId + "' in parents and trashed=false") +
+                    '&fields=files(id,name)&pageSize=200',
+                    { method: 'GET' }
+                );
+                var driveFiles = (resp && resp.files) ? resp.files : [];
+
+                // Para cada EP selecionado, encontrar o vídeo correspondente
+                var videosEncontrados = 0;
+                eps.forEach(function(ep) {
+                    var epNum = parseInt(ep, 10);
+                    var epPad2 = String(epNum).padStart(2,'0');
+                    // Procura arquivo que tenha o número do EP no nome
+                    var match = driveFiles.find(function(f) {
+                        var n = f.name.toLowerCase();
+                        return n.match(new RegExp('\\bep?' + epNum + '\\b|[_\\-\\s]0*' + epNum + '[_\\-\\s\\.]'));
+                    }) || driveFiles.find(function(f) {
+                        return f.name.includes(epPad2);
+                    });
+                    if (match) {
+                        // Download via link direto do Drive (funciona para arquivos grandes)
+                        var a = document.createElement('a');
+                        a.href = 'https://drive.google.com/uc?id=' + match.id + '&export=download';
+                        a.target = '_blank';
+                        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+                        videosEncontrados++;
+                    }
+                });
+
+                confFecharModalBaixar();
+                if (btnBaixar) { btnBaixar.disabled = false; btnBaixar.textContent = t('membro.dub.baixarSelecionados')||'⬇️ Baixar Selecionados'; }
+                mostrarNotificacao(
+                    '✅ ' + srtsBaixados + ' SRT(s)' + (videosEncontrados ? ' + ' + videosEncontrados + ' vídeo(s)' : '') + ' baixados!',
+                    'sucesso', 3500
+                );
+                if (videosEncontrados < eps.length && urlVid) {
+                    setTimeout(function() {
+                        mostrarNotificacao('⚠️ ' + (eps.length - videosEncontrados) + ' vídeo(s) não encontrados na pasta. <a href="' + urlVid + '" target="_blank">Abrir pasta ↗</a>', 'aviso', 6000);
+                    }, 500);
+                }
+                return;
+            } catch(e) {
+                console.warn('Erro ao listar vídeos do Drive:', e.message);
+            }
+        }
+        // Sem Drive conectado: abre a pasta para download manual
+        mostrarNotificacao('🎬 Vídeos em: <a href="'+urlVid+'" target="_blank" style="color:#60a5fa;">Videos Para Revisão ↗</a> — baixe manualmente.', 'info', 6000);
+    }
+
     confFecharModalBaixar();
-    mostrarNotificacao(t('notif.srtsBaixadasN',{n:baixados}), 'sucesso', 2500);
+    if (btnBaixar) { btnBaixar.disabled = false; btnBaixar.textContent = t('membro.dub.baixarSelecionados')||'⬇️ Baixar Selecionados'; }
+    mostrarNotificacao(t('notif.srtsBaixadasN',{n:srtsBaixados}), 'sucesso', 2500);
 }
 
 // ── Conferente: enviar SRT finalizada (lote, auto-renomeação) ─────────────────
@@ -21503,6 +21903,9 @@ function dubDropEpRapido(e) {
     if (e.dataTransfer.files.length) dubHandleEpRapidoFiles(e.dataTransfer.files);
 }
 function dubHandleEpRapidoInput(input) { if(input.files.length) dubHandleEpRapidoFiles(input.files); }
+// Armazena arquivos para upload do modal Enviar por EP (rápido)
+var _dubArquivosEpRapido = [];
+
 function dubHandleEpRapidoFiles(files) {
     var ep  = (document.getElementById('dubEpRapidoSel')||{value:''}).value;
     if (!ep) { mostrarNotificacao(t('membro.dub.selEpPrimeiro'),'info',1500); return; }
@@ -21511,18 +21914,50 @@ function dubHandleEpRapidoFiles(files) {
     var pers=(pSel&&pSel.value?pSel.value:(_dubMeusPers()[0]||'PERS')).replace(/[^a-zA-Z0-9]/g,'_');
     var dub=_dubNomeAbreviado();
     var l=document.getElementById('dubEpRapidoLog'); if(l){l.innerHTML='';l.dataset.pronto='1';}
+    _dubArquivosEpRapido = [];
     Array.from(files).forEach(function(f){
         var ext=(f.name.match(/\.[^.]+$/)||['.wav'])[0];
-        var nome='EP'+String(ep).padStart(2,'0')+'_'+proj+'_'+pers+'-'+dub+ext;
+        var rtk = window._dubEnvioEhRetake ? '-RTK' : '';
+        var nome='EP'+String(ep).padStart(2,'0')+'_'+proj+'_'+pers+'-'+dub+rtk+ext;
         if(l) l.innerHTML+='<div>✅ '+f.name+' → <span style="color:#4ade80;">'+nome+'</span></div>';
+        _dubArquivosEpRapido.push({ file: f, nome: nome });
     });
 }
-function dubConfirmarEpRapido() {
-    var l=document.getElementById('dubEpRapidoLog');
-    if (!l||l.dataset.pronto!=='1') { mostrarNotificacao(t('misc.selecioneArquivo'),'info',1500); return; }
-    var ep=(document.getElementById('dubEpRapidoSel')||{value:''}).value;
-    mostrarNotificacao(t('notif.epRegistrado',{n:String(ep).padStart(2,'0')}),'sucesso',2000);
+async function dubConfirmarEpRapido() {
+    var l   = document.getElementById('dubEpRapidoLog');
+    var ep  = (document.getElementById('dubEpRapidoSel')||{value:''}).value;
+    if (!_dubArquivosEpRapido.length) {
+        mostrarNotificacao(t('misc.selecioneArquivo'), 'info', 1500); return;
+    }
+    if (!ep) { mostrarNotificacao(t('membro.dub.selEpPrimeiro'), 'info', 1500); return; }
+    var btn = document.querySelector('#dubModalEpRapido button[onclick*="dubConfirmarEpRapido"]');
+    var lk  = _dubProjeto && _dubProjeto.links || {};
+    var destUrl = (window._dubEnvioEhRetake ? lk.pastaRetakes : lk.pastaUpload) || lk.pastaUpload || '';
+
+    // Upload de cada arquivo (pode ser múltiplos)
+    for (var i = 0; i < _dubArquivosEpRapido.length; i++) {
+        var item = _dubArquivosEpRapido[i];
+        await _dubUploadDrive(item.file, item.nome, destUrl, l, btn);
+    }
+
+    // Marcar ep como gravado
+    var epStr = String(ep);
+    if (_dubProjeto && _dubDubId && epStr) {
+        if (!_dubProjeto.producao) _dubProjeto.producao = {};
+        if (!_dubProjeto.producao[_dubDubId]) _dubProjeto.producao[_dubDubId] = { eps:{} };
+        if (!_dubProjeto.producao[_dubDubId].eps) _dubProjeto.producao[_dubDubId].eps = {};
+        if (!_dubProjeto.producao[_dubDubId].eps[epStr]) _dubProjeto.producao[_dubDubId].eps[epStr] = {};
+        _dubProjeto.producao[_dubDubId].eps[epStr].grav = 'ok';
+        _dubProjeto.producao[_dubDubId].eps[epStr].gravacao_status = 'ok';
+        _dubProjeto.producao[_dubDubId].eps[epStr].tsGrav = Date.now();
+        var todos = JSON.parse(localStorage.getItem('projetos_dublagem')||'[]');
+        var pidx = todos.findIndex(function(p){ return p.id === _dubProjeto.id; });
+        if (pidx >= 0) { todos[pidx] = _dubProjeto; localStorage.setItem('projetos_dublagem', JSON.stringify(todos)); }
+    }
+    _dubArquivosEpRapido = [];
+    mostrarNotificacao(t('notif.epRegistrado',{n:String(ep).padStart(2,'0')}), 'sucesso', 2000);
     dubFecharModalEpRapido();
+    _dubRenderizarRoteiro();
 }
 
 // dubToggleCompacto definida acima (única definição)
