@@ -5783,6 +5783,8 @@ function _driveAutoConectar() {
                 // Instalação nova / computador limpo: carrega tudo do Drive
                 driveCarregarDados();
             }
+            // Auto-share: garante pastas abertas para uploads da equipe (silencioso)
+            _driveCompartilharTodosProjetos(true).catch(function(){});
         } else {
             irParaAba('configuracoes');
         }
@@ -20598,31 +20600,72 @@ function confFecharModalBaixar() { document.getElementById('confModalBaixar').st
 function confSelecionarTodosEps(val) {
     document.querySelectorAll('.conf-ep-check').forEach(function(c){ c.checked = val; });
 }
-function confExecutarBaixar() {
+async function confExecutarBaixar() {
     var checks = document.querySelectorAll('.conf-ep-check:checked');
     if (!checks.length) { mostrarNotificacao(t('membro.dub.selAoMenosUmEp'), 'info', 1500); return; }
+
     var proj = (_dubProjeto.nome||'PROJ').replace(/[^a-zA-Z0-9]/g,'_');
-    var baixados = 0;
-    checks.forEach(function(c) {
-        var ep = c.value;
-        var epPad = String(ep).padStart(2,'0');
-        // Baixar SRT
+    var eps  = Array.from(checks).map(function(c){ return c.value; });
+    var btn  = document.querySelector('#confModalBaixar button[onclick*="confExecutarBaixar"]');
+    if (btn) { btn.disabled = true; btn.textContent = '\u23F3 Preparando...'; }
+
+    var arquivos = [];
+    eps.forEach(function(ep) {
+        var epPad = String(parseInt(ep,10)).padStart(2,'0');
         var srtUrl = _dubGerarLinkSRT(ep);
-        if (srtUrl) {
-            var a = document.createElement('a');
-            a.href = srtUrl; a.download = 'EP'+epPad+'_'+proj+'.srt';
-            document.body.appendChild(a); a.click(); document.body.removeChild(a);
-            setTimeout(function(){ URL.revokeObjectURL(srtUrl); }, 2000);
-            baixados++;
-        }
-        // Abrir vídeo em nova aba se disponível
-        if (typeof videosCache !== 'undefined') {
-            var vc = videosCache[_dubProjeto.id+'_'+ep];
-            if (vc && vc.url) window.open(vc.url, '_blank');
-        }
+        if (srtUrl) arquivos.push({ ep: epPad, url: srtUrl, nome: 'EP'+epPad+'_'+proj+'.srt' });
     });
+
+    if (!arquivos.length) {
+        if (btn) { btn.disabled = false; btn.textContent = t('membro.dub.baixarSelecionados'); }
+        mostrarNotificacao('Nenhum SRT disponivel para os EPs selecionados.', 'aviso', 2000);
+        return;
+    }
+
+    // Baixar como ZIP
+    try {
+        if (typeof JSZip === 'undefined') {
+            await new Promise(function(res, rej) {
+                var s = document.createElement('script');
+                s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+                s.onload = res; s.onerror = rej;
+                document.head.appendChild(s);
+            });
+        }
+        var zip = new JSZip();
+        for (var i = 0; i < arquivos.length; i++) {
+            var arq = arquivos[i];
+            var resp = await fetch(arq.url);
+            var txt  = await resp.text();
+            zip.file(arq.nome, txt);
+            URL.revokeObjectURL(arq.url);
+        }
+        var ep0   = arquivos[0].ep;
+        var epN   = arquivos[arquivos.length-1].ep;
+        var zNome = 'SRTs_'+proj+'_EP'+ep0+(epN!==ep0?'-EP'+epN:'')+'.zip';
+        var blob  = await zip.generateAsync({ type: 'blob' });
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob); a.download = zNome;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        setTimeout(function(){ URL.revokeObjectURL(a.href); }, 3000);
+        confFecharModalBaixar();
+        if (btn) { btn.disabled = false; btn.textContent = t('membro.dub.baixarSelecionados'); }
+        mostrarNotificacao('\u2705 '+arquivos.length+' SRT(s) baixados em ZIP!', 'sucesso', 3000);
+        return;
+    } catch(e) { console.warn('ZIP falhou:', e.message); }
+
+    // Fallback sem ZIP
+    for (var j = 0; j < arquivos.length; j++) {
+        var arqF = arquivos[j];
+        var aF = document.createElement('a');
+        aF.href = arqF.url; aF.download = arqF.nome;
+        document.body.appendChild(aF); aF.click(); document.body.removeChild(aF);
+        await new Promise(function(r){ setTimeout(r, 200); });
+        URL.revokeObjectURL(arqF.url);
+    }
     confFecharModalBaixar();
-    mostrarNotificacao(t('notif.srtsBaixadasN',{n:baixados}), 'sucesso', 2500);
+    if (btn) { btn.disabled = false; btn.textContent = t('membro.dub.baixarSelecionados'); }
+    mostrarNotificacao(t('notif.srtsBaixadasN',{n:arquivos.length}), 'sucesso', 2500);
 }
 
 // ── Conferente: enviar SRT finalizada (lote, auto-renomeação) ─────────────────
@@ -22134,6 +22177,10 @@ function dubFecharEpModal() {
     if (modal) modal.style.display='none';
     _dubEpEnvioAtual = null;
 }
+var _dubArquivoUnif    = null; // FIX 3 — armazena arquivo selecionado para envio unificado
+var _dubArquivoEp      = null; // FIX 3 — armazena arquivo selecionado para envio por EP
+var _dubArquivosEpRapido = [];  // FIX 3 — armazena arquivos para envio rápido por EP
+
 function dubDropEpAudio(e) {
     e.preventDefault(); e.currentTarget.style.borderColor='#334155';
     if (e.dataTransfer.files[0]) _dubProcessarEpAudio(e.dataTransfer.files[0]);
@@ -22146,7 +22193,8 @@ function _dubProcessarEpAudio(file) {
     var ext=(file.name.match(/\.[^.]+$/)||['.wav'])[0];
     var nome='P'+ep+'_'+proj+'_'+pers+ext;
     var l=document.getElementById('dubEpModalLog');
-    if (l) { l.innerHTML='<strong>'+file.name+'</strong> → <span style="color:#4ade80;">'+nome+'</span>'; l.dataset.pronto='1'; }
+    _dubArquivoEp = { file: file, nome: nome };
+    if (l) { l.innerHTML='<div>✅ <strong>'+file.name+'</strong> → <span style="color:#4ade80;">'+nome+'</span></div>'; l.dataset.pronto='1'; }
 }
 async function dubConfirmarEnvioEp() {
     var l = document.getElementById('dubEpModalLog');
@@ -23454,12 +23502,14 @@ function dubHandleUnifFiles(files) {
     var pers = (sel&&sel.value ? sel.value : (_dubMeusPers()[0]||'PERS')).replace(/[^a-zA-Z0-9]/g,'_');
     var dub  = _dubNomeAbreviado();
     var l = document.getElementById('dubUnifLog');
-    if (l) { l.innerHTML=''; l.dataset.pronto='1'; }
-    Array.from(files).forEach(function(f){
-        var ext=(f.name.match(/\.[^.]+$/)||['.wav'])[0];
-        var nome=proj+'_'+pers+'-'+dub+ext;
-        if (l) l.innerHTML+='<div>✅ '+f.name+' → <span style="color:#4ade80;">'+nome+'</span></div>';
-    });
+    if (l) { l.innerHTML=''; delete l.dataset.pronto; }
+    _dubArquivoUnif = null;
+    var f = files[0]; if (!f) return;
+    var ext  = (f.name.match(/\.[^.]+$/)||['.wav'])[0];
+    var rtk  = window._dubEnvioEhRetake ? '-RTK' : '';
+    var nome = proj+'_'+pers+'-'+dub+rtk+ext;
+    _dubArquivoUnif = { file: f, nome: nome };
+    if (l) { l.innerHTML='<div>✅ '+f.name+' → <span style="color:#4ade80;">'+nome+'</span></div>'; l.dataset.pronto='1'; }
 }
 async function _driveObterOuCriarSubpasta(nome, pastaParenteId) {
     if (!nome || !pastaParenteId || !_driveToken()) return null;
@@ -23628,10 +23678,13 @@ function dubHandleEpRapidoFiles(files) {
     var pers=(pSel&&pSel.value?pSel.value:(_dubMeusPers()[0]||'PERS')).replace(/[^a-zA-Z0-9]/g,'_');
     var dub=_dubNomeAbreviado();
     var l=document.getElementById('dubEpRapidoLog'); if(l){l.innerHTML='';l.dataset.pronto='1';}
+    _dubArquivosEpRapido = [];
     Array.from(files).forEach(function(f){
         var ext=(f.name.match(/\.[^.]+$/)||['.wav'])[0];
-        var nome='EP'+String(ep).padStart(2,'0')+'_'+proj+'_'+pers+'-'+dub+ext;
+        var rtk = window._dubEnvioEhRetake ? '-RTK' : '';
+        var nome='EP'+String(ep).padStart(2,'0')+'_'+proj+'_'+pers+'-'+dub+rtk+ext;
         if(l) l.innerHTML+='<div>✅ '+f.name+' → <span style="color:#4ade80;">'+nome+'</span></div>';
+        _dubArquivosEpRapido.push({ file: f, nome: nome });
     });
 }
 async function dubConfirmarEpRapido() {
