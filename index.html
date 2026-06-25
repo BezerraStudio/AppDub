@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.624</title>
+    <title>Sistema de Dublagem v12.626</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.624</p>
+        <p>v12.626</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.624</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.626</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1747,7 +1747,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.624</footer>
+    <footer>🎬 Sistema de Dublagem v12.626</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -3134,8 +3134,47 @@ var _i18n = {
         'notif.confirmarEPs':         '✅ Confirmar {n} EP(s) Selecionado(s)',
         'notif.nenhPar':              'Nenhum par completo disponível ainda.',
         'notif.retakeGravado':        '✅ Retake marcado como gravado! O gerente do projeto está sendo informado.',
+        // Chaves adicionais de notificações e prateleira
+        'notif.arquivosProntos':       '✅ {n} arquivo(s) pronto(s)!',
+        'notif.externosVinc':          '✅ {n} externo(s) vinculado(s) ao projeto!',
+        'misc.notif.aplicandoForm':    '⏳ Aplicando formatação e cores...',
+        'misc.notif.configurePastaRaiz': 'Configure a pasta raiz em ⚙️ Configurações',
+        'misc.notif.erroCarregarVideo': '❌ Erro ao carregar vídeo',
+        'misc.notif.erroExcelJS':      'Erro ao carregar ExcelJS. Verifique sua conexão.',
+        'misc.notif.populandoDados':   '⏳ Populando dados...',
+        'prat.aprov.abrir':            'Abrir',
+        'prat.aprov.reabrir':          'Reabrir',
+        'prat.pers.excluirCasting':    'Excluir do casting',
+        'prat.pers.incluirCasting':    'Incluir no casting',
+        'prat.pers.foraCasting':       'fora do casting',
         // ── Telas de membros ─────────────────────────────────────────────────
-        'membro.dub.baixarSelecionados':  '⬇️ Baixar Selecionados',
+        'membro.dub.olaLabel':           '{icone} Olá, {nome}!',
+        'membro.dub.soMeusEPs':          '🗂️ Só meus EPs',
+        'membro.dub.todosEpsLib':        '▶ Todos os eps liberados para gravação',
+        'membro.dub.driveAberto':        '📁 Drive aberto — baixe os materiais necessários na pasta do projeto.',
+        'membro.dub.driveSemPasta':      '⚠️ Pasta do Drive não configurada. Configure em Configurações → Google Drive.',
+        'membro.dub.audioIndisponivel':  'Áudio não disponível.',
+        'membro.dub.videoIndisponivel':  'Vídeo não disponível.',
+        'membro.dub.videoParaDubs':      'Vídeo para os dubladores usarem durante a gravação.',
+        'membro.dub.erroProjetoNaoEnc':  'Erro: projeto não encontrado.',
+        'membro.dub.listaSalvaLocal':    'Lista salva localmente (Drive não conectado).',
+        'membro.dub.nenhumConteudoSRT':  'Nenhum conteúdo para gerar.',
+        'membro.dub.primeiroEpAuto':     'O primeiro ep é sempre liberado automaticamente.',
+        'membro.dub.retakeConferido':    '✅ Retake conferido — produtor está sendo notificado.',
+        'membro.dub.retakeExcluido':     '🗑️ Retake excluído.',
+        'membro.dub.selAoMenosUmEp':     'Selecione pelo menos um EP.',
+        'membro.dub.selArquivo':         'Selecione um arquivo antes de confirmar.',
+        'membro.dub.selArquivoUm':       'Selecione um arquivo.',
+        'membro.dub.selEpLista':         'Selecione um episódio da lista.',
+        'membro.dub.selEpPrimeiro':      'Selecione o episódio primeiro.',
+        'membro.dub.serieEnviada':       '✅ Série completa enviada e marcada como gravada!',
+        'membro.dub.useExplorador':      'Use o explorador de arquivos para arrastar os áudios finais.',
+        'membro.dub.blocoNaoAutorizado': 'Gerente não autorizou marcação em bloco. Libere o próximo EP em sequência.',
+        'membro.dub.epBloqOutroConf':    'EP bloqueado por outro conferente.',
+        'membro.dub.epEmRevOutro':       'EP em revisão por outro revisor.',
+        'membro.dub.epJaLiberado':       'EP já liberado.',
+        'membro.dub.epNaoAtrib':         'EP não atribuído a você.',
+        'membro.dub.baixarSelecionados': '⬇️ Baixar Selecionados',
         'membro.dub.todosPersonagens':   'Todos os personagens',
         'membro.dub.todosMeus':          'Todos os meus',
         'membro.dub.todosEPs':           'Todos os EPs',
@@ -6645,6 +6684,7 @@ function _pratAbrirCastingFinal() {
         '<div><h3 style="margin:0;color:#5b21b6;font-size:19px;">📋 Casting Final</h3>' +
         '<p style="margin:3px 0 0;font-size:11px;color:#6b7280;">'+t('misc.consolidacaoAprov')+'</p>' +
         '<button onclick="(function(){var o=document.getElementById(\'_castFinalOv\');if(o)o.remove();})()" style="padding:5px 12px;background:#e2e8f0;border:none;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;">✕ Fechar</button>' +
+        '</div>' +
         '</div>' +
         '<div style="background:#fefce8;border:1px solid #fde68a;border-radius:8px;padding:9px 13px;margin-bottom:12px;font-size:11px;color:#78350f;line-height:1.7;">' +
         t('prat.aprov.instrucao') +
@@ -10454,8 +10494,6 @@ function pagToggleModelo(profId) {
 
 
 // ─── ESTADO ────────────────────────────────────────────────────────────────
-var _pagTipoAtual = 'todos';
-
 // ─── TOGGLE TIPO ────────────────────────────────────────────────────────────
 function pagMudarTipo(tipo) {
     _pagTipoAtual = tipo;
@@ -14555,7 +14593,10 @@ async function driveCriarPastaProjeto(nomeProjeto, nomeCliente) {
 const _DRIVE_BACKUP_CHAVES_ARRAY = [
     'dublagem_dubladores', 'equipe_editores', 'equipe_conferentes',
     'equipe_revisores', 'equipe_outros', 'dublagem_papeis',
-    'cfg_clientes', 'cfg_admins', 'cfg_perfis', 'cfg_perfis_proj'
+    'cfg_clientes', 'cfg_admins', 'cfg_perfis', 'cfg_perfis_proj',
+    // projetos_dublagem: merge por id — Supabase só adiciona projetos novos,
+    // nunca sobrescreve projetos locais (previne perda de trabalho de produção)
+    'projetos_dublagem'
 ];
 // OBJETO/TEXTO simples: o Drive substitui o local quando presente (configurações
 // administrativas que normalmente só o Sydney mexe, sem necessidade de mesclar)
@@ -19198,13 +19239,7 @@ function dubFiltrarPersSelect(val) {
     _dubRenderizarRoteiro();
 }
 
-function dubFiltrarPers(btn) {
-    _dubPersFiltro = btn.dataset.pers || '';
-    document.querySelectorAll('.dub-pers-btn').forEach(function(b){
-        b.classList.toggle('ativo', b.dataset.pers === _dubPersFiltro);
-    });
-    _dubRenderizarRoteiro();
-}
+// dubFiltrarPers definida abaixo com tratamento mais robusto de parâmetros
 
 function dubToggleSoMeus() {
     _dubSoMeus = !_dubSoMeus;
@@ -21789,23 +21824,31 @@ function dubHandleUnifFiles(files) {
 async function _driveObterOuCriarSubpasta(nome, pastaParenteId) {
     if (!nome || !pastaParenteId || !_driveToken()) return null;
     try {
-        // Buscar se já existe
         var q = encodeURIComponent("name='" + nome + "' and '" + pastaParenteId + "' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false");
         var res = await _driveFetch('https://www.googleapis.com/drive/v3/files?q=' + q + '&fields=files(id,name)&pageSize=5', { method: 'GET' });
         if (res && res.files && res.files.length > 0) return res.files[0].id;
-        // Criar se não existe
+        // Criar a subpasta
         var created = await _driveFetch('https://www.googleapis.com/drive/v3/files', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name: nome, mimeType: 'application/vnd.google-apps.folder', parents: [pastaParenteId] })
         });
-        // Compartilhar a subpasta (assim outros dubladores também podem enviar)
-        if (created && created.id) {
-            _driveCompartilharParaEnvio(created.id).catch(function(){});
-            return created.id;
+        // Verificar novamente após criação — trata race condition onde dois clientes
+        // criam simultaneamente: usamos sempre a pasta mais antiga (first wins)
+        if (!created || !created.id) {
+            var res2 = await _driveFetch('https://www.googleapis.com/drive/v3/files?q=' + q + '&fields=files(id,name)&orderBy=createdTime&pageSize=1', { method: 'GET' });
+            return (res2 && res2.files && res2.files.length > 0) ? res2.files[0].id : null;
         }
-        return null;
-    } catch(e) { console.warn('_driveObterOuCriarSubpasta:', e.message); return null; }
+        // Compartilhar para que outros dubladores do mesmo EP também possam enviar
+        _driveCompartilharParaEnvio(created.id).catch(function(){});
+        return created.id;
+    } catch(e) {
+        // Em caso de erro 409 (conflito — pasta já existe), buscar novamente
+        try {
+            var res3 = await _driveFetch('https://www.googleapis.com/drive/v3/files?q=' + q + '&fields=files(id,name)&pageSize=1', { method: 'GET' });
+            return (res3 && res3.files && res3.files.length > 0) ? res3.files[0].id : null;
+        } catch(e2) { return null; }
+    }
 }
 
 // ── Upload de áudio para o Drive (dubladores) ────────────────────────────────
@@ -21818,13 +21861,13 @@ async function _dubUploadDrive(fileObj, nomeArquivo, pastaUrl, logEl, btnEl, sub
     var conectado = await _garantirDriveConectado().catch(function(){ return false; });
     var token = _driveToken();
 
-    // SEM DRIVE: baixa localmente e abre pasta manualmente
+    // SEM DRIVE: cria link de download direto do File object sem carregar em memória
     if (!token || !pastaId) {
-        var blob = new Blob([await fileObj.arrayBuffer()], {type: fileObj.type || 'audio/wav'});
         var a = document.createElement('a');
-        a.href = URL.createObjectURL(blob); a.download = nomeArquivo;
+        a.href = URL.createObjectURL(fileObj);
+        a.download = nomeArquivo;
         document.body.appendChild(a); a.click(); document.body.removeChild(a);
-        setTimeout(function(){ URL.revokeObjectURL(a.href); }, 2000);
+        setTimeout(function(){ URL.revokeObjectURL(a.href); }, 5000);
         if (logEl) logEl.innerHTML += '<div style="color:#fbbf24;font-size:11px;">⬇️ Arquivo baixado localmente.</div>' +
             (!pastaUrl ? '<div style="color:#f87171;font-size:11px;">⚠️ Pasta não configurada — clique em 🔍 Buscar pasta no Drive.</div>' :
              '<div><a href="'+pastaUrl+'" target="_blank" style="color:#60a5fa;font-size:11px;">📁 Arraste o arquivo para a pasta ↗</a></div>');
@@ -24683,12 +24726,13 @@ async function _sbCarregarDados() {
 // não percebe nada, porque o objeto projetoAtual que a tela usa nunca é
 // substituído por essa rotina.
 let _sbPollingAtivo = false;
+var _sbPollingIntervalId = null; // id do setInterval para poder cancelar
 const _SB_POLL_INTERVALO_MS = 45000; // 45s
 
 function _sbIniciarPolling() {
     if (_sbPollingAtivo) return;
     _sbPollingAtivo = true;
-    setInterval(async function() {
+    _sbPollingIntervalId = setInterval(async function() {
         try {
             // 1) Busca o que outras pessoas/projetos mudaram desde o último ciclo
             await _sbCarregarDados();
@@ -24706,6 +24750,14 @@ function _sbIniciarPolling() {
             }
         } catch(e) { console.warn('Sincronização silenciosa falhou:', e); }
     }, _SB_POLL_INTERVALO_MS);
+}
+
+function _sbPararPolling() {
+    if (_sbPollingIntervalId !== null) {
+        clearInterval(_sbPollingIntervalId);
+        _sbPollingIntervalId = null;
+    }
+    _sbPollingAtivo = false;
 }
 
 function _sbInit() {
