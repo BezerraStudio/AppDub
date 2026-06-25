@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.626</title>
+    <title>Sistema de Dublagem v12.627</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.626</p>
+        <p>v12.627</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.626</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.627</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1747,7 +1747,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.626</footer>
+    <footer>🎬 Sistema de Dublagem v12.627</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -3134,6 +3134,48 @@ var _i18n = {
         'notif.confirmarEPs':         '✅ Confirmar {n} EP(s) Selecionado(s)',
         'notif.nenhPar':              'Nenhum par completo disponível ainda.',
         'notif.retakeGravado':        '✅ Retake marcado como gravado! O gerente do projeto está sendo informado.',
+        // Chaves das telas de membro (data-i18n no dubScreen)
+        'app.logout':                  'Sair',
+        'membro.dub.arquivoRen':       'Arquivo renomeado para:',
+        'membro.dub.arrasteOuClique':  '🎵 Arraste ou clique para selecionar',
+        'membro.dub.btnConfirmar':     '📤 Confirmar',
+        'membro.dub.btnFechar':        'Fechar',
+        'membro.dub.concluido':        '✅ Concluído — liberar próximo',
+        'membro.dub.confirmarSel':     '✅ Confirmar Selecionados',
+        'membro.dub.cores':            '🎨 Cores',
+        'membro.dub.desmarcarEp':      '🗑️ Desmarcar EP',
+        'membro.dub.enviarEp':         '📁 Enviar por EP',
+        'membro.dub.episodios':        'EPISÓDIOS',
+        'membro.dub.labelPersonagem':  'Personagem:',
+        'membro.dub.modalUnifH3':      '🎵 Enviar Áudio Unificado',
+        'membro.dub.personagem':       'Personagem:',
+        'membro.dub.retakeInfo':       '📋 Informações de Retakes',
+        'membro.dub.soMeus':           '🎭 Só meus',
+        'membro.dub.soRetakes':        '🔁 Só retakes',
+        'membro.dub.modoCompacto':     'Compacto',
+        'membro.dub.tcUnif':           'TC Unif.',
+        'membro.dub.textoFonte.p':     'Texto P',
+        'membro.dub.textoFonte.m':     'Texto M',
+        'membro.dub.textoFonte.g':     'Texto G',
+        'membro.dub.textoFonte.xg':    'Texto XG',
+        'membro.dub.todosMeus':        'Todos os meus',
+        'misc.enviarAudioEP':          '📁 Enviar Áudio por EP',
+        'misc.personagem':             'Personagem:',
+        'misc.selecioneEpisodio':      'Selecione o episódio:',
+        'modal.cancelar':              'Cancelar',
+        'primeiroAcesso.bemVindo':     'Bem-vindo,',
+        'primeiroAcesso.btn':          '✅ Definir minha senha e entrar',
+        'primeiroAcesso.confirmar':    'Confirmar senha',
+        'primeiroAcesso.novaSenha':    'Nova senha',
+        'cfg.admins.modalBtnSalvar':   '💾 Salvar',
+        'cfg.admins.modalLabelConfSenha': 'Confirmar Senha',
+        'cfg.admins.modalLabelEmail':  'E-mail',
+        'cfg.admins.modalLabelNome':   'Nome *',
+        'cfg.admins.modalLabelRole':   'Role',
+        'cfg.admins.modalLabelSenha':  'Senha',
+        'cfg.admins.modalOptAdmin':    '🟠 Admin — acesso total',
+        'cfg.admins.modalOptUsuario':  '🟢 Usuário — acesso operacional (sem configs do sistema)',
+        'cfg.admins.modalTituloNovo':  'Novo Admin',
         // Chaves adicionais de notificações e prateleira
         'notif.arquivosProntos':       '✅ {n} arquivo(s) pronto(s)!',
         'notif.externosVinc':          '✅ {n} externo(s) vinculado(s) ao projeto!',
@@ -3525,6 +3567,48 @@ var _i18n = {
         'cfg.drive.btnCarregar':    '⬇️ Load from Drive',
         // ── Member screens ───────────────────────────────────────────────────
         'membro.dub.baixarSelecionados':  '⬇️ Download Selected',
+        // Telas de membro — chaves completas EN
+        'app.logout':                  'Logout',
+        'membro.dub.arquivoRen':       'File renamed to:',
+        'membro.dub.arrasteOuClique':  '🎵 Drag or click to select',
+        'membro.dub.btnConfirmar':     '📤 Confirm',
+        'membro.dub.btnFechar':        'Close',
+        'membro.dub.concluido':        '✅ Done — release next',
+        'membro.dub.confirmarSel':     '✅ Confirm Selected',
+        'membro.dub.cores':            '🎨 Colors',
+        'membro.dub.desmarcarEp':      '🗑️ Unmark EP',
+        'membro.dub.enviarEp':         '📁 Send by EP',
+        'membro.dub.episodios':        'EPISODES',
+        'membro.dub.labelPersonagem':  'Character:',
+        'membro.dub.modalUnifH3':      '🎵 Send Unified Audio',
+        'membro.dub.personagem':       'Character:',
+        'membro.dub.retakeInfo':       '📋 Retake Information',
+        'membro.dub.soMeus':           '🎭 Mine only',
+        'membro.dub.soRetakes':        '🔁 Retakes only',
+        'membro.dub.modoCompacto':     'Compact',
+        'membro.dub.tcUnif':           'TC Unif.',
+        'membro.dub.textoFonte.p':     'Font S',
+        'membro.dub.textoFonte.m':     'Font M',
+        'membro.dub.textoFonte.g':     'Font L',
+        'membro.dub.textoFonte.xg':    'Font XL',
+        'membro.dub.todosMeus':        'All mine',
+        'misc.enviarAudioEP':          '📁 Send Audio by EP',
+        'misc.personagem':             'Character:',
+        'misc.selecioneEpisodio':      'Select episode:',
+        'modal.cancelar':              'Cancel',
+        'primeiroAcesso.bemVindo':     'Welcome,',
+        'primeiroAcesso.btn':          '✅ Set my password and enter',
+        'primeiroAcesso.confirmar':    'Confirm password',
+        'primeiroAcesso.novaSenha':    'New password',
+        'cfg.admins.modalBtnSalvar':   '💾 Save',
+        'cfg.admins.modalLabelConfSenha': 'Confirm Password',
+        'cfg.admins.modalLabelEmail':  'E-mail',
+        'cfg.admins.modalLabelNome':   'Name *',
+        'cfg.admins.modalLabelRole':   'Role',
+        'cfg.admins.modalLabelSenha':  'Password',
+        'cfg.admins.modalOptAdmin':    '🟠 Admin — full access',
+        'cfg.admins.modalOptUsuario':  '🟢 User — operational access (no system config)',
+        'cfg.admins.modalTituloNovo':  'New Admin',
         'membro.dub.selArquivo':         'Select a file before confirming.',
         'membro.dub.selArquivoUm':       'Select a file.',
         'membro.dub.enviarUnif':         '🎵 Send Unified',
@@ -3671,7 +3755,29 @@ function _setIdioma(lang) {
         if (aba === 'pagamentos') { if (typeof renderizarTabelaPagamentos === 'function') renderizarTabelaPagamentos(); }
         if (aba === 'configuracoes') { if (typeof _cfgSubAba === 'function') { var _cfgBtnAtv = document.querySelector('#cfgWrapper button[style*="#fff"]'); var _cfgAbaId = _cfgBtnAtv ? _cfgBtnAtv.id.replace('cfgTab','').toLowerCase() : 'dubladores'; _cfgSubAba(_cfgAbaId); } }
     }
-    // Re-renderiza Prateleira se estiver aberta
+    // Re-renderiza tela de membro ativa (roteiro dinâmico não usa data-i18n)
+    if (document.getElementById('dubScreen') &&
+        document.getElementById('dubScreen').classList.contains('ativo')) {
+        if (typeof _dubRenderizarRoteiro === 'function') _dubRenderizarRoteiro();
+        // Atualiza o greeting com novo idioma
+        var _dubLabel = document.getElementById('dubNomeLabel');
+        if (_dubLabel && typeof _dubDubId !== 'undefined') {
+            var _dubNome = _dubLabel.textContent.split(' ').slice(1).join(' ');
+            _dubLabel.textContent = t('membro.dub.olaLabel', {
+                icone: _dubLabel.textContent.charAt(0),
+                nome: _dubNome
+            });
+        }
+    }
+    // Re-renderiza tela do cliente (conteúdo totalmente dinâmico, sem data-i18n)
+    var _cliSc = document.getElementById('clienteScreen');
+    if (_cliSc && _cliSc.style.display !== 'none') {
+        if (_cliModo === 'catalogo' && typeof _cliRenderCatalogo === 'function') {
+            _cliRenderCatalogo();
+        } else if (_cliModo === 'casting' && typeof _cliRenderCasting === 'function') {
+            _cliRenderCasting();
+        }
+    }
     if (document.getElementById('_pratOv')) {
         // Re-renderiza título, subtítulo e tabs
         var _ph = document.querySelector('#_pratOv h3');
