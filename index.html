@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.626</title>
+    <title>Sistema de Dublagem v12.625</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.626</p>
+        <p>v12.625</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.626</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.625</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1747,7 +1747,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.626</footer>
+    <footer>🎬 Sistema de Dublagem v12.625</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -3238,28 +3238,6 @@ var _i18n = {
         'membro.dub.textoFonte.m':       'Texto M',
         'membro.dub.textoFonte.g':       'Texto G',
         'membro.dub.textoFonte.xg':      'Texto XG',
-        // ── C2: Chaves i18n adicionadas (membro.dub) ─────────────────────────
-        'membro.dub.arquivoRen':         'Arquivo renomeado para:',
-        'membro.dub.arrasteOuClique':    '🎵 Arraste ou clique para selecionar',
-        'membro.dub.btnConfirmar':       '📤 Confirmar',
-        'membro.dub.btnFechar':          'Fechar',
-        'membro.dub.concluido':          '✅ Concluído — liberar próximo',
-        'membro.dub.confirmarSel':       '✅ Confirmar Selecionados',
-        'membro.dub.cores':              '🎨 Cores',
-        'membro.dub.desmarcarEp':        '🗑️ Desmarcar EP',
-        'membro.dub.enviarEp':           '📁 Enviar por EP',
-        'membro.dub.episodios':          'EPISÓDIOS',
-        'membro.dub.labelPersonagem':    'Personagem:',
-        'membro.dub.modalUnifH3':        '🎵 Enviar Áudio Unificado',
-        'membro.dub.personagem':         'Personagem:',
-        'membro.dub.retakeInfo':         '📋 Informações de Retakes',
-        'membro.dub.soMeus':             '🎭 Só meus',
-        'membro.dub.soRetakes':          '🔁 Só retakes',
-        // ── C2: Chaves i18n adicionadas (misc + app) ─────────────────────────
-        'app.logout':                    'Sair',
-        'misc.enviarAudioEP':            '📁 Enviar Áudio por EP',
-        'misc.personagem':               'Personagem:',
-        'misc.selecioneEpisodio':        'Selecione o episódio:',
         // ── Papéis ────────────────────────────────────────────────────────────
         'membro.papel.dublador':         'Dublador',
         'membro.papel.conferente':       'Conferente de SRT',
@@ -3564,48 +3542,6 @@ var _i18n = {
         'membro.dub.epNaoAtrib':         'EP not assigned to you.',
         'membro.dub.epEmRevOutro':       'EP being reviewed by another reviewer.',
         'membro.dub.epJaLiberado':       'EP already released.',
-        // ── C2: Missing i18n keys — membro.dub ───────────────────────────────
-        'membro.dub.arquivoRen':         'File renamed to:',
-        'membro.dub.arrasteOuClique':    '🎵 Drag or click to select',
-        'membro.dub.btnConfirmar':       '📤 Confirm',
-        'membro.dub.btnFechar':          'Close',
-        'membro.dub.concluido':          '✅ Done — release next',
-        'membro.dub.confirmarSel':       '✅ Confirm Selected',
-        'membro.dub.cores':              '🎨 Colors',
-        'membro.dub.desmarcarEp':        '🗑️ Unmark EP',
-        'membro.dub.enviarEp':           '📁 Send by EP',
-        'membro.dub.episodios':          'EPISODES',
-        'membro.dub.labelPersonagem':    'Character:',
-        'membro.dub.modalUnifH3':        '🎵 Send Unified Audio',
-        'membro.dub.personagem':         'Character:',
-        'membro.dub.retakeInfo':         '📋 Retake Information',
-        'membro.dub.soMeus':             '🎭 Mine only',
-        'membro.dub.soRetakes':          '🔁 Retakes only',
-        'membro.dub.textoFonte.pp':      'Text XP',
-        'membro.dub.textoFonte.p':       'Text P',
-        'membro.dub.textoFonte.m':       'Text M',
-        'membro.dub.textoFonte.g':       'Text G',
-        'membro.dub.textoFonte.xg':      'Text XG',
-        // ── C2: Missing i18n keys — misc / app ───────────────────────────────
-        'app.logout':                    'Logout',
-        'misc.enviarAudioEP':            '📁 Send Audio by EP',
-        'misc.personagem':               'Character:',
-        'misc.selecioneEpisodio':        'Select the episode:',
-        // ── C2: Missing i18n keys — primeiroAcesso ───────────────────────────
-        'primeiroAcesso.bemVindo':       'Welcome,',
-        'primeiroAcesso.btn':            '✅ Set my password and enter',
-        'primeiroAcesso.confirmar':      'Confirm password',
-        'primeiroAcesso.novaSenha':      'New password',
-        // ── C2: Missing i18n keys — cfg.admins modal ─────────────────────────
-        'cfg.admins.modalBtnSalvar':     '💾 Save',
-        'cfg.admins.modalLabelConfSenha':'Confirm Password',
-        'cfg.admins.modalLabelEmail':    'E-mail',
-        'cfg.admins.modalLabelNome':     'Name *',
-        'cfg.admins.modalLabelRole':     'Role',
-        'cfg.admins.modalLabelSenha':    'Password',
-        'cfg.admins.modalOptAdmin':      '🟠 Admin — full access',
-        'cfg.admins.modalOptUsuario':    '🟢 User — operational access (no system settings)',
-        'cfg.admins.modalTituloNovo':    'New Admin',
         'membro.conf.baixarMat':         '⬇️ Download Materials',
         'membro.conf.enviarSRT':         '📤 Send SRT',
         'membro.edit.link':              '🔗 Project Link',
@@ -14645,8 +14581,7 @@ async function driveCriarPastaProjeto(nomeProjeto, nomeCliente) {
 const _DRIVE_BACKUP_CHAVES_ARRAY = [
     'dublagem_dubladores', 'equipe_editores', 'equipe_conferentes',
     'equipe_revisores', 'equipe_outros', 'dublagem_papeis',
-    'cfg_clientes', 'cfg_admins', 'cfg_perfis', 'cfg_perfis_proj',
-    'projetos_dublagem'  // C1 — protegido contra sobrescrita do polling
+    'cfg_clientes', 'cfg_admins', 'cfg_perfis', 'cfg_perfis_proj'
 ];
 // OBJETO/TEXTO simples: o Drive substitui o local quando presente (configurações
 // administrativas que normalmente só o Sydney mexe, sem necessidade de mesclar)
