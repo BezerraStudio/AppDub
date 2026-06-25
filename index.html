@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.628</title>
+    <title>Sistema de Dublagem v12.629</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -364,7 +364,7 @@
         .prod-modal-box h3 { font-size:16px;font-weight:700;color:#2c3e50;margin:0 0 16px; }
         .prod-link-box { background:#f4f6f9;border:1px solid #dde;border-radius:8px;padding:10px 14px;font-size:12px;font-family:monospace;color:#2c3e50;word-break:break-all;margin-bottom:14px; }
         /* tela de seleção de equipe (modo ?projeto=ID) */
-        .proj-select-screen { display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#1a1a2e;z-index:99999;flex-direction:column;align-items:center;justify-content:flex-start;overflow-y:auto;padding-top:40px; }
+        .proj-select-screen { display:none;position:fixed;top:0;left:0;width:100%;height:100%;height:100dvh;background:#1a1a2e;z-index:99999;flex-direction:column;align-items:center;justify-content:flex-start;overflow-y:auto;padding-top:40px; }
         .proj-select-screen.ativo { display:flex; }
         .proj-select-title { color:#e2e8f0;font-size:22px;font-weight:700;margin-bottom:6px;text-align:center; }
         .proj-select-sub { color:#94a3b8;font-size:14px;margin-bottom:32px;text-align:center; }
@@ -385,7 +385,7 @@
         .proj-senha-input:focus { outline:none;border-color:#3498db; }
         .proj-senha-errou { color:#e74c3c;font-size:12px;margin-bottom:10px;display:none; }
         /* interface do dublador */
-        .dub-screen { display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#1a1a2e;z-index:99999;flex-direction:column;overflow:hidden; }
+        .dub-screen { display:none;position:fixed;top:0;left:0;width:100%;height:100%;height:100dvh;background:#1a1a2e;z-index:99999;flex-direction:column;overflow:hidden; }
         .dub-screen.ativo { display:flex; }
         .dub-header { background:#16213e;padding:12px 16px;display:flex;align-items:center;gap:12px;flex-shrink:0;border-bottom:2px solid #0f3460; }
         .dub-header h1 { font-size:16px;font-weight:700;color:#e2e8f0;flex:1;margin:0; }
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.628</p>
+        <p>v12.629</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.628</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.629</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1747,7 +1747,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.628</footer>
+    <footer>🎬 Sistema de Dublagem v12.629</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -5873,7 +5873,8 @@ function _driveAutoConectar() {
             // Auto-share: garante pastas abertas para uploads da equipe (silencioso)
             _driveCompartilharTodosProjetos(true).catch(function(){});
         } else {
-            irParaAba('configuracoes');
+            // Auto-connect silencioso: não redirecionar para settings
+            // O usuário será direcionado ao Drive só quando tentar usar uma função que precise dele
         }
     });
 }
@@ -16537,7 +16538,8 @@ async function driveSincronizar() {
         return;
     }
     if (!_driveToken()) {
-        cfgCarregarGapi(() => cfgAutenticar(() => driveSincronizar()));
+        // Sem token Drive — retornar silenciosamente quando chamado em background
+        // Para sincronizar manualmente, use o botão em ⚙️ Configurações → Google Drive
         return;
     }
     // Salva apenas — NÃO carrega do Drive antes de salvar.
@@ -19237,7 +19239,12 @@ async function _dubVerificarURLParam() {
                        (esc.revisor && esc.revisor[dubId]);
             }) || todos[0] || null;
         }
-        if (!_dubProjeto) { mostrarNotificacao(t('misc.notif.nenhumProjDisp'), 'aviso'); return; }
+        if (!_dubProjeto) {
+            // Projeto não encontrado — restaurar tela de login em vez de deixar branco
+            document.getElementById('loginScreen').style.display = '';
+            mostrarNotificacao(t('misc.notif.nenhumProjDisp'), 'aviso', 4000);
+            return;
+        }
         initDB().then(function(){ _dubAbrirTela(); });
     }
 }
@@ -19252,7 +19259,11 @@ async function _projMostrarSelectEquipe(projId) {
     _sbIniciarPolling();
     var todos = JSON.parse(localStorage.getItem('projetos_dublagem') || '[]');
     var proj  = todos.find(function(p){ return String(p.id) === String(projId); });
-    if (!proj) { mostrarNotificacao(t('membro.dub.projetoNaoEnc'), 'aviso'); return; }
+    if (!proj) {
+        document.getElementById('loginScreen').style.display = '';
+        mostrarNotificacao(t('membro.dub.projetoNaoEnc'), 'aviso', 4000);
+        return;
+    }
     _dubProjeto = proj;
     document.getElementById('projSelectTitulo').textContent = '🎬 ' + (proj.nome || 'Projeto');
     document.getElementById('projSelectSub').textContent = t('membro.dub.subProjeto');
