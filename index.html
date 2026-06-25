@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.629</title>
+    <title>Sistema de Dublagem v12.630</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.629</p>
+        <p>v12.630</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.629</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.630</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1747,7 +1747,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.629</footer>
+    <footer>🎬 Sistema de Dublagem v12.630</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -19276,6 +19276,8 @@ async function _projMostrarSelectEquipe(projId) {
     var escRev = proj && proj.escalacaoEquipe && proj.escalacaoEquipe.revisor || {};
     var revisores = carregarRevisores().filter(function(rv){
         if (rv.ativo === false) return false;
+        // Sem configuração → mostra todos (permissivo, como conferentes)
+        if (!Object.keys(escRev).length) return true;
         return escRev[rv.id] && escRev[rv.id].eps && escRev[rv.id].eps.length > 0;
     });
     if (revisores.length) {
@@ -19288,7 +19290,8 @@ async function _projMostrarSelectEquipe(projId) {
     var escEdit = proj && proj.escalacaoEquipe && proj.escalacaoEquipe.editor || {};
     var editores = carregarEditores().filter(function(e){
         if (e.ativo === false) return false;
-        if (!Object.keys(escEdit).length) return false;
+        // Sem configuração → mostra todos (permissivo, como conferentes)
+        if (!Object.keys(escEdit).length) return true;
         return escEdit[e.id] && escEdit[e.id].eps && escEdit[e.id].eps.length > 0;
     });
     if (editores.length) {
@@ -19310,19 +19313,21 @@ async function _projMostrarSelectEquipe(projId) {
             (function(cfCapt){ grid.appendChild(_projCriarCard(cfCapt.nome, t('membro.papel.conferente'), '#16a085', function(){ _projClicarMembro({id:cfCapt.id,tipo:'conferente',nome:cfCapt.nome}); })); })(cf);
         });
     }
-    // 4. Dubladores escalados
+    // 4. Dubladores — escalados ou todos se sem casting
     var esc    = (proj.escalacao && proj.escalacao.padrao) || {};
     var dubIds = [];
     Object.values(esc).forEach(function(id){ if (id && dubIds.indexOf(id) < 0) dubIds.push(id); });
     var dubs = carregarDubladores();
-    if (dubIds.length) {
+    // Se sem casting configurado, mostrar todos os dubladores ativos (permissivo)
+    var dubsParaMostrar = dubIds.length
+        ? dubs.filter(function(d){ return dubIds.indexOf(d.id) >= 0; })
+        : dubs.filter(function(d){ return d.ativo !== false; });
+    if (dubsParaMostrar.length) {
         grid.insertAdjacentHTML('beforeend', '<div class="proj-secao-label" style="width:100%;text-align:center;color:#94a3b8;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin:14px 0 8px;flex-basis:100%;">'+t('membro.selecione.secDubs')+'</div>');
-        dubIds.forEach(function(dubId) {
-            var dub = dubs.find(function(d){ return d.id === dubId; });
-            if (!dub) return;
-            var card = _projCriarCard(dub.nome, t('membro.papel.dublador'), '#0f3460', function(){ _projClicarMembro({id:dubId,tipo:'dub',nome:dub.nome}); });
+        dubsParaMostrar.forEach(function(dub) {
+            var card = _projCriarCard(dub.nome, t('membro.papel.dublador'), '#0f3460', function(){ _projClicarMembro({id:dub.id,tipo:'dub',nome:dub.nome}); });
             grid.appendChild(card);
-            _idbBuscar('foto_' + dubId).then(function(foto){
+            _idbBuscar('foto_' + dub.id).then(function(foto){
                 if (!foto) return;
                 var av = card.querySelector('.proj-membro-avatar');
                 if (av) av.outerHTML = '<img class="proj-membro-foto" src="' + foto + '">';
