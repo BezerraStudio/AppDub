@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.630</title>
+    <title>Sistema de Dublagem v12.632</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.630</p>
+        <p>v12.632</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.630</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.632</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -763,6 +763,7 @@
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
                         <h2 style="margin:0;" data-i18n="proj.h2.existentes">2️⃣ PROJETOS EXISTENTES</h2>
                         <div style="display:flex;gap:6px;">
+                            <button id="_catBadgeProjetos" onclick="_catAbrirPopupPendentes()" style="display:none;font-size:11px;padding:6px 12px;background:linear-gradient(135deg,#7c3aed,#5b21b6);border:none;border-radius:6px;color:#fff;font-weight:700;cursor:pointer;align-items:center;gap:4px;opacity:1;transition:opacity .3s;">🎭 0 casting</button>
                             <button class="btn btn-success" onclick="exportarBackup()" style="font-size:11px;padding:6px 10px;" title="Salvar backup em arquivo JSON" data-i18n-title="tooltip.backupJSON">💾 Backup</button>
                             <button class="btn btn-warning" onclick="document.getElementById('inputImportBackup').click()" style="font-size:11px;padding:6px 10px;" title="Restaurar a partir de arquivo JSON" data-i18n-title="tooltip.restaurarJSON" data-i18n="proj.btn.restaurar">📂 Restaurar</button>
                             <input type="file" id="inputImportBackup" accept=".json" style="display:none" onchange="importarBackup(event)">
@@ -1747,7 +1748,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.630</footer>
+    <footer>🎬 Sistema de Dublagem v12.632</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -5843,6 +5844,8 @@ function _admAbrir(adm) {
     verificarUltimoBackup();
     _sbIniciarPolling();
     _driveAutoConectar();
+    // Verificar catálogos de clientes pendentes e mostrar badge
+    setTimeout(function() { _catCheckBadge(); }, 2000);
 }
 
 // Ao logar, tenta conectar ao Drive automaticamente — sem exigir clique em
@@ -6449,9 +6452,38 @@ async function selecionarEIr(idx) {
     document.querySelectorAll('.tab-btn')[1].click();
 }
 
+
+// ── Limpeza Supabase ao excluir projeto ──────────────────────────────────────
+// Remove todos os rastros do projeto no Supabase:
+// - Entradas catalogo_pendente_TOKEN e catalogo_arquivado_TOKEN dos castings
+// - A sincronização normal já cuida do projetos_dublagem (array upsert)
+async function _sbLimparProjeto(proj) {
+    if (!_sbClient || !proj) return;
+    try {
+        // Coletar tokens de catálogos do projeto
+        var tokens = [];
+        var castings = (proj.pratCastings || []);
+        castings.forEach(function(cast) {
+            if (cast.catalogoToken) tokens.push(cast.catalogoToken);
+        });
+
+        // Para cada token: deletar pendente e arquivado
+        for (var i = 0; i < tokens.length; i++) {
+            var tk = tokens[i];
+            await _sbClient.from('app_data').delete().eq('chave', 'catalogo_pendente_' + tk);
+            await _sbClient.from('app_data').delete().eq('chave', 'catalogo_arquivado_' + tk);
+        }
+
+        if (tokens.length > 0) {
+            console.log('[Supabase] Limpeza: ' + tokens.length + ' catálogo(s) de ' + (proj.nome || 'projeto') + ' removido(s).');
+        }
+    } catch(e) { console.warn('_sbLimparProjeto:', e); }
+}
+
 function deletarProjeto(idx) {
     const _nomePrj = projetos[idx]?.nome || '';
     _confirmar(`Excluir "${_nomePrj}"?`, function() {
+        var _projParaLimpar = projetos[idx]; // capturar antes de remover
         if (projetoAtual?.id === projetos[idx]?.id) {
             projetoAtual = null;
             document.getElementById('projetoSelecionadoInfo').style.display = 'none';
@@ -6460,6 +6492,8 @@ function deletarProjeto(idx) {
         idbDel('pasta_' + projetos[idx].id);
         projetos.splice(idx, 1);
         salvarProjetos(); carregarProjetos();
+        // Limpar resíduos do projeto no Supabase (catálogos, tokens)
+        _sbLimparProjeto(_projParaLimpar).catch(function(e){ console.warn('Limpeza SB:', e); });
     }, t('modal.t.excluirProjeto'), '🗑️');
 }
 
@@ -25940,6 +25974,9 @@ function _catEnviarLista() {
             obs:(document.getElementById('catEnvObs')||{value:''}).value.trim() },
         lista:_catLista, status:'enviado' };
     ['_catEnvioOv','_catResumoOv'].forEach(function(id){ var el=document.getElementById(id); if(el) el.remove(); });
+    // Salvar no Supabase (funciona do browser do cliente sem credenciais admin)
+    _catSalvarSupabase(dados).catch(function(e){ console.warn('SB cat:', e); });
+    // Tentar Drive se admin estiver no mesmo browser
     _catSalvarDrive(dados).catch(function(e){ console.warn('Drive:',e); });
     try { localStorage.removeItem('cat_rascunho_'+_catToken); } catch(e){}
     // Mostrar tela de conclusão — cliente escolhe como baixar/enviar
@@ -25987,6 +26024,157 @@ function _pratImportarXLSXCatalogo(input) {
 
 // ── Drive: salvar rascunho ───────────────────────────────────────────────────
 var _catDrivePastaId = null;
+
+
+// ── Catálogo Livre — bridge Supabase ─────────────────────────────────────────
+// Chamado do browser do CLIENTE (sem credenciais admin) usando as constantes
+// _SB_URL e _SB_KEY que já estão no HTML. O anon key é público por design.
+async function _catSalvarSupabase(dados) {
+    try {
+        if (!_SB_URL || !_SB_KEY) return;
+        var chave = 'catalogo_pendente_' + (dados.token || '');
+        var resp = await fetch(_SB_URL + '/rest/v1/app_data', {
+            method: 'POST',
+            headers: {
+                'apikey': _SB_KEY,
+                'Authorization': 'Bearer ' + _SB_KEY,
+                'Content-Type': 'application/json',
+                'Prefer': 'return=minimal,resolution=merge-duplicates'
+            },
+            body: JSON.stringify({
+                chave: chave,
+                valor: JSON.stringify(dados),
+                atualizado_em: new Date().toISOString()
+            })
+        });
+        if (!resp.ok) console.warn('Supabase catalog save status:', resp.status);
+    } catch(e) { console.warn('_catSalvarSupabase:', e); }
+}
+
+// ── Admin: verificar catálogos pendentes no Supabase ─────────────────────────
+async function _catVerificarPendentes() {
+    try {
+        if (!_sbClient) return [];
+        var resp = await _sbClient
+            .from('app_data')
+            .select('chave, valor, atualizado_em')
+            .like('chave', 'catalogo_pendente_%');
+        if (resp.error) return [];
+        return (resp.data || []).map(function(row) {
+            try { return { chave: row.chave, dados: JSON.parse(row.valor), data: row.atualizado_em }; }
+            catch(e) { return null; }
+        }).filter(Boolean);
+    } catch(e) { return []; }
+}
+
+// ── Admin: arquivar catálogos no Drive e limpar do Supabase ──────────────────
+async function _catProcessarPendentes() {
+    var pendentes = await _catVerificarPendentes();
+    if (!pendentes.length) return;
+    var arquivados = 0;
+    for (var i = 0; i < pendentes.length; i++) {
+        var item = pendentes[i];
+        try {
+            // Se Drive conectado, salvar lá
+            if (_driveToken && _driveToken() && cfgGet().pastaRaizId) {
+                await _catSalvarDrive(item.dados);
+            }
+            // Renomear chave para arquivado (remove do badge)
+            await _sbClient.from('app_data')
+                .upsert({ chave: item.chave.replace('pendente', 'arquivado'), valor: item.dados ? JSON.stringify(item.dados) : '', atualizado_em: new Date().toISOString() }, { onConflict: 'chave' });
+            await _sbClient.from('app_data').delete().eq('chave', item.chave);
+            arquivados++;
+        } catch(e) { console.warn('Erro ao arquivar catálogo:', e); }
+    }
+    return arquivados;
+}
+
+// ── Badge pulsante na aba Projetos ───────────────────────────────────────────
+var _catBadgeInterval = null;
+function _catAtualizarBadge(n) {
+    var badge = document.getElementById('_catBadgeProjetos');
+    if (!badge) return;
+    if (n > 0) {
+        badge.textContent = '🎭 ' + n + ' casting' + (n > 1 ? 's' : '') + ' recebido' + (n > 1 ? 's' : '');
+        badge.style.display = 'inline-flex';
+        // Pulsar
+        if (!_catBadgeInterval) {
+            _catBadgeInterval = setInterval(function() {
+                badge.style.opacity = badge.style.opacity === '0.5' ? '1' : '0.5';
+            }, 700);
+        }
+    } else {
+        badge.style.display = 'none';
+        if (_catBadgeInterval) { clearInterval(_catBadgeInterval); _catBadgeInterval = null; }
+    }
+}
+
+async function _catCheckBadge() {
+    var pendentes = await _catVerificarPendentes();
+    _catAtualizarBadge(pendentes.length);
+    return pendentes;
+}
+
+// ── Popup com lista de catálogos pendentes ───────────────────────────────────
+async function _catAbrirPopupPendentes() {
+    var pendentes = await _catVerificarPendentes();
+    var itens = '';
+    if (!pendentes.length) {
+        itens = '<p style="color:#94a3b8;text-align:center;padding:20px;">Nenhum casting pendente.</p>';
+    } else {
+        pendentes.forEach(function(item) {
+            var d = item.dados || {}; var cl = d.cliente || {};
+            var dataFmt = item.data ? new Date(item.data).toLocaleString('pt-BR') : '';
+            var token = d.token || item.chave.replace('catalogo_pendente_','');
+            itens += '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px;margin-bottom:10px;">'
+                + '<div style="font-size:13px;font-weight:700;color:#e8e4dc;">' + (cl.nome||'—') + '</div>'
+                + '<div style="font-size:11px;color:#94a3b8;margin:3px 0;">' + (cl.projeto||'Sem nome') + ' &middot; ' + dataFmt + '</div>'
+                + (cl.contato ? '<div style="font-size:11px;color:#60a5fa;">' + cl.contato + '</div>' : '')
+                + '<div style="display:flex;gap:6px;margin-top:10px;">'
+                + '<button data-token="' + token + '" onclick="_catImportarDoPendente(this.dataset.token)" style="flex:1;padding:6px 10px;background:rgba(22,163,74,.15);border:1px solid rgba(22,163,74,.3);border-radius:6px;color:#4ade80;font-size:11px;cursor:pointer;">&#x1F4E5; Importar para projeto</button>'
+                + '<button data-token="' + token + '" onclick="_catArquivarPendente(this.dataset.token,this)" style="padding:6px 10px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:6px;color:#94a3b8;font-size:11px;cursor:pointer;">&#10003; Arquivar</button>'
+                + '</div></div>';
+        });
+    }
+    var html = '<div id="_catPopupOv" style="position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9000;display:flex;align-items:center;justify-content:center;">'
+        + '<div style="background:#1e2530;border:1px solid rgba(201,168,76,.3);border-radius:14px;padding:24px;max-width:540px;width:90%;max-height:80vh;overflow-y:auto;">'
+        + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">'
+        + '<h3 style="margin:0;color:#c9a84c;font-size:16px;">&#127917; Castings recebidos</h3>'
+        + '<button onclick="_catFecharPopup()" style="background:none;border:none;color:#94a3b8;cursor:pointer;font-size:18px;">&#10005;</button></div>'
+        + itens
+        + '</div></div>';
+
+    var old = document.getElementById('_catPopupOv'); if (old) old.remove();
+    document.body.insertAdjacentHTML('beforeend', html);
+}
+
+function _catFecharPopup() { var p = document.getElementById('_catPopupOv'); if (p) p.remove(); }
+
+async function _catArquivarPendente(token, btn) {
+    if (btn) btn.disabled = true;
+    try {
+        var chave = 'catalogo_pendente_' + token;
+        var resp = await _sbClient.from('app_data').select('valor').eq('chave', chave).single();
+        if (resp.data) {
+            await _sbClient.from('app_data').upsert({ chave: chave.replace('pendente','arquivado'), valor: resp.data.valor, atualizado_em: new Date().toISOString() }, {onConflict:'chave'});
+        }
+        await _sbClient.from('app_data').delete().eq('chave', chave);
+        var pop = document.getElementById('_catPopupOv'); if (pop) pop.remove();
+        var pendentes = await _catVerificarPendentes();
+        _catAtualizarBadge(pendentes.length);
+        mostrarNotificacao('Casting arquivado.', 'sucesso', 1500);
+    } catch(e) { mostrarNotificacao('Erro ao arquivar.', 'erro', 2000); }
+}
+
+function _catImportarDoPendente(token) {
+    var el = document.getElementById('_catLivreToken');
+    if (el) { el.value = token; }
+    var pop = document.getElementById('_catPopupOv'); if (pop) pop.remove();
+    // Abrir prateleira → aba Catálogo Livre
+    var btnPrat = document.querySelector('[onclick*="abrirPrateleira"]');
+    if (btnPrat) btnPrat.click();
+    mostrarNotificacao('Token colocado. Clique em Buscar para importar.', 'info', 3000);
+}
 
 async function _catSalvarDrive(dados) {
     var cfg = {};
@@ -27473,7 +27661,7 @@ window.addEventListener('load', function() {
   <header class="cli-header">
     <div class="cli-logo" id="cliNomeEstudio"></div>
     <div class="cli-badge" id="cliBadgeModo"></div>
-        <button id="cliBtnLang" type="button" onclick="_cliToggleLang()" style="position:fixed;bottom:80px;right:16px;z-index:9999;background:rgba(13,15,20,.9);border:1px solid rgba(201,168,76,.35);border-radius:20px;padding:6px 14px;color:rgba(201,168,76,.85);font-size:11px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif;letter-spacing:.05em;box-shadow:0 4px 16px rgba(0,0,0,.4);">🌐 PT|EN</button>
+        <button id="cliBtnLang" type="button" onclick="_cliToggleLang()" style="margin-left:auto;background:rgba(13,15,20,.6);border:1px solid rgba(201,168,76,.35);border-radius:20px;padding:6px 14px;color:rgba(201,168,76,.85);font-size:11px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif;letter-spacing:.05em;flex-shrink:0;">🌐 PT|EN</button>
   </header>
   <div id="cliConteudo"></div>
 </div>
