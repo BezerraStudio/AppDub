@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.643</title>
+    <title>Sistema de Dublagem v12.645</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.643</p>
+        <p>v12.645</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.643</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.645</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1748,7 +1748,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.643</footer>
+    <footer>🎬 Sistema de Dublagem v12.645</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -6083,37 +6083,68 @@ function salvarProjetos() {
     try {
         var freshRaw = localStorage.getItem('projetos_dublagem');
         var fresh = freshRaw ? JSON.parse(freshRaw) : null;
-        // Edição de rotina em um projeto já existente (mesma quantidade de projetos):
-        // mescla preservando o trabalho de OUTRAS pessoas em OUTROS projetos —
-        // só sobrescreve a entrada do projeto que estou editando agora.
-        // Criação/exclusão de projeto (mudou a quantidade) salva o array como está.
         if (fresh && projetoAtual && projetoAtual.id != null && fresh.length === projetos.length) {
             var idx = fresh.findIndex(function(p){ return p.id === projetoAtual.id; });
             if (idx >= 0) {
-                fresh[idx] = projetoAtual;
+                // ── PROTEÇÃO DE RETAKES ───────────────────────────────────────
+                // fresh[idx] pode ter retakes marcados por membros da equipe que
+                // projetoAtual (em memória do admin) ainda não viu.
+                // Fazemos deep-merge: projetoAtual vence em tudo EXCETO retakes —
+                // retakes de fresh são preservados se não existirem em projetoAtual.
+                var freshProj = fresh[idx];
+                var merged = Object.assign({}, projetoAtual);
+                if (freshProj && freshProj.producao) {
+                    if (!merged.producao) merged.producao = {};
+                    Object.keys(freshProj.producao).forEach(function(dubId) {
+                        var fpDub  = freshProj.producao[dubId];
+                        var mDub   = merged.producao[dubId];
+                        if (!mDub) {
+                            // Dublador inteiro ausente no admin → preservar tudo
+                            merged.producao[dubId] = fpDub;
+                            return;
+                        }
+                        // Merge de retakes ep a ep
+                        if (fpDub.eps) {
+                            if (!mDub.eps) mDub.eps = {};
+                            Object.keys(fpDub.eps).forEach(function(ep) {
+                                var fpEp = fpDub.eps[ep];
+                                var mEp  = mDub.eps[ep];
+                                if (!mEp) { mDub.eps[ep] = fpEp; return; }
+                                var fpRts = fpEp.retakes || [];
+                                var mRts  = mEp.retakes  || [];
+                                if (fpRts.length > 0) {
+                                    var mTs = new Set(mRts.map(function(r){ return String(r.ts); }));
+                                    var novosDeFresh = fpRts.filter(function(r){ return !mTs.has(String(r.ts)); });
+                                    if (novosDeFresh.length > 0) {
+                                        mEp.retakes = mRts.concat(novosDeFresh);
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+                fresh[idx] = merged;
                 projetos = fresh;
             }
         }
     } catch(e) { console.warn('Mesclagem de projetos falhou, salvando como está:', e); }
 
     localStorage.setItem('projetos_dublagem', JSON.stringify(projetos));
-    // Auto-backup: salva cópia datada a cada salvamento (mantém últimos 3)
     try {
         const hoje = new Date().toISOString().slice(0,10);
         const chave = 'backup_dublagem_' + hoje;
         localStorage.setItem(chave, JSON.stringify(projetos));
-        // Limpa backups antigos (mantém só os 3 mais recentes)
         const chaves = Object.keys(localStorage)
             .filter(k => k.startsWith('backup_dublagem_'))
             .sort().reverse();
         chaves.slice(3).forEach(k => localStorage.removeItem(k));
-    } catch(e) { /* ignora se localStorage cheio */ }
+    } catch(e) {}
 }
 
 // ─── BACKUP / RESTORE ─────────────────────────────────────────────────────────
 function exportarBackup() {
     var data = new Date().toISOString().slice(0,10);
-    var versao = 'v12.643';
+    var versao = 'v12.645';
 
     // Ler todas as chaves do sistema do localStorage
     function lerChave(k) {
@@ -15019,6 +15050,10 @@ function carregarVideoEpisodio(epNum) {
 }
 
 function selecionarLinha(linha, tr) {
+    // Auto-save ao trocar de linha: texto editado ou reação inserida
+    if (_modificacoesNaoSalvas && linhaAtual) {
+        salvarLinha();
+    }
     linhaAtual = linha;
     document.querySelectorAll('#tabelaFalas tr').forEach(r => r.classList.remove('selected'));
     tr.classList.add('selected');
