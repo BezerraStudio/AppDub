@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.637</title>
+    <title>Sistema de Dublagem v12.639</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.637</p>
+        <p>v12.639</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.637</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.639</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1748,7 +1748,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.637</footer>
+    <footer>🎬 Sistema de Dublagem v12.639</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -6110,14 +6110,56 @@ function salvarProjetos() {
 
 // ─── BACKUP / RESTORE ─────────────────────────────────────────────────────────
 function exportarBackup() {
-    if (!projetos.length) { mostrarNotificacao(t('proj.notif.nenhumExportar'), 'erro'); return; }
-    const data = new Date().toISOString().slice(0,10);
-    const blob = new Blob([JSON.stringify({ versao: 'v12.46', data, projetos }, null, 2)], { type: 'application/json' });
-    const a = document.createElement('a');
+    var data = new Date().toISOString().slice(0,10);
+    var versao = 'v12.639';
+
+    // Ler todas as chaves do sistema do localStorage
+    function lerChave(k) {
+        try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch(e) { return null; }
+    }
+
+    var backup = {
+        versao:       versao,
+        data:         data,
+        tipo:         'completo',
+        // Projetos
+        projetos:         lerChave('projetos_dublagem') || [],
+        // Equipe
+        dubladores:       lerChave('dublagem_dubladores') || [],
+        editores:         lerChave('equipe_editores') || [],
+        conferentes:      lerChave('equipe_conferentes') || [],
+        revisores:        lerChave('equipe_revisores') || [],
+        outros:           lerChave('equipe_outros') || [],
+        papeis:           lerChave('dublagem_papeis') || [],
+        // Configurações
+        clientes:         lerChave('cfg_clientes') || [],
+        admins:           lerChave('cfg_admins') || [],
+        perfis:           lerChave('cfg_perfis') || [],
+        perfis_proj:      lerChave('cfg_perfis_proj') || [],
+        cfg_geral:        lerChave('cfg_geral') || {},
+    };
+
+    // Remover credenciais sensíveis do cfg_geral (device-specific)
+    if (backup.cfg_geral) {
+        var geral = JSON.parse(JSON.stringify(backup.cfg_geral));
+        delete geral.googleToken; delete geral.token; delete geral.accessToken;
+        backup.cfg_geral = geral;
+    }
+
+    var total = backup.projetos.length + backup.dubladores.length +
+                backup.editores.length + backup.conferentes.length +
+                backup.revisores.length + backup.outros.length +
+                backup.clientes.length + backup.admins.length;
+
+    var blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+    var a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = `backup_dublagem_${data}.json`;
+    a.download = 'backup_sistema_' + data + '.json';
     a.click();
     URL.revokeObjectURL(a.href);
+    localStorage.setItem('_ultimo_backup', new Date().toISOString());
+    verificarUltimoBackup();
+    mostrarNotificacao(t('proj.notif.backupExportado') || ('✅ Backup completo — ' + total + ' registros'), 'sucesso', 2500);
 }
 
 function importarBackup(event) {
@@ -6127,42 +6169,89 @@ function importarBackup(event) {
     reader.onload = e => {
         try {
             const dados = JSON.parse(e.target.result);
+
+            // Suporte ao formato antigo (só projetos) e novo (completo)
+            const isCompleto = dados.tipo === 'completo' || dados.dubladores !== undefined;
             const lista = dados.projetos || (Array.isArray(dados) ? dados : null);
-            if (!lista) { mostrarNotificacao(t('proj.notif.arquivoInvalido'), 'erro'); return; }
-            const _bkpLista = lista;
-            var _finalizarBkp = function() {
-                projetoAtual = null;
-                projetos.forEach(p => _migrarPersonagensCombinados(p));
-                salvarProjetos(); carregarProjetos();
-            };
-            if (projetos.length > 0) {
-                _confirmar(
-                    `Você já tem ${projetos.length} projeto(s).\n\n` +
-                    `✅ OK = Mesclar (mantém existentes + importa novos)\n` +
-                    `❌ Cancelar = Substituir tudo pelos ${_bkpLista.length} projeto(s) do backup`,
-                    function() {
-                        // OK = Mesclar
-                        const idsAtuais = new Set(projetos.map(p => p.id));
-                        let adicionados = 0;
-                        _bkpLista.forEach(p => { if (!idsAtuais.has(p.id)) { projetos.push(p); adicionados++; } });
-                        mostrarNotificacao(t('proj.notif.projImportados', {n:adicionados}), 'sucesso');
-                        _finalizarBkp();
-                    },
-                    t('modal.t.importarBackup'), '📦',
-                    function() {
-                        // Cancelar = Substituir
-                        projetos = _bkpLista;
-                        mostrarNotificacao(t('proj.notif.projRestaurados', {n:_bkpLista.length}), 'sucesso');
-                        _finalizarBkp();
+            if (!lista && !isCompleto) { mostrarNotificacao(t('proj.notif.arquivoInvalido'), 'erro'); return; }
+
+            var resumo = [];
+            if (lista) resumo.push(lista.length + ' projeto(s)');
+            if (dados.dubladores && dados.dubladores.length) resumo.push(dados.dubladores.length + ' dublador(es)');
+            if (dados.editores && dados.editores.length) resumo.push(dados.editores.length + ' editor(es)');
+            if (dados.conferentes && dados.conferentes.length) resumo.push(dados.conferentes.length + ' conferente(s)');
+            if (dados.clientes && dados.clientes.length) resumo.push(dados.clientes.length + ' cliente(s)');
+            if (dados.admins && dados.admins.length) resumo.push(dados.admins.length + ' admin(s)');
+
+            var msgConfirm = 'Backup de ' + (dados.data || '?') + '\n' +
+                resumo.join(' · ') + '\n\n' +
+                '✅ OK = Mesclar (mantém existentes + importa novos)\n' +
+                '❌ Cancelar = Substituir TUDO pelos dados do backup';
+
+            var _aplicarBackup = function(mesclar) {
+                function salvarChave(chaveLS, novosDados, idField) {
+                    if (!novosDados || !novosDados.length) return 0;
+                    if (mesclar) {
+                        var existentes = [];
+                        try { existentes = JSON.parse(localStorage.getItem(chaveLS) || '[]'); } catch(e){}
+                        var ids = new Set(existentes.map(function(x){ return x[idField||'id']; }));
+                        var adicionados = 0;
+                        novosDados.forEach(function(item){
+                            if (!ids.has(item[idField||'id'])) { existentes.push(item); adicionados++; }
+                        });
+                        localStorage.setItem(chaveLS, JSON.stringify(existentes));
+                        return adicionados;
+                    } else {
+                        localStorage.setItem(chaveLS, JSON.stringify(novosDados));
+                        return novosDados.length;
                     }
+                }
+
+                var totais = {};
+                if (lista) totais.projetos = salvarChave('projetos_dublagem', lista);
+                if (dados.dubladores)  totais.dubs = salvarChave('dublagem_dubladores', dados.dubladores);
+                if (dados.editores)    totais.eds  = salvarChave('equipe_editores', dados.editores);
+                if (dados.conferentes) totais.conf = salvarChave('equipe_conferentes', dados.conferentes);
+                if (dados.revisores)   totais.revs = salvarChave('equipe_revisores', dados.revisores);
+                if (dados.outros)      totais.out  = salvarChave('equipe_outros', dados.outros);
+                if (dados.papeis)      totais.pap  = salvarChave('dublagem_papeis', dados.papeis);
+                if (dados.clientes)    totais.cli  = salvarChave('cfg_clientes', dados.clientes);
+                if (dados.admins)      totais.adm  = salvarChave('cfg_admins', dados.admins);
+                if (dados.perfis)      totais.perf = salvarChave('cfg_perfis', dados.perfis);
+                if (dados.perfis_proj) totais.pp   = salvarChave('cfg_perfis_proj', dados.perfis_proj);
+                // cfg_geral: mesclar campos (não sobrescrever tokens Google)
+                if (dados.cfg_geral && typeof dados.cfg_geral === 'object') {
+                    var geralAtual = {};
+                    try { geralAtual = JSON.parse(localStorage.getItem('cfg_geral') || '{}'); } catch(e){}
+                    var geralNovo = Object.assign({}, dados.cfg_geral, {
+                        // Preservar credenciais do device atual
+                        clientId:    geralAtual.clientId    || dados.cfg_geral.clientId,
+                        apiKey:      geralAtual.apiKey      || dados.cfg_geral.apiKey,
+                        pastaRaizId: geralAtual.pastaRaizId || dados.cfg_geral.pastaRaizId,
+                    });
+                    localStorage.setItem('cfg_geral', JSON.stringify(geralNovo));
+                }
+
+                projetoAtual = null;
+                projetos = [];
+                try { projetos = JSON.parse(localStorage.getItem('projetos_dublagem') || '[]'); } catch(e){}
+                projetos.forEach(function(p){ _migrarPersonagensCombinados(p); });
+                salvarProjetos(); carregarProjetos();
+                mostrarNotificacao('✅ Backup restaurado — ' + JSON.stringify(totais), 'sucesso', 3000);
+            };
+
+            if (projetos.length > 0) {
+                _confirmar(msgConfirm,
+                    function() { _aplicarBackup(true); },   // OK = Mesclar
+                    t('modal.t.importarBackup'), '📦',
+                    function() { _aplicarBackup(false); }   // Cancelar = Substituir
                 );
             } else {
-                projetos = _bkpLista;
-                mostrarNotificacao(t('proj.notif.projRestaurados', {n:_bkpLista.length}), 'sucesso');
-                _finalizarBkp();
+                _aplicarBackup(false);
             }
+
         } catch(err) {
-            mostrarNotificacao(t('proj.notif.erroLerArquivo', {msg:err.message}), 'erro');
+            mostrarNotificacao(t('proj.notif.erroImportar') + ': ' + err.message, 'erro');
         }
     };
     reader.readAsText(file);
@@ -26140,7 +26229,7 @@ async function _catProcessarPendentes() {
                 .upsert({ chave: item.chave.replace('pendente', 'arquivado'), valor: item.dados ? JSON.stringify(item.dados) : '', atualizado_em: new Date().toISOString() }, { onConflict: 'chave' });
             await _sbClient.from('app_data').delete().eq('chave', item.chave);
             arquivados++;
-        } catch(e) { console.warn('Erro ao arquivar catálogo:', e); }
+        } catch(e) { console.warn('Erro ao arquivar catálogo:', e.message || e); mostrarNotificacao('Erro ao arquivar catálogo: ' + (e.message||e), 'erro', 3000); }
     }
     return arquivados;
 }
@@ -26239,8 +26328,7 @@ function _catImportarDoPendente(token) {
 }
 
 async function _catSalvarDrive(dados) {
-    var cfg = {};
-    try { cfg = JSON.parse(localStorage.getItem('cfg_geral')||'{}'); } catch(e){}
+    var cfg = cfgGet(); // cfg_google — mesmo que _driveSalvarInterno usa
     var raizId = cfg.pastaRaizId;
     if (!raizId || !_driveToken || !_driveToken()) throw new Error('Drive não configurado');
 
