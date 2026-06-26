@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.641</title>
+    <title>Sistema de Dublagem v12.642</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.641</p>
+        <p>v12.642</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.641</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.642</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1748,7 +1748,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.641</footer>
+    <footer>🎬 Sistema de Dublagem v12.642</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -6113,7 +6113,7 @@ function salvarProjetos() {
 // ─── BACKUP / RESTORE ─────────────────────────────────────────────────────────
 function exportarBackup() {
     var data = new Date().toISOString().slice(0,10);
-    var versao = 'v12.641';
+    var versao = 'v12.642';
 
     // Ler todas as chaves do sistema do localStorage
     function lerChave(k) {
@@ -26302,6 +26302,7 @@ async function _catAbrirPopupPendentes() {
             + '<div style="display:flex;gap:6px;margin-top:10px;">'
             + '<button data-token="' + token + '" onclick="_catImportarDoPendente(this.dataset.token)" style="flex:1;padding:6px 10px;background:rgba(22,163,74,.15);border:1px solid rgba(22,163,74,.3);border-radius:6px;color:#4ade80;font-size:11px;cursor:pointer;">&#x1F4E5; Importar para projeto</button>'
             + (!isArquivado ? '<button data-token="' + token + '" onclick="_catArquivarPendente(this.dataset.token,this)" style="padding:6px 10px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:6px;color:#94a3b8;font-size:11px;cursor:pointer;">&#10003; Arquivar</button>' : '')
+            + '<button data-token="' + token + '" onclick="_catDeletarCatalogo(this.dataset.token,this)" style="padding:6px 10px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:6px;color:#f87171;font-size:11px;cursor:pointer;">&#128465;</button>'
             + '</div></div>';
     }
 
@@ -26328,6 +26329,22 @@ async function _catAbrirPopupPendentes() {
 
     var old = document.getElementById('_catPopupOv'); if (old) old.remove();
     document.body.insertAdjacentHTML('beforeend', html);
+}
+
+
+function _catDeletarCatalogo(token, btnEl) {
+    if (!_sbClient || !token) return;
+    if (btnEl) btnEl.disabled = true;
+    _confirmar('Excluir este casting do sistema? Não poderá ser recuperado.', async function() {
+        try {
+            await _sbClient.from('app_data').delete().eq('chave', 'catalogo_pendente_'  + token);
+            await _sbClient.from('app_data').delete().eq('chave', 'catalogo_arquivado_' + token);
+            var pop = document.getElementById('_catPopupOv'); if (pop) pop.remove();
+            var pendentes = await _catVerificarPendentes();
+            _catAtualizarBadge(pendentes.length);
+            mostrarNotificacao('Casting removido.', 'sucesso', 1500);
+        } catch(e) { mostrarNotificacao('Erro ao deletar: ' + (e.message||e), 'erro', 2000); }
+    }, 'Excluir casting', '🗑️');
 }
 
 function _catFecharPopup() { var p = document.getElementById('_catPopupOv'); if (p) p.remove(); }
