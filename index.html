@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.639</title>
+    <title>Sistema de Dublagem v12.641</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.639</p>
+        <p>v12.641</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.639</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.641</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1748,7 +1748,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.639</footer>
+    <footer>🎬 Sistema de Dublagem v12.641</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -3593,6 +3593,7 @@ var _i18n = {
         'proj.lang.toggle':              '🌐 Language',
 
         // ── Tela membro strings restantes ──────────────────────────────
+        'misc.notif.tokenColocado':        'Token colocado. Clique em Buscar para importar.',
         'app.logout':                    'Sair',
         'membro.dub.tcInicioFim':        'início → fim',
         'membro.dub.thPersonagem':       'Personagem',
@@ -4952,6 +4953,7 @@ var _i18n = {
         'membro.dub.filtrando':          'Filtering: {nome} — {n} lines',
         'misc.notif.formatando':         '⏳ Formatting: {n}/{total}...',
         'modal.fechar':                  'Close',
+        'misc.notif.tokenColocado':        'Token set. Click Search to import.',
         'app.logout':                    'Logout',
         'proj.label.projeto':            'Project',
         'proj.lang.toggle':              '🌐 Language',
@@ -6111,7 +6113,7 @@ function salvarProjetos() {
 // ─── BACKUP / RESTORE ─────────────────────────────────────────────────────────
 function exportarBackup() {
     var data = new Date().toISOString().slice(0,10);
-    var versao = 'v12.639';
+    var versao = 'v12.641';
 
     // Ler todas as chaves do sistema do localStorage
     function lerChave(k) {
@@ -26215,23 +26217,28 @@ async function _catVerificarPendentes() {
 // ── Admin: arquivar catálogos no Drive e limpar do Supabase ──────────────────
 async function _catProcessarPendentes() {
     var pendentes = await _catVerificarPendentes();
-    if (!pendentes.length) return;
-    var arquivados = 0;
+    if (!pendentes.length) {
+        _catAtualizarBadge(0);
+        return 0;
+    }
+    var salvos = 0;
     for (var i = 0; i < pendentes.length; i++) {
         var item = pendentes[i];
         try {
-            // Se Drive conectado, salvar lá
+            // Salvar no Drive se conectado — NÃO arquiva no Supabase aqui
+            // O admin precisa confirmar a importação antes do item sair do badge
             if (_driveToken && _driveToken() && cfgGet().pastaRaizId) {
                 await _catSalvarDrive(item.dados);
+                salvos++;
             }
-            // Renomear chave para arquivado (remove do badge)
-            await _sbClient.from('app_data')
-                .upsert({ chave: item.chave.replace('pendente', 'arquivado'), valor: item.dados ? JSON.stringify(item.dados) : '', atualizado_em: new Date().toISOString() }, { onConflict: 'chave' });
-            await _sbClient.from('app_data').delete().eq('chave', item.chave);
-            arquivados++;
-        } catch(e) { console.warn('Erro ao arquivar catálogo:', e.message || e); mostrarNotificacao('Erro ao arquivar catálogo: ' + (e.message||e), 'erro', 3000); }
+        } catch(e) {
+            console.warn('Erro ao salvar catálogo no Drive:', e.message || e);
+        }
     }
-    return arquivados;
+    // Atualizar badge com a contagem atual (pendentes continuam até admin agir)
+    _catAtualizarBadge(pendentes.length);
+    if (salvos > 0) console.log('[Drive] ' + salvos + ' catálogo(s) arquivado(s) no Drive.');
+    return salvos;
 }
 
 // ── Badge pulsante na aba Projetos ───────────────────────────────────────────
@@ -26262,25 +26269,55 @@ async function _catCheckBadge() {
 
 // ── Popup com lista de catálogos pendentes ───────────────────────────────────
 async function _catAbrirPopupPendentes() {
-    var pendentes = await _catVerificarPendentes();
-    var itens = '';
-    if (!pendentes.length) {
-        itens = '<p style="color:#94a3b8;text-align:center;padding:20px;">Nenhum casting pendente.</p>';
-    } else {
-        pendentes.forEach(function(item) {
-            var d = item.dados || {}; var cl = d.cliente || {};
-            var dataFmt = item.data ? new Date(item.data).toLocaleString('pt-BR') : '';
-            var token = d.token || item.chave.replace('catalogo_pendente_','');
-            itens += '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px;margin-bottom:10px;">'
-                + '<div style="font-size:13px;font-weight:700;color:#e8e4dc;">' + (cl.nome||'—') + '</div>'
-                + '<div style="font-size:11px;color:#94a3b8;margin:3px 0;">' + (cl.projeto||'Sem nome') + ' &middot; ' + dataFmt + '</div>'
-                + (cl.contato ? '<div style="font-size:11px;color:#60a5fa;">' + cl.contato + '</div>' : '')
-                + '<div style="display:flex;gap:6px;margin-top:10px;">'
-                + '<button data-token="' + token + '" onclick="_catImportarDoPendente(this.dataset.token)" style="flex:1;padding:6px 10px;background:rgba(22,163,74,.15);border:1px solid rgba(22,163,74,.3);border-radius:6px;color:#4ade80;font-size:11px;cursor:pointer;">&#x1F4E5; Importar para projeto</button>'
-                + '<button data-token="' + token + '" onclick="_catArquivarPendente(this.dataset.token,this)" style="padding:6px 10px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:6px;color:#94a3b8;font-size:11px;cursor:pointer;">&#10003; Arquivar</button>'
-                + '</div></div>';
-        });
+    var pendentes  = await _catVerificarPendentes();
+
+    // Também buscar arquivados recentes (últimas 48h) para recuperação
+    var arquivados = [];
+    if (_sbClient) {
+        try {
+            var limite = new Date(Date.now() - 48*60*60*1000).toISOString();
+            var rArq = await _sbClient.from('app_data')
+                .select('chave, valor, atualizado_em')
+                .like('chave', 'catalogo_arquivado_%')
+                .gte('atualizado_em', limite);
+            if (!rArq.error && rArq.data) {
+                arquivados = rArq.data.map(function(row) {
+                    try { return { chave: row.chave, dados: JSON.parse(row.valor), data: row.atualizado_em }; }
+                    catch(e) { return null; }
+                }).filter(Boolean);
+            }
+        } catch(e) { console.warn('arquivados busca:', e); }
     }
+
+    function renderItem(item, isArquivado) {
+        var d = item.dados || {}; var cl = d.cliente || {};
+        var dataFmt = item.data ? new Date(item.data).toLocaleString('pt-BR') : '';
+        var token = d.token || item.chave.replace(isArquivado ? 'catalogo_arquivado_' : 'catalogo_pendente_','');
+        var corBorda = isArquivado ? 'rgba(100,116,139,.3)' : 'rgba(255,255,255,.08)';
+        var label = isArquivado ? '<span style="font-size:10px;background:rgba(100,116,139,.2);color:#94a3b8;padding:2px 6px;border-radius:4px;margin-left:6px;">arquivado</span>' : '';
+        return '<div style="background:rgba(255,255,255,.04);border:1px solid '+corBorda+';border-radius:10px;padding:14px;margin-bottom:10px;">'
+            + '<div style="font-size:13px;font-weight:700;color:#e8e4dc;">' + (cl.nome||'—') + label + '</div>'
+            + '<div style="font-size:11px;color:#94a3b8;margin:3px 0;">' + (cl.projeto||'Sem nome') + ' &middot; ' + dataFmt + '</div>'
+            + (cl.contato ? '<div style="font-size:11px;color:#60a5fa;">' + cl.contato + '</div>' : '')
+            + '<div style="display:flex;gap:6px;margin-top:10px;">'
+            + '<button data-token="' + token + '" onclick="_catImportarDoPendente(this.dataset.token)" style="flex:1;padding:6px 10px;background:rgba(22,163,74,.15);border:1px solid rgba(22,163,74,.3);border-radius:6px;color:#4ade80;font-size:11px;cursor:pointer;">&#x1F4E5; Importar para projeto</button>'
+            + (!isArquivado ? '<button data-token="' + token + '" onclick="_catArquivarPendente(this.dataset.token,this)" style="padding:6px 10px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:6px;color:#94a3b8;font-size:11px;cursor:pointer;">&#10003; Arquivar</button>' : '')
+            + '</div></div>';
+    }
+
+    var itens = '';
+    if (pendentes.length) {
+        itens += '<div style="font-size:11px;color:#c9a84c;font-weight:700;margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em;">&#128228; Novos</div>';
+        pendentes.forEach(function(item){ itens += renderItem(item, false); });
+    }
+    if (arquivados.length) {
+        itens += '<div style="font-size:11px;color:#64748b;font-weight:700;margin:12px 0 8px;text-transform:uppercase;letter-spacing:.05em;">&#128193; Recentes (48h)</div>';
+        arquivados.forEach(function(item){ itens += renderItem(item, true); });
+    }
+    if (!pendentes.length && !arquivados.length) {
+        itens = '<p style="color:#94a3b8;text-align:center;padding:20px;">Nenhum casting pendente ou recente.</p>';
+    }
+
     var html = '<div id="_catPopupOv" style="position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9000;display:flex;align-items:center;justify-content:center;">'
         + '<div style="background:#1e2530;border:1px solid rgba(201,168,76,.3);border-radius:14px;padding:24px;max-width:540px;width:90%;max-height:80vh;overflow-y:auto;">'
         + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">'
@@ -26328,35 +26365,41 @@ function _catImportarDoPendente(token) {
 }
 
 async function _catSalvarDrive(dados) {
-    var cfg = cfgGet(); // cfg_google — mesmo que _driveSalvarInterno usa
+    var cfg = cfgGet();
     var raizId = cfg.pastaRaizId;
     if (!raizId || !_driveToken || !_driveToken()) throw new Error('Drive não configurado');
 
-    // Garantir pasta Catálogos
+    // Garantir pasta Catálogos dentro do root do sistema
     if (!_catDrivePastaId) {
         _catDrivePastaId = await _driveGarantirPasta('Catálogos', raizId);
     }
-    // Garantir subpasta do token (usa dados.token, não a variável global _catToken)
+    // Garantir subpasta com o token do catálogo
     var tokenPastaId = await _driveGarantirPasta(dados.token || _catToken, _catDrivePastaId);
 
-    // Procurar arquivo existente
-    var q = "name='catalogo.json' and '"+tokenPastaId+"' in parents and trashed=false";
-    var resp = await _driveFetch('https://www.googleapis.com/drive/v3/files?q='+encodeURIComponent(q)+'&fields=files(id)');
-    var data = await resp.json();
     var json = JSON.stringify(dados, null, 2);
 
-    if (data.files && data.files.length) {
-        await _driveAtualizarArquivo(data.files[0].id, json);
+    // Verificar se arquivo já existe → atualizar; senão → criar
+    var q = "name='catalogo.json' and '" + tokenPastaId + "' in parents and trashed=false";
+    var respQ = await _driveFetch(
+        'https://www.googleapis.com/drive/v3/files?q=' + encodeURIComponent(q) + '&fields=files(id)'
+    );
+    var dataQ = await respQ.json();
+
+    if (dataQ.files && dataQ.files.length) {
+        // Arquivo existe — atualizar conteúdo
+        await _driveAtualizarArquivo(dataQ.files[0].id, json);
     } else {
-        var cr = await _driveFetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id', {
-            method: 'POST',
-            headers: { 'Content-Type': 'multipart/related; boundary=cat_boundary' },
-            body: '--cat_boundary\r\nContent-Type: application/json\r\n\r\n'+
-                  JSON.stringify({ name:'catalogo.json', parents:[tokenPastaId] })+
-                  '\r\n--cat_boundary\r\nContent-Type: application/json\r\n\r\n'+json+'\r\n--cat_boundary--'
-        });
-        var crd = await cr.json();
-        _catDriveId = crd.id;
+        // Criar novo arquivo usando FormData (mesmo padrão de _driveCriarArquivo)
+        var meta = { name: 'catalogo.json', mimeType: 'application/json', parents: [tokenPastaId] };
+        var form = new FormData();
+        form.append('metadata', new Blob([JSON.stringify(meta)], { type: 'application/json' }));
+        form.append('file',     new Blob([json],               { type: 'application/json' }));
+        var respC = await _driveFetch(
+            'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name',
+            { method: 'POST', body: form }
+        );
+        var crd = await respC.json();
+        if (crd.id) console.log('[Drive] catalogo.json criado:', crd.name, crd.id);
     }
 }
 
