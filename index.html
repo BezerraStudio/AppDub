@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.646</title>
+    <title>Sistema de Dublagem v12.648</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.646</p>
+        <p>v12.648</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.646</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.648</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1748,7 +1748,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.646</footer>
+    <footer>🎬 Sistema de Dublagem v12.648</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -5887,6 +5887,10 @@ function _driveAutoConectar() {
             setTimeout(function() {
                 _catProcessarPendentes().catch(function(e){ console.warn('catProcessar:', e); });
             }, 3000); // aguarda sync inicial terminar
+            // Carregar logo e ícone do Drive para este device (se não tiver local)
+            setTimeout(function() {
+                _driveCarregarIdentidade().catch(function(){});
+            }, 4000);
         } else {
             // Auto-connect silencioso: não redirecionar para settings
             // O usuário será direcionado ao Drive só quando tentar usar uma função que precise dele
@@ -6144,7 +6148,7 @@ function salvarProjetos() {
 // ─── BACKUP / RESTORE ─────────────────────────────────────────────────────────
 function exportarBackup() {
     var data = new Date().toISOString().slice(0,10);
-    var versao = 'v12.646';
+    var versao = 'v12.648';
 
     // Ler todas as chaves do sistema do localStorage
     function lerChave(k) {
@@ -10866,6 +10870,10 @@ function _cfgFaviconCarregar(input) {
     reader.onload = function(e) {
         var src = e.target.result;
         _idbSalvar('favicon_estudio', src).then(function(){
+            // Subir ao Drive para compartilhar entre devices
+            if (_driveToken && _driveToken()) {
+                _driveSalvarIdentidade('favicon', src).catch(function(){});
+            }
             var prev = document.getElementById('cfgFaviconPreview');
             var btn  = document.getElementById('cfgFaviconBtnRemover');
             if (prev) prev.innerHTML = '<img src="'+src+'" style="width:44px;height:44px;object-fit:contain;border-radius:6px;">';
@@ -10894,6 +10902,10 @@ function _cfgLogoCarregar(input) {
         var src = e.target.result;
         _idbSalvar('logo_estudio', src).then(function(){
             _cfgLogoMostrarPreview(src);
+            // Subir ao Drive para compartilhar entre devices
+            if (_driveToken && _driveToken()) {
+                _driveSalvarIdentidade('logo', src).catch(function(){});
+            }
             mostrarNotificacao(t('cfg.logo.carregada'),'sucesso',1800);
         });
     };
@@ -16125,6 +16137,71 @@ async function _driveFetch(url, opts = {}) {
 
 var _driveSistemaId = null; // cache do ID da pasta _SISTEMA
 
+
+// ── Identidade do estúdio no Drive (_SISTEMA/logo.b64, favicon.b64) ──────────
+// Permite que logo e ícone apareçam para TODOS os devices automaticamente.
+
+async function _driveSalvarIdentidade(tipo, dataUrl) {
+    try {
+        var sistemaId = await _driveGetSistemaId();
+        if (!sistemaId) return;
+        var nome = tipo === 'logo' ? 'logo.b64' : 'favicon.b64';
+        // Verificar se já existe
+        var q = "name='" + nome + "' and '" + sistemaId + "' in parents and trashed=false";
+        var resp = await _driveFetch(
+            'https://www.googleapis.com/drive/v3/files?q=' + encodeURIComponent(q) + '&fields=files(id)'
+        );
+        var data = await resp.json();
+        var conteudo = dataUrl; // data URL base64
+        if (data.files && data.files.length) {
+            // Atualizar existente
+            await _driveAtualizarArquivo(data.files[0].id, conteudo);
+        } else {
+            // Criar novo
+            var meta = { name: nome, mimeType: 'text/plain', parents: [sistemaId] };
+            var form = new FormData();
+            form.append('metadata', new Blob([JSON.stringify(meta)], { type: 'application/json' }));
+            form.append('file',     new Blob([conteudo],            { type: 'text/plain' }));
+            await _driveFetch(
+                'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id',
+                { method: 'POST', body: form }
+            );
+        }
+        console.log('[Drive] Identidade salva:', nome);
+    } catch(e) { console.warn('[Drive] Falha ao salvar identidade:', e.message || e); }
+}
+
+async function _driveCarregarIdentidade() {
+    try {
+        var sistemaId = await _driveGetSistemaId();
+        if (!sistemaId) return;
+        for (var tipo of ['logo', 'favicon']) {
+            var nome = tipo === 'logo' ? 'logo.b64' : 'favicon.b64';
+            var chaveIdb = tipo === 'logo' ? 'logo_estudio' : 'favicon_estudio';
+            // Verificar se já tem no IndexedDB local
+            var local = await _idbLer(chaveIdb).catch(function(){ return null; });
+            if (local) continue; // já tem local, não precisa baixar
+            // Buscar no Drive
+            var q = "name='" + nome + "' and '" + sistemaId + "' in parents and trashed=false";
+            var resp = await _driveFetch(
+                'https://www.googleapis.com/drive/v3/files?q=' + encodeURIComponent(q) + '&fields=files(id)'
+            );
+            var data = await resp.json();
+            if (!data.files || !data.files.length) continue;
+            var conteudo = await _driveLerArquivo(data.files[0].id);
+            if (!conteudo || !conteudo.startsWith('data:')) continue;
+            // Salvar no IndexedDB local e aplicar
+            await _idbSalvar(chaveIdb, conteudo);
+            if (tipo === 'logo') {
+                _cfgLogoMostrarPreview(conteudo);
+            }
+            // Reaplicar identidade completa
+            if (typeof _cfgAplicarIdentidade === 'function') _cfgAplicarIdentidade();
+            console.log('[Drive] Identidade carregada:', nome);
+        }
+    } catch(e) { console.warn('[Drive] Falha ao carregar identidade:', e.message || e); }
+}
+
 async function _driveGetSistemaId() {
     const cfg = cfgGet();
     if (!cfg.pastaRaizId) throw new Error('ID da pasta raiz não configurado.');
@@ -16592,7 +16669,12 @@ const _DRIVE_BACKUP_CHAVES_ARRAY = [
     'cfg_google',     // pasta raiz Drive, clientId, apiKey (token em LOCAL_ONLY)
     'cfg_geral',      // nome do estúdio, logo, configurações gerais
     'cfg_servicos',   // serviços cadastrados
-    'cfg_idiomas'     // idiomas configurados
+    'cfg_idiomas',    // idiomas configurados
+    // Configs operacionais — precisam sincronizar entre devices
+    'cfg_links',         // mapeamento subpastas Drive por projeto (SRTs/Vídeos/Áudios)
+    'senhaPadraoEquipe', // senha padrão para novos membros
+    'cfg_servicos_var',  // variáveis de serviços
+    'cfg_funcoes_var'    // variáveis de funções
 ];
 // OBJETO/TEXTO simples: o Drive substitui o local quando presente (configurações
 // administrativas que normalmente só o Sydney mexe, sem necessidade de mesclar)
@@ -16668,7 +16750,7 @@ async function driveCarregarDados() {
         if (!arquivo) {
             // Primeira vez neste computador — Drive sem dados ainda
             driveAtualizarStatusUI(t('cfg.drive.statusNenhum'));
-            const conteudo = JSON.stringify({ versao: 'v12.46', projetos, ..._driveColetarBackupExtra() });
+            const conteudo = JSON.stringify({ versao: (document.title.match(/v\d+\.\d+/) || ['v12'])[0], projetos, ..._driveColetarBackupExtra() });
             var sistemaId = await _driveGetSistemaId();
             arquivo = await _driveCriarArquivo(sistemaId, conteudo);
             _driveFileId = arquivo.id;
@@ -16722,7 +16804,7 @@ async function _driveSalvarInterno() {
     if (!cfg.pastaRaizId || !_driveToken()) return;
     _driveSyncing = true;
     try {
-        const conteudo = JSON.stringify({ versao: 'v12.46', data: new Date().toISOString(), projetos, ..._driveColetarBackupExtra() });
+        const conteudo = JSON.stringify({ versao: (document.title.match(/v\d+\.\d+/) || ['v12'])[0], data: new Date().toISOString(), projetos, ..._driveColetarBackupExtra() });
         if (!_driveFileId) {
             const arquivo = await _driveEncontrarArquivo(cfg.pastaRaizId);
             if (arquivo) { _driveFileId = arquivo.id; }
