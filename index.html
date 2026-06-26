@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.633</title>
+    <title>Sistema de Dublagem v12.635</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.633</p>
+        <p>v12.635</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.633</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.635</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1748,7 +1748,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.633</footer>
+    <footer>🎬 Sistema de Dublagem v12.635</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -8106,7 +8106,17 @@ function _pratRenderEnvio(cont) {
     // LINKS NO TOPO (3 links)
     // ══════════════════════════════════════════════════════════════════════════
 
-    // 1️⃣ Link Casting (personalizado)
+    // 1️⃣ Link Catálogo Livre (primeiro — contexto geral)
+    var linkCatalogo = window.location.href.split('?')[0] + '?catalogo=1';
+    html += '<div style="background:#f0f7ff;border:2px solid #bae0fd;border-radius:12px;padding:20px;">' +
+        '<h4 style="margin:0 0 8px;color:#0369a1;font-size:16px;">'+t('prat.envio.h4Catalogo')+'</h4>' +
+        '<p style="font-size:13px;color:#0369a1;margin:0 0 14px;">'+t('prat.envio.descCatalogo')+'</p>' +
+        '<div style="display:flex;gap:8px;align-items:center;">' +
+        '<input type="text" value="'+linkCatalogo+'" readonly style="flex:1;padding:9px;border:1px solid #bae0fd;border-radius:7px;font-size:13px;background:white;">' +
+        '<button onclick="navigator.clipboard.writeText(\''+linkCatalogo+'\').then(function(){mostrarNotificacao(t(\'prat.envio.copiado\'),\'sucesso\',1500);})" style="padding:9px 16px;background:#0369a1;color:white;border:none;border-radius:7px;cursor:pointer;font-size:13px;font-weight:700;">📋</button>' +
+        '</div></div>';
+
+    // 2️⃣ Link Casting (personalizado) — diretamente acima do Resumo
     html += '<div style="background:#f0fdf4;border:2px solid #86efac;border-radius:12px;padding:20px;">' +
         '<h4 style="margin:0 0 8px;color:#166534;font-size:16px;">'+t('prat.envio.h4Casting')+'</h4>' +
         '<p style="font-size:13px;color:#166534;margin:0 0 14px;">'+t('prat.envio.descCasting')+'</p>';
@@ -8124,16 +8134,6 @@ function _pratRenderEnvio(cont) {
         html += '<div style="font-size:13px;color:#94a3b8;">'+t('prat.envio.adicioneCands')+'</div>';
     }
     html += '</div>';
-
-    // 2️⃣ Link Catálogo Livre
-    var linkCatalogo = window.location.href.split('?')[0] + '?catalogo=1';
-    html += '<div style="background:#f0f7ff;border:2px solid #bae0fd;border-radius:12px;padding:20px;">' +
-        '<h4 style="margin:0 0 8px;color:#0369a1;font-size:16px;">'+t('prat.envio.h4Catalogo')+'</h4>' +
-        '<p style="font-size:13px;color:#0369a1;margin:0 0 14px;">'+t('prat.envio.descCatalogo')+'</p>' +
-        '<div style="display:flex;gap:8px;align-items:center;">' +
-        '<input type="text" value="'+linkCatalogo+'" readonly style="flex:1;padding:9px;border:1px solid #bae0fd;border-radius:7px;font-size:13px;background:white;">' +
-        '<button onclick="navigator.clipboard.writeText(\''+linkCatalogo+'\').then(function(){mostrarNotificacao(t(\'prat.envio.copiado\'),\'sucesso\',1500);})" style="padding:9px 16px;background:#0369a1;color:white;border:none;border-radius:7px;cursor:pointer;font-size:13px;font-weight:700;">📋</button>' +
-        '</div></div>';
 
     // 3️⃣ Link Escalação Final (só aparece se projeto aprovado)
     var aprovFinal = projetoAtual.statusProducao === 'aprovado' || projetoAtual.statusProducao === 'producao';
@@ -8837,40 +8837,86 @@ async function _pratBuscarCatalogoDrive() {
     var token = (document.getElementById('_catLivreToken')||{value:''}).value.trim();
     if (!token) { mostrarNotificacao(t('misc.notif.informeToken'),'aviso',2000); return; }
 
-    mostrarNotificacao('Buscando no Drive...','info',2000);
-    try {
-        var cfg = {};
-        try { cfg = JSON.parse(localStorage.getItem('cfg_geral')||'{}'); } catch(e){}
-        var raizId = cfg.pastaRaizId;
-        if (!raizId || !_driveToken || !_driveToken()) throw new Error('Drive não configurado. Conecte o Google em Configurações.');
+    mostrarNotificacao('Buscando...','info',1500);
 
-        // Buscar pasta Catálogos → pasta do token → catalogo.json
-        var catPastaId = await _driveGarantirPasta('Catálogos', raizId);
-        var tokenPastaId = await _driveGarantirPasta(token, catPastaId);
-        var q = "name='catalogo.json' and '"+tokenPastaId+"' in parents and trashed=false";
-        var resp = await _driveFetch('https://www.googleapis.com/drive/v3/files?q='+encodeURIComponent(q)+'&fields=files(id,modifiedTime)');
-        var data = await resp.json();
-        if (!data.files || !data.files.length) throw new Error('Nenhuma lista encontrada para este token.');
+    var dados = null;
 
-        var conteudo = await _driveLerArquivo(data.files[0].id);
-        var dados = JSON.parse(conteudo);
-
-        if (dados.status !== 'enviado') { mostrarNotificacao(t('esc.notif.listaNaoEnviada'),'aviso',3000); return; }
-
-        var listas = _pratCarregarListasCatalogo();
-        // Verificar se já importou
-        var jaExiste = listas.some(function(l){ return l.token === dados.token; });
-        if (jaExiste) { mostrarNotificacao(t('esc.notif.listaJaImp'),'aviso',2000); return; }
-
-        listas.push(dados);
-        _pratSalvarListasCatalogo(listas);
-        var cont = document.getElementById('_pratConteudo');
-        if (cont) _pratRenderCatalogoLivre(cont);
-        mostrarNotificacao(t('esc.notif.listaImportada'),'sucesso',2500);
-
-    } catch(err) {
-        mostrarNotificacao(t('misc.notif.erroGenerico',{msg:err.message||err}),'erro',4000);
+    // ── 1. Tentar Supabase primeiro (funciona sem Drive) ────────────────────
+    if (_sbClient) {
+        try {
+            var chavePend = 'catalogo_pendente_' + token;
+            var chaveArq  = 'catalogo_arquivado_' + token;
+            var resp = await _sbClient.from('app_data')
+                .select('valor')
+                .in('chave', [chavePend, chaveArq])
+                .limit(1);
+            if (!resp.error && resp.data && resp.data.length) {
+                dados = JSON.parse(resp.data[0].valor);
+            }
+        } catch(e) { console.warn('SB busca catálogo:', e); }
     }
+
+    // ── 2. Fallback: tentar Drive se conectado ───────────────────────────────
+    if (!dados) {
+        try {
+            var cfg = {};
+            try { cfg = JSON.parse(localStorage.getItem('cfg_geral')||'{}'); } catch(e){}
+            var raizId = cfg.pastaRaizId;
+            if (!raizId || !_driveToken || !_driveToken()) {
+                if (!dados) {
+                    mostrarNotificacao('Catálogo não encontrado. O cliente enviou pelo formulário do catálogo?','aviso',4000);
+                    return;
+                }
+            } else {
+                var catPastaId = await _driveGarantirPasta('Catálogos', raizId);
+                var tokenPastaId = await _driveGarantirPasta(token, catPastaId);
+                var q = "name='catalogo.json' and '"+tokenPastaId+"' in parents and trashed=false";
+                var resp2 = await _driveFetch('https://www.googleapis.com/drive/v3/files?q='+encodeURIComponent(q)+'&fields=files(id,modifiedTime)');
+                var data2 = await resp2.json();
+                if (data2.files && data2.files.length) {
+                    var conteudo = await _driveLerArquivo(data2.files[0].id);
+                    dados = JSON.parse(conteudo);
+                }
+            }
+        } catch(e) { console.warn('Drive busca catálogo:', e); }
+    }
+
+    // ── 3. Processar resultado ───────────────────────────────────────────────
+    if (!dados) {
+        mostrarNotificacao('Nenhuma lista encontrada para este token. Verifique se o cliente finalizou o envio.','aviso',4000);
+        return;
+    }
+
+    if (dados.status !== 'enviado') {
+        mostrarNotificacao(t('esc.notif.listaNaoEnviada'),'aviso',3000);
+        return;
+    }
+
+    var listas = _pratCarregarListasCatalogo();
+    var jaExiste = listas.some(function(l){ return l.token === dados.token; });
+    if (jaExiste) { mostrarNotificacao(t('esc.notif.listaJaImp'),'aviso',2000); return; }
+
+    listas.push(dados);
+    _pratSalvarListasCatalogo(listas);
+
+    // Mover de pendente para arquivado no Supabase
+    if (_sbClient) {
+        try {
+            var chave = 'catalogo_pendente_' + token;
+            var resp3 = await _sbClient.from('app_data').select('valor').eq('chave', chave).single();
+            if (resp3.data) {
+                await _sbClient.from('app_data').upsert({chave:'catalogo_arquivado_'+token, valor:resp3.data.valor, atualizado_em:new Date().toISOString()},{onConflict:'chave'});
+                await _sbClient.from('app_data').delete().eq('chave', chave);
+            }
+            // Atualizar badge
+            var pendentes = await _catVerificarPendentes();
+            _catAtualizarBadge(pendentes.length);
+        } catch(e) { console.warn('SB arquivar catálogo:', e); }
+    }
+
+    var cont = document.getElementById('_pratConteudo');
+    if (cont) _pratRenderCatalogoLivre(cont);
+    mostrarNotificacao(t('esc.notif.listaImportada'),'sucesso',2500);
 }
 
 function _pratNormNome(n) {
