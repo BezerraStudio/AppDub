@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.648</title>
+    <title>Sistema de Dublagem v12.649</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.648</p>
+        <p>v12.649</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.648</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.649</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1748,7 +1748,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.648</footer>
+    <footer>🎬 Sistema de Dublagem v12.649</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -6148,7 +6148,7 @@ function salvarProjetos() {
 // ─── BACKUP / RESTORE ─────────────────────────────────────────────────────────
 function exportarBackup() {
     var data = new Date().toISOString().slice(0,10);
-    var versao = 'v12.648';
+    var versao = 'v12.649';
 
     // Ler todas as chaves do sistema do localStorage
     function lerChave(k) {
@@ -26924,6 +26924,31 @@ localStorage.setItem = function(chave, valor) {
     }
 };
 
+
+// ── Re-sync forçado: push de todo localStorage → Supabase (após reconexão) ──
+async function _sbForcePushAll() {
+    if (!_sbClient) return;
+    var chaves = _DRIVE_BACKUP_CHAVES_ARRAY;
+    var enviados = 0;
+    for (var i = 0; i < chaves.length; i++) {
+        var chave = chaves[i];
+        var raw = localStorage.getItem(chave);
+        if (raw === null) continue;
+        try {
+            var parsed;
+            try { parsed = JSON.parse(raw); } catch(ex) { parsed = raw; }
+            await _sbClient.from('app_data').upsert(
+                { chave: chave, valor: parsed, atualizado_em: new Date().toISOString() },
+                { onConflict: 'chave' }
+            );
+            enviados++;
+        } catch(e) {
+            console.warn('_sbForcePushAll falhou:', chave, e.message);
+        }
+    }
+    if (enviados > 0) console.log('[Supabase] Re-sync forçado:', enviados, 'chaves enviadas');
+}
+
 async function _sbFlush() {
     if (!_sbClient) return;
     var entradas = Object.entries(_sbPendente);
@@ -26940,6 +26965,8 @@ async function _sbFlush() {
             );
         } catch(e) {
             console.warn('Supabase sync falhou:', chave, e.message);
+            // Re-enfileirar para tentar na próxima reconexão
+            if (!_sbPendente[chave]) _sbPendente[chave] = valor;
         }
     }
 }
@@ -27162,11 +27189,18 @@ function _sbInit() {
         mostrarNotificacao('🔄 Conexão restaurada — sincronizando...', 'info', 3000);
         // Pequeno delay pra garantir que o browser já estabilizou a conexão
         setTimeout(function() {
-            // 1) Supabase: força um ciclo imediato (não esperar os 45s)
-            if (typeof _sbCarregarDados === 'function') {
+            // 1) Push forçado: envia para Supabase tudo que foi salvo offline
+            if (typeof _sbForcePushAll === 'function') {
+                _sbForcePushAll().catch(function(){}).then(function() {
+                    // 2) Depois do push, faz pull para pegar mudanças de outros
+                    if (typeof _sbCarregarDados === 'function') {
+                        _sbCarregarDados().catch(function(){});
+                    }
+                });
+            } else if (typeof _sbCarregarDados === 'function') {
                 _sbCarregarDados().catch(function(){});
             }
-            // 2) Drive: reconecta e sincroniza, igual ao que faz no login
+            // 3) Drive: reconecta e sincroniza
             if (typeof _driveAutoConectar === 'function') {
                 _driveAutoConectar();
             }
