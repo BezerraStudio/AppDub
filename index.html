@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.649</title>
+    <title>Sistema de Dublagem v12.650</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -1748,7 +1748,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.649</footer>
+    <footer>🎬 Sistema de Dublagem v12.650</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -3907,7 +3907,55 @@ var _i18n = {
         'cli.form.castingAprovNome':     '✅ {nome} aprovado! Continue com os outros castings.',
         // ── Grupo C: chaves adicionadas auditoria i18n ─────────────────────
         'membro.dub.baixarSelecionados': '⬇️ Baixar Selecionados',
-        'proj.lang.toggle':              '🌐 Idioma'
+        'proj.lang.toggle':              '🌐 Idioma',
+        // ── Auditoria i18n — telas de cliente (casting / catálogo) ─────────
+        'cli.cand.escolher':            'Escolher',
+        'cli.cand.escolhido':           '✓ Escolhido',
+        'cli.cand.escolhidos2':         '2 escolhidos',
+        'cli.cand.aguardando':          'Aguardando escolha',
+        'cli.cand.faixaVocal':          'FAIXA VOCAL',
+        'cli.cand.anosExp':             '{n} anos exp.',
+        'cli.cat.btnAdicionado':        '✓ Adicionado',
+        'cli.cat.btnLista':             '+ Lista',
+        'cli.cat.modal.addTitulo':      'Adicionar à sua lista',
+        'cli.cat.modal.nomePers':       'Nome do Personagem',
+        'cli.cat.modal.phNomePers':     'Ex: Protagonista, Narrador, Vilão...',
+        'cli.cat.modal.numRef':         'Número / Referência',
+        'cli.cat.modal.opcional':       '(opcional)',
+        'cli.cat.modal.fotoRef':        'Foto de Referência do Personagem',
+        'cli.cat.modal.cliqueImg':      'Clique para selecionar imagem',
+        'cli.cat.modal.cancelar':       'Cancelar',
+        'cli.cat.modal.adicionar':      '✓ Adicionar à lista',
+        'cli.cat.envio.titulo':         '📤 Enviar ao Estúdio',
+        'cli.cat.envio.subtitulo':      'Preencha seus dados para que possamos entrar em contato.',
+        'cli.cat.envio.nomeCompleto':   'Seu nome completo *',
+        'cli.cat.envio.empresa':        'Empresa / Produtora',
+        'cli.cat.envio.contato':        'E-mail ou WhatsApp *',
+        'cli.cat.envio.projeto':        'Nome do projeto',
+        'cli.cat.envio.prazo':          'Prazo estimado de conclusão',
+        'cli.cat.envio.obs':            'Observações',
+        'cli.cat.envio.phObs':          'Informações adicionais...',
+        'cli.cat.envio.voltar':         'Voltar',
+        'cli.cat.envio.enviar':         '✉ Enviar',
+        'cli.cat.envio.obrigado':       'Obrigado, {nome}. Comunique o estúdio com um dos meios abaixo.',
+        'cli.cat.verCatalogo':          '← Ver catálogo novamente',
+        'cli.cat.enviarEstudio':        '📤 Enviar ao estúdio',
+        // ── Auditoria i18n — prateleira de vozes ───────────────────────────
+        'prat.form.genMasculino':       'Masculino',
+        'prat.form.genFeminino':        'Feminino',
+        'prat.form.genNeutro':          'Neutro',
+        'prat.form.faixaCrianca':       'Criança',
+        'prat.form.faixaAdolesc':       'Adolescente',
+        'prat.form.faixaJovem':         'Jovem',
+        'prat.form.faixaAdulto':        'Adulto',
+        'prat.form.faixaMeia':          'Meia-idade',
+        'prat.form.faixaIdoso':         'Idoso',
+        'prat.cast.faixaCrianca':       'Criança',
+        'prat.cast.faixaAdolesc':       'Adolesc.',
+        'prat.cast.faixaJovem':         'Jovem',
+        'prat.cast.faixaAdulto':        'Adulto',
+        'prat.cast.faixaMeia':          'Meia-idade',
+        'prat.cast.faixaIdoso':         'Idoso'
     },
     en: {
         // ── Navigation tabs ────────────────────────────────────────────────
@@ -5374,7 +5422,55 @@ var _i18n = {
         'prat.pers.incluirCasting': 'Include in casting',
         'prat.pers.sortNome': 'Sort: A-Z',
         'prat.pers.sortPalavras': 'Sort: words',
-        'misc.phVozDesc':             'Describe the voice (timbre, texture, range), interpretation styles'
+        'misc.phVozDesc':             'Describe the voice (timbre, texture, range), interpretation styles',
+        // ── Audit i18n — client screens (casting / catalog) ─────────────────
+        'cli.cand.escolher':            'Choose',
+        'cli.cand.escolhido':           '✓ Chosen',
+        'cli.cand.escolhidos2':         '2 chosen',
+        'cli.cand.aguardando':          'Awaiting selection',
+        'cli.cand.faixaVocal':          'VOCAL RANGE',
+        'cli.cand.anosExp':             '{n} yrs exp.',
+        'cli.cat.btnAdicionado':        '✓ Added',
+        'cli.cat.btnLista':             '+ List',
+        'cli.cat.modal.addTitulo':      'Add to your list',
+        'cli.cat.modal.nomePers':       'Character Name',
+        'cli.cat.modal.phNomePers':     'Ex: Protagonist, Narrator, Villain...',
+        'cli.cat.modal.numRef':         'Number / Reference',
+        'cli.cat.modal.opcional':       '(optional)',
+        'cli.cat.modal.fotoRef':        'Character Reference Photo',
+        'cli.cat.modal.cliqueImg':      'Click to select image',
+        'cli.cat.modal.cancelar':       'Cancel',
+        'cli.cat.modal.adicionar':      '✓ Add to list',
+        'cli.cat.envio.titulo':         '📤 Send to Studio',
+        'cli.cat.envio.subtitulo':      'Fill in your details so we can get in touch.',
+        'cli.cat.envio.nomeCompleto':   'Your full name *',
+        'cli.cat.envio.empresa':        'Company / Production',
+        'cli.cat.envio.contato':        'Email or WhatsApp *',
+        'cli.cat.envio.projeto':        'Project name',
+        'cli.cat.envio.prazo':          'Estimated completion date',
+        'cli.cat.envio.obs':            'Notes',
+        'cli.cat.envio.phObs':          'Additional information...',
+        'cli.cat.envio.voltar':         'Back',
+        'cli.cat.envio.enviar':         '✉ Send',
+        'cli.cat.envio.obrigado':       'Thank you, {nome}. Please contact the studio using one of the options below.',
+        'cli.cat.verCatalogo':          '← View catalog again',
+        'cli.cat.enviarEstudio':        '📤 Send to studio',
+        // ── Audit i18n — voice shelf form ───────────────────────────────────
+        'prat.form.genMasculino':       'Male',
+        'prat.form.genFeminino':        'Female',
+        'prat.form.genNeutro':          'Neutral',
+        'prat.form.faixaCrianca':       'Child',
+        'prat.form.faixaAdolesc':       'Teen',
+        'prat.form.faixaJovem':         'Young Adult',
+        'prat.form.faixaAdulto':        'Adult',
+        'prat.form.faixaMeia':          'Middle-aged',
+        'prat.form.faixaIdoso':         'Senior',
+        'prat.cast.faixaCrianca':       'Child',
+        'prat.cast.faixaAdolesc':       'Teen',
+        'prat.cast.faixaJovem':         'Young Adult',
+        'prat.cast.faixaAdulto':        'Adult',
+        'prat.cast.faixaMeia':          'Mid-age',
+        'prat.cast.faixaIdoso':         'Senior'
 
     }
 };
@@ -7471,9 +7567,9 @@ function _cpAbrir(inputEl, corAtual, callbackApply) {
 
     // Buttons
     var brow=document.createElement('div'); brow.style.cssText='display:flex;gap:8px;';
-    var bOk=document.createElement('button'); bOk.textContent='✅ Aplicar';
+    var bOk=document.createElement('button'); bOk.textContent='✅ '+t('map.btn.salvar');
     bOk.style.cssText='flex:1;padding:9px;background:#27ae60;color:#fff;border:none;border-radius:7px;font-weight:700;cursor:pointer;font-size:13px;';
-    var bX=document.createElement('button'); bX.textContent='✕ Cancelar';
+    var bX=document.createElement('button'); bX.textContent='✕ '+t('modal.cancelar');
     bX.style.cssText='flex:1;padding:9px;background:#e74c3c;color:#fff;border:none;border-radius:7px;font-weight:700;cursor:pointer;font-size:13px;';
     brow.appendChild(bOk); brow.appendChild(bX);
 
@@ -7798,7 +7894,14 @@ function _pratRenderPersonagens(cont) {
 function _pratAddPersonagem(idxEditar) {
     var lista = projetoAtual.personagensCasting || [];
     var p = (idxEditar !== undefined) ? lista[idxEditar] : null;
-    var faixas = ['Criança','Adolescente','Jovem','Adulto','Meia-idade','Idoso'];
+    var faixas = [
+        {val:'Criança',    key:'prat.form.faixaCrianca'},
+        {val:'Adolescente',key:'prat.form.faixaAdolesc'},
+        {val:'Jovem',      key:'prat.form.faixaJovem'},
+        {val:'Adulto',     key:'prat.form.faixaAdulto'},
+        {val:'Meia-idade', key:'prat.form.faixaMeia'},
+        {val:'Idoso',      key:'prat.form.faixaIdoso'}
+    ];
     var pFaixas = p ? (p.faixas||[]) : [];
     var old = document.getElementById('_pratFormOv'); if(old) old.remove();
     var fov = document.createElement('div');
@@ -7816,12 +7919,12 @@ function _pratAddPersonagem(idxEditar) {
         '</select></div>' +
         '<div><label style="font-size:11px;font-weight:700;color:#555;display:block;margin-bottom:3px;">'+t('prat.form.labelGenero')+'</label>' +
         '<select id="_pfGenero" style="width:100%;padding:8px;border:2px solid #dde;border-radius:6px;font-size:13px;">' +
-        '<option value="">—</option><option value="Masculino"'+(p&&p.genero==='Masculino'?' selected':'')+'>Masculino</option>' +
-        '<option value="Feminino"'+(p&&p.genero==='Feminino'?' selected':'')+'>Feminino</option>' +
-        '<option value="Neutro"'+(p&&p.genero==='Neutro'?' selected':'')+'>Neutro</option></select></div>' +
+        '<option value="">—</option><option value="Masculino"'+(p&&p.genero==='Masculino'?' selected':'')+'>'+t('prat.form.genMasculino')+'</option>' +
+        '<option value="Feminino"'+(p&&p.genero==='Feminino'?' selected':'')+'>'+t('prat.form.genFeminino')+'</option>' +
+        '<option value="Neutro"'+(p&&p.genero==='Neutro'?' selected':'')+'>'+t('prat.form.genNeutro')+'</option></select></div>' +
         '<div><label style="font-size:11px;font-weight:700;color:#555;display:block;margin-bottom:5px;">'+t('prat.form.labelFaixas')+'</label>' +
         '<div style="display:flex;flex-wrap:wrap;gap:5px;">' +
-        faixas.map(function(f){ return '<label style="font-size:12px;display:inline-flex;align-items:center;gap:4px;background:#f1f5f9;padding:3px 9px;border-radius:8px;cursor:pointer;"><input type="checkbox" class="_pfFaixa" value="'+f+'" '+(pFaixas.includes(f)?'checked':'')+'>'+f+'</label>'; }).join('') +
+        faixas.map(function(f){ return '<label style="font-size:12px;display:inline-flex;align-items:center;gap:4px;background:#f1f5f9;padding:3px 9px;border-radius:8px;cursor:pointer;"><input type="checkbox" class="_pfFaixa" value="'+f.val+'" '+(pFaixas.includes(f.val)?'checked':'')+'>'+t(f.key)+'</label>'; }).join('') +
         '</div></div>' +
         '<div><label style="font-size:11px;font-weight:700;color:#555;display:block;margin-bottom:3px;">'+t('prat.form.labelDesc')+'</label>' +
         '<textarea id="_pfDesc" rows="3" placeholder="'+t('prat.form.phDesc')+'" style="width:100%;padding:8px;border:2px solid #dde;border-radius:6px;font-size:13px;box-sizing:border-box;resize:vertical;font-family:inherit;">'+(p?p.descricao||'':'')+'</textarea></div>' +
@@ -7985,7 +8088,7 @@ function _pratRenderCasting(cont) {
         '</div>' +
         '<div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;">' +
         '<select id="_pratGenero" onchange="_pratRenderListaDubs()" style="padding:4px;border:1.5px solid #dde;border-radius:5px;font-size:11px;"><option value="">'+t('prat.cast.optGenero')+'</option><option value="Feminino">Fem.</option><option value="Masculino">Masc.</option><option value="Neutro">Neutro</option></select>' +
-        '<select id="_pratFaixa" onchange="_pratRenderListaDubs()" style="padding:4px;border:1.5px solid #dde;border-radius:5px;font-size:11px;"><option value="">'+t('prat.cast.optFaixa')+'</option><option value="Criança">Criança</option><option value="Adolescente">Adolesc.</option><option value="Jovem">Jovem</option><option value="Adulto">Adulto</option><option value="Meia-idade">Meia-idade</option><option value="Idoso">Idoso</option></select>' +
+        '<select id="_pratFaixa" onchange="_pratRenderListaDubs()" style="padding:4px;border:1.5px solid #dde;border-radius:5px;font-size:11px;"><option value="">'+t('prat.cast.optFaixa')+'</option><option value="Criança">'+t('prat.cast.faixaCrianca')+'</option><option value="Adolescente">'+t('prat.cast.faixaAdolesc')+'</option><option value="Jovem">'+t('prat.cast.faixaJovem')+'</option><option value="Adulto">'+t('prat.cast.faixaAdulto')+'</option><option value="Meia-idade">'+t('prat.cast.faixaMeia')+'</option><option value="Idoso">'+t('prat.cast.faixaIdoso')+'</option></select>' +
         '<select id="_pratQualidade" onchange="_pratRenderListaDubs()" style="padding:4px;border:1.5px solid #dde;border-radius:5px;font-size:11px;"><option value="">'+t('prat.cast.optQualidade')+'</option><option value="Professional-Studio">Professional-Studio</option><option value="Home-Studio">Home-Studio</option><option value="Basic-Studio">Basic-Studio</option></select>' +
         '<select id="_pratPapel" onchange="_pratRenderListaDubs()" style="padding:4px;border:1.5px solid #dde;border-radius:5px;font-size:11px;"><option value="">'+t('prat.cast.optPapel')+'</option><option value="Protagonista">Protagonista</option><option value="Antagonista">Antagonista</option><option value="Coadjuvante">Coadjuvante</option><option value="Narrador">Narrador</option></select>' +
         '</div>' +
@@ -9256,7 +9359,7 @@ function _persFotoAbrir(nome, callbackSalvo) {
     var btnRow = document.createElement('div');
     btnRow.style.cssText = 'display:flex;gap:8px;';
     var btnFile = document.createElement('button');
-    btnFile.innerHTML = '📂 Selecionar arquivo';
+    btnFile.innerHTML = '📂 '+t('btn.escolherArquivos');
     btnFile.style.cssText = 'flex:1;padding:9px;border:1.5px solid #3498db;background:#ebf5fb;color:#2471a3;border-radius:7px;cursor:pointer;font-size:13px;font-weight:600;';
     btnFile.onclick = function(){ var i=document.getElementById('_pfInput'); if(i) i.click(); };
     var btnVideoSel = document.createElement('button');
@@ -9313,11 +9416,11 @@ function _persFotoAbrir(nome, callbackSalvo) {
     finalRow.style.cssText='display:flex;gap:8px;';
     var btnAplicar = document.createElement('button');
     btnAplicar.id='_pfBtnAplicar'; btnAplicar.disabled=true;
-    btnAplicar.innerHTML='✅ Aplicar';
+    btnAplicar.innerHTML='✅ '+t('map.btn.salvar');
     btnAplicar.style.cssText='flex:1;padding:11px;background:#27ae60;color:white;border:none;border-radius:7px;font-weight:700;cursor:pointer;font-size:14px;';
     btnAplicar.onclick = function(){ _pfSalvarCrop(chave, nome); };
     var btnCancel = document.createElement('button');
-    btnCancel.innerHTML='Cancelar';
+    btnCancel.innerHTML=t('modal.cancelar');
     btnCancel.style.cssText='padding:11px 20px;background:#ecf0f1;color:#555;border:none;border-radius:7px;font-weight:700;cursor:pointer;font-size:14px;';
     btnCancel.onclick = function(){ document.removeEventListener('paste',ov._pasteH); ov.remove(); };
     finalRow.appendChild(btnAplicar); finalRow.appendChild(btnCancel);
@@ -24776,8 +24879,8 @@ function _cliFaixasTexto(d){
 function _cliInit(modo, token, skipRender) {
     _cliModo      = modo;
     _cliProjToken = token || null;
-    // Página cliente: forçar EN se idioma não definido explicitamente pelo admin
-    if (!localStorage.getItem('appIdioma')) { localStorage.setItem('appIdioma','en'); }
+    // Página cliente: sempre em inglês (padrão internacional do estúdio)
+    localStorage.setItem('appIdioma','en');
     // Re-aplicar scan de idioma
     if (typeof _i18nScan === 'function') _i18nScan();
 
@@ -25138,8 +25241,8 @@ function _cliRenderListaCasting() {
 
         // Badge de status da linha
         var statusBadge = op1d
-            ? '<span style="font-size:10px;padding:3px 10px;border-radius:12px;background:rgba(74,222,128,.15);border:1px solid rgba(74,222,128,.4);color:#4ade80;font-weight:600;">✓ '+(op2d&&permit2?'2 escolhidos':'Escolhido')+'</span>'
-            : '<span style="font-size:10px;padding:3px 10px;border-radius:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:rgba(232,228,220,.4);">Aguardando escolha</span>';
+            ? '<span style="font-size:10px;padding:3px 10px;border-radius:12px;background:rgba(74,222,128,.15);border:1px solid rgba(74,222,128,.4);color:#4ade80;font-weight:600;">✓ '+(op2d&&permit2?t('cli.cand.escolhidos2'):t('cli.cand.escolhido'))+'</span>'
+            : '<span style="font-size:10px;padding:3px 10px;border-radius:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:rgba(232,228,220,.4);">'+t('cli.cand.aguardando')+'</span>';
 
         html += '<div class="cli-pers-row" id="cliPersRow_'+p.id+'">' +
             // Coluna esquerda: foto + nome do personagem
@@ -25247,7 +25350,7 @@ function _cliCandCard(d, persId, escolhas, permit2) {
     } else {
         // Modo simples — só 1 opção
         btnsEscolha =
-            '<button onclick="event.stopPropagation();cliEscolher(\''+persId+'\',\''+d.id+'\',\'op1\')" class="cli-btn-escolha'+(isOp1?' active-op1':'')+'" style="width:100%;margin-top:8px;">'+(isOp1?'✓ Escolhido':'Escolher')+'</button>';
+            '<button onclick="event.stopPropagation();cliEscolher(\''+persId+'\',\''+d.id+'\',\'op1\')" class="cli-btn-escolha'+(isOp1?' active-op1':'')+'" style="width:100%;margin-top:8px;">'+(isOp1?t('cli.cand.escolhido'):t('cli.cand.escolher'))+'</button>';
     }
 
     // Se há algum escolhido para Op1 e este não é → apagar
@@ -25268,12 +25371,12 @@ function _cliCandCard(d, persId, escolhas, permit2) {
         // Nota + anos — colados ao nome
         '<div style="display:flex;align-items:center;gap:5px;margin-bottom:0;">' +
         '<span style="font-size:10px;color:#c9a84c;font-weight:700;">'+(media>0?'★ '+media.toFixed(1):'★ —')+'</span>' +
-        (anos>0?'<span style="font-size:10px;color:rgba(232,228,220,.3);">· '+anos+' anos exp.</span>':'') +
+        (anos>0?'<span style="font-size:10px;color:rgba(232,228,220,.3);">· '+t('cli.cand.anosExp',{n:anos})+'</span>':'') +
         '</div>' +
         // Linha separadora entre nota e faixa vocal
         '<div style="height:1px;background:rgba(255,255,255,.18);margin:5px 0 4px;"></div>' +
         // Faixa Vocal — label colado aos valores
-        '<div style="font-size:9px;color:rgba(201,168,76,.6);font-weight:700;letter-spacing:.07em;text-transform:uppercase;margin-bottom:1px;">Faixa Vocal</div>' +
+        '<div style="font-size:9px;color:rgba(201,168,76,.6);font-weight:700;letter-spacing:.07em;text-transform:uppercase;margin-bottom:1px;">'+t('cli.cand.faixaVocal')+'</div>' +
         (faixasHtml||'<div style="font-size:10px;color:rgba(232,228,220,.18);">—</div>') +
         // Linha entre faixa vocal e bio
         '<div style="height:1px;background:rgba(255,255,255,.18);margin:4px 0 0;"></div>' +
@@ -25474,16 +25577,16 @@ function cliAbrirFicha(dubId, persId) {
         '<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px;">' +
         (d.genero?'<span style="font-size:10px;color:rgba(232,228,220,.55);background:rgba(255,255,255,.07);padding:2px 8px;border-radius:20px;">'+d.genero+'</span>':'') +
         (d.idioma?'<span style="font-size:10px;color:rgba(232,228,220,.55);background:rgba(255,255,255,.07);padding:2px 8px;border-radius:20px;">'+d.idioma+'</span>':'') +
-        (anos>0?'<span style="font-size:10px;color:#c9a84c;background:rgba(201,168,76,.1);padding:2px 8px;border-radius:20px;border:1px solid rgba(201,168,76,.2);">'+anos+' anos exp.</span>':'') +
+        (anos>0?'<span style="font-size:10px;color:#c9a84c;background:rgba(201,168,76,.1);padding:2px 8px;border-radius:20px;border:1px solid rgba(201,168,76,.2);">'+t('cli.cand.anosExp',{n:anos})+'</span>':'') +
         '</div>' +
         // Papéis
         (d.papeis&&d.papeis.length?
-        '<div style="font-size:9px;color:rgba(201,168,76,.55);font-weight:700;letter-spacing:.07em;text-transform:uppercase;margin-bottom:2px;">🎭 Voz ideal para</div>' +
+        '<div style="font-size:9px;color:rgba(201,168,76,.55);font-weight:700;letter-spacing:.07em;text-transform:uppercase;margin-bottom:2px;">'+t('cfg.dub.labelVozIdeal')+'</div>' +
         '<div style="font-size:11px;color:rgba(232,228,220,.65);margin-bottom:5px;line-height:1.5;">'+d.papeis.join(' · ')+'</div>' : '') +
         // Linha
         '<div style="height:1px;background:rgba(255,255,255,.1);margin-bottom:5px;"></div>' +
         // Faixa Vocal
-        '<div style="font-size:9px;color:rgba(201,168,76,.55);font-weight:700;letter-spacing:.07em;text-transform:uppercase;margin-bottom:2px;">Faixa Vocal</div>' +
+        '<div style="font-size:9px;color:rgba(201,168,76,.55);font-weight:700;letter-spacing:.07em;text-transform:uppercase;margin-bottom:2px;">'+t('cli.cand.faixaVocal')+'</div>' +
         _cliFaixasTexto(d) +
         '</div></div>' +
         // ── Nota média + notas por categoria na mesma linha ──
@@ -25692,7 +25795,7 @@ function cliEnviar() {
             '<span class="cli-empty-icon" style="font-size:72px;">🎉</span>' +
             '<h2 style="font-family:Cormorant Garamond,serif;font-size:32px;color:#fff;margin:12px 0;">'+t('cli.form.todosAprov')+'</h2>' +
             '<p style="font-size:15px;color:rgba(232,228,220,.6);max-width:400px;margin:0 auto;">'+t('cli.form.obrigado',{nome:'<strong style="color:#c9a84c;">'+nome+'</strong>'})+'</p>' +
-            '<button onclick="_cliVoltarParaCasting()" style="margin-top:28px;padding:12px 32px;background:transparent;border:1.5px solid rgba(201,168,76,.5);color:#c9a84c;border-radius:30px;font-size:14px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif;letter-spacing:.05em;">&#8592; Voltar ao casting</button>' +
+            '<button onclick="_cliVoltarParaCasting()" style="margin-top:28px;padding:12px 32px;background:transparent;border:1.5px solid rgba(201,168,76,.5);color:#c9a84c;border-radius:30px;font-size:14px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif;letter-spacing:.05em;">&#8592; '+t('cli.escFinal.voltar')+'</button>' +
             '</div>';
         var bar = document.getElementById('cliCastBar'); if(bar) bar.style.display='none';
     } else {
@@ -25756,14 +25859,14 @@ function _cliRenderCatalogo() {
         (d.papeis||d.estilos||[]).forEach(function(p){ if(p && !papeis_f.includes(p)) papeis_f.push(p); });
     });
 
-    // Mapeamento faixa etária: valor interno → label só com números
+    // Mapeamento faixa etária: valor interno → label traduzida
     var faixasMap = [
-        {val:'Criança',    label:'3–12 (Criança)'},
-        {val:'Adolescente', label:'13–17 (Adolescente)'},
-        {val:'Jovem',       label:'18–30 (Jovem)'},
-        {val:'Adulto',      label:'31–50 (Adulto)'},
-        {val:'Meia-idade',  label:'51–65 (Meia-idade)'},
-        {val:'Idoso',       label:'65+ (Idoso)'}
+        {val:'Criança',    label:'3–12 ('+t('prat.form.faixaCrianca')+')'},
+        {val:'Adolescente', label:'13–17 ('+t('prat.form.faixaAdolesc')+')'},
+        {val:'Jovem',       label:'18–30 ('+t('prat.form.faixaJovem')+')'},
+        {val:'Adulto',      label:'31–50 ('+t('prat.form.faixaAdulto')+')'},
+        {val:'Meia-idade',  label:'51–65 ('+t('prat.form.faixaMeia')+')'},
+        {val:'Idoso',       label:'65+ ('+t('prat.form.faixaIdoso')+')'}
     ];
     // Mapeamento qualidade: valor interno = label exibido
     var qualsMap = [
@@ -25902,7 +26005,7 @@ function catAtualizarGrid() {
             // Botões
             '<div style="display:flex;gap:6px;margin-top:8px;">' +
             '<button onclick="event.stopPropagation();cliOuvir(\''+d.id+'\')" style="flex:1;padding:6px;background:rgba(74,158,255,.08);border:1px solid rgba(74,158,255,.2);border-radius:7px;color:#4a9eff;font-size:10px;font-weight:600;cursor:pointer;">▶ Demo</button>' +
-            '<button onclick="event.stopPropagation();_catToggle(\''+d.id+'\')" style="flex:1;padding:6px;background:'+(naLista?'rgba(201,168,76,.15)':'rgba(201,168,76,.08)')+';border:1px solid rgba(201,168,76,'+(naLista?'.5':'.2')+');border-radius:7px;color:#c9a84c;font-size:10px;font-weight:600;cursor:pointer;">'+(naLista?'✓ Adicionado':'+ Lista')+'</button>' +
+            '<button onclick="event.stopPropagation();_catToggle(\''+d.id+'\')" style="flex:1;padding:6px;background:'+(naLista?'rgba(201,168,76,.15)':'rgba(201,168,76,.08)')+';border:1px solid rgba(201,168,76,'+(naLista?'.5':'.2')+');border-radius:7px;color:#c9a84c;font-size:10px;font-weight:600;cursor:pointer;">'+(naLista?t('cli.cat.btnAdicionado'):t('cli.cat.btnLista'))+'</button>' +
             '</div></div></div>';
     }).join('');
 
@@ -25944,29 +26047,29 @@ function _catAbrirAddModal(dub) {
         '<div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">' +
         '<div id="_catAddFoto" style="width:52px;height:52px;border-radius:10px;background:#1a1c23;display:flex;align-items:center;justify-content:center;font-size:24px;overflow:hidden;flex-shrink:0;">🎙️</div>' +
         '<div><div style="font-family:Cormorant Garamond,serif;font-size:18px;color:#fff;">'+dub.nome+'</div>' +
-        '<div style="font-size:11px;color:rgba(232,228,220,.4);">Adicionar à sua lista</div></div>' +
+        '<div style="font-size:11px;color:rgba(232,228,220,.4);">'+t('cli.cat.modal.addTitulo')+'</div></div>' +
         '</div>' +
         // Campos
         '<div style="display:flex;flex-direction:column;gap:10px;">' +
         '<div>' +
-        '<label style="font-size:11px;color:rgba(232,228,220,.5);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em;">Nome do Personagem</label>' +
-        '<input id="_catAddNome" placeholder="Ex: Protagonista, Narrador, Vilão..." style="width:100%;padding:10px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#e8e4dc;font-size:13px;outline:none;box-sizing:border-box;">' +
+        '<label style="font-size:11px;color:rgba(232,228,220,.5);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em;">'+t('cli.cat.modal.nomePers')+'</label>' +
+        '<input id="_catAddNome" placeholder="'+t('cli.cat.modal.phNomePers')+'" style="width:100%;padding:10px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#e8e4dc;font-size:13px;outline:none;box-sizing:border-box;">' +
         '</div>' +
         '<div>' +
-        '<label style="font-size:11px;color:rgba(232,228,220,.5);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em;">Número / Referência <span style="opacity:.5;">(opcional)</span></label>' +
+        '<label style="font-size:11px;color:rgba(232,228,220,.5);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em;">'+t('cli.cat.modal.numRef')+' <span style="opacity:.5;">'+t('cli.cat.modal.opcional')+'</span></label>' +
         '<input id="_catAddNum" placeholder="Ex: P01, 001..." style="width:100%;padding:10px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#e8e4dc;font-size:13px;outline:none;box-sizing:border-box;">' +
         '</div>' +
         '<div>' +
-        '<label style="font-size:11px;color:rgba(232,228,220,.5);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em;">Foto de Referência do Personagem <span style="opacity:.5;">(opcional)</span></label>' +
+        '<label style="font-size:11px;color:rgba(232,228,220,.5);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em;">'+t('cli.cat.modal.fotoRef')+' <span style="opacity:.5;">'+t('cli.cat.modal.opcional')+'</span></label>' +
         '<div style="display:flex;gap:10px;align-items:center;">' +
         '<div id="_catAddFotoRef" style="width:48px;height:48px;border-radius:8px;background:rgba(255,255,255,.05);border:1px dashed rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:20px;overflow:hidden;flex-shrink:0;cursor:pointer;" onclick="document.getElementById(\'_catAddFotoInput\').click()">📷</div>' +
-        '<label for="_catAddFotoInput" style="font-size:12px;color:rgba(232,228,220,.5);cursor:pointer;">Clique para selecionar imagem</label>' +
+        '<label for="_catAddFotoInput" style="font-size:12px;color:rgba(232,228,220,.5);cursor:pointer;">'+t('cli.cat.modal.cliqueImg')+'</label>' +
         '<input id="_catAddFotoInput" type="file" accept="image/*" style="display:none;" onchange="_catPreviewFotoRef(this)">' +
         '</div></div>' +
         '</div>' +
         '<div style="display:flex;gap:8px;margin-top:20px;">' +
-        '<button onclick="document.getElementById(\'_catAddModal\').remove()" style="flex:1;padding:11px;background:transparent;border:1px solid rgba(255,255,255,.15);border-radius:8px;color:rgba(232,228,220,.6);font-size:13px;cursor:pointer;">Cancelar</button>' +
-        '<button onclick="_catConfirmarAdd(\''+dub.id+'\',\''+dub.nome+'\')" style="flex:2;padding:11px;background:linear-gradient(135deg,#c9a84c,#a8893e);border:none;border-radius:8px;color:#1a1a1a;font-size:13px;font-weight:700;cursor:pointer;">✓ Adicionar à lista</button>' +
+        '<button onclick="document.getElementById(\'_catAddModal\').remove()" style="flex:1;padding:11px;background:transparent;border:1px solid rgba(255,255,255,.15);border-radius:8px;color:rgba(232,228,220,.6);font-size:13px;cursor:pointer;">'+t('cli.cat.modal.cancelar')+'</button>' +
+        '<button onclick="_catConfirmarAdd(\''+dub.id+'\',\''+dub.nome+'\')" style="flex:2;padding:11px;background:linear-gradient(135deg,#c9a84c,#a8893e);border:none;border-radius:8px;color:#1a1a1a;font-size:13px;font-weight:700;cursor:pointer;">'+t('cli.cat.modal.adicionar')+'</button>' +
         '</div></div>';
 
     document.body.appendChild(ov);
@@ -26025,7 +26128,7 @@ function _catRenderPainel() {
         '<div onclick="_catPainelOpen=!_catPainelOpen;_catRenderPainel()" style="padding:12px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;background:rgba(201,168,76,.08);">' +
         '<div style="display:flex;align-items:center;gap:8px;">' +
         '<div style="background:#c9a84c;border-radius:20px;padding:2px 10px;font-size:11px;font-weight:700;color:#1a1a1a;">'+n+'</div>' +
-        '<span style="font-size:13px;font-weight:600;color:#e8e4dc;">Minha Lista</span>' +
+        '<span style="font-size:13px;font-weight:600;color:#e8e4dc;">'+t('cli.cat.addALista')+'</span>' +
         '</div>' +
         '<span style="font-size:12px;color:rgba(201,168,76,.7);">'+(aberto?'▼':'▲')+'</span>' +
         '</div>' +
@@ -26039,7 +26142,7 @@ function _catRenderPainel() {
                     ? '<img src="'+item.persFoto+'" style="width:32px;height:32px;border-radius:6px;object-fit:cover;flex-shrink:0;">'
                     : '<div style="width:32px;height:32px;border-radius:6px;background:rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;">🎭</div>') +
                 '<div style="flex:1;min-width:0;">' +
-                '<div style="font-size:11px;color:#e8e4dc;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+(item.persNum?item.persNum+' — ':'')+''+(item.persNome||'<em style="opacity:.4">Sem nome</em>')+'</div>' +
+                '<div style="font-size:11px;color:#e8e4dc;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+(item.persNum?item.persNum+' — ':'')+''+(item.persNome||'<em style="opacity:.4">'+t('prat.cast.semCandsPers')+'</em>')+'</div>' +
                 '<div style="font-size:10px;color:rgba(232,228,220,.4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+item.dubNome+'</div>' +
                 '</div>' +
                 '<button onclick="_catLista.splice('+i+',1);_catRenderPainel();catAtualizarGrid();_catSalvarRascunho()" style="background:none;border:none;color:rgba(232,228,220,.3);cursor:pointer;font-size:14px;padding:2px;">✕</button>' +
@@ -26049,9 +26152,9 @@ function _catRenderPainel() {
 
         // Botões de ação
         '<div style="padding:10px 16px;display:flex;gap:6px;">' +
-        '<button onclick="_catSalvarRascunho(true)" style="flex:1;padding:8px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:rgba(232,228,220,.6);font-size:11px;font-weight:600;cursor:pointer;">💾 Salvar</button>' +
-        '<button onclick="_catAbrirResumo()" style="flex:1;padding:8px;background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.3);border-radius:8px;color:#c9a84c;font-size:11px;font-weight:600;cursor:pointer;">👁 Revisar</button>' +
-        '<button onclick="_catAbrirEnvio()" style="flex:2;padding:8px;background:linear-gradient(135deg,#c9a84c,#a8893e);border:none;border-radius:8px;color:#1a1a1a;font-size:11px;font-weight:700;cursor:pointer;">📤 Enviar ao estúdio</button>' +
+        '<button onclick="_catSalvarRascunho(true)" style="flex:1;padding:8px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:rgba(232,228,220,.6);font-size:11px;font-weight:600;cursor:pointer;">💾 '+t('modal.confirmar')+'</button>' +
+        '<button onclick="_catAbrirResumo()" style="flex:1;padding:8px;background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.3);border-radius:8px;color:#c9a84c;font-size:11px;font-weight:600;cursor:pointer;">👁 Review</button>' +
+        '<button onclick="_catAbrirEnvio()" style="flex:2;padding:8px;background:linear-gradient(135deg,#c9a84c,#a8893e);border:none;border-radius:8px;color:#1a1a1a;font-size:11px;font-weight:700;cursor:pointer;">'+t('cli.cat.enviarEstudio')+'</button>' +
         '</div></div>';
 }
 
@@ -26072,13 +26175,13 @@ function _catAbrirResumo() {
             (item.persFoto
                 ? '<img src="'+item.persFoto+'" style="width:44px;height:44px;border-radius:8px;object-fit:cover;">'
                 : '<div style="width:44px;height:44px;border-radius:8px;background:rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center;font-size:20px;">🎭</div>') +
-            '<div><div style="font-size:13px;font-weight:600;color:#e8e4dc;">'+(item.persNome||'<em style="opacity:.4">Sem nome</em>')+'</div>' +
-            '<div style="font-size:10px;color:rgba(232,228,220,.35);">'+(item.persNum||'Sem referência')+'</div></div>' +
+            '<div><div style="font-size:13px;font-weight:600;color:#e8e4dc;">'+(item.persNome||'<em style="opacity:.4">—</em>')+'</div>' +
+            '<div style="font-size:10px;color:rgba(232,228,220,.35);">'+(item.persNum||'')+'</div></div>' +
             // Seta
             '<div style="font-size:16px;color:rgba(201,168,76,.6);">→</div>' +
             // Dublador
             '<div><div id="_catResF_'+item.dubId+'" style="font-size:13px;font-weight:600;color:#e8e4dc;">'+(dub?dub.nome:item.dubNome)+'</div>' +
-            '<div style="font-size:10px;color:rgba(232,228,220,.35);">'+(dub?dub.idioma||'':'')+' '+(dub&&_cliAnosExp?_cliAnosExp(dub)+' anos':'')+'</div></div>' +
+            '<div style="font-size:10px;color:rgba(232,228,220,.35);">'+(dub?dub.idioma||'':'')+' '+(dub&&_cliAnosExp?t('cli.cand.anosExp',{n:_cliAnosExp(dub)}):'')+'</div></div>' +
             '</div>';
     }).join('');
 
@@ -26095,7 +26198,7 @@ function _catAbrirResumo() {
         '<div></div><div style="font-size:10px;color:rgba(232,228,220,.3);text-transform:uppercase;letter-spacing:.08em;">Dublador indicado</div>' +
         '</div>' +
         '<div style="display:flex;flex-direction:column;gap:8px;max-height:50vh;overflow-y:auto;">' + linhas + '</div>' +
-        '<button onclick="document.getElementById(\'_catResumoOv\').remove();_catAbrirEnvio()" style="width:100%;margin-top:20px;padding:13px;background:linear-gradient(135deg,#c9a84c,#a8893e);border:none;border-radius:10px;color:#1a1a1a;font-size:14px;font-weight:700;cursor:pointer;">📤 Enviar ao estúdio</button>' +
+        '<button onclick="document.getElementById(\'_catResumoOv\').remove();_catAbrirEnvio()" style="width:100%;margin-top:20px;padding:13px;background:linear-gradient(135deg,#c9a84c,#a8893e);border:none;border-radius:10px;color:#1a1a1a;font-size:14px;font-weight:700;cursor:pointer;">'+t('cli.cat.enviarEstudio')+'</button>' +
         '</div>';
 
     document.body.appendChild(ov);
@@ -26111,20 +26214,20 @@ function _catAbrirEnvio() {
 
     ov.innerHTML =
         '<div style="background:#0d0f14;border:1px solid rgba(201,168,76,.25);border-radius:18px;padding:28px;width:100%;max-width:460px;font-family:DM Sans,sans-serif;">' +
-        '<h3 style="margin:0 0 6px;font-family:Cormorant Garamond,serif;font-size:22px;color:#fff;">📤 Enviar ao Estúdio</h3>' +
-        '<p style="margin:0 0 20px;font-size:12px;color:rgba(232,228,220,.4);">Preencha seus dados para que possamos entrar em contato.</p>' +
+        '<h3 style="margin:0 0 6px;font-family:Cormorant Garamond,serif;font-size:22px;color:#fff;">'+t('cli.cat.envio.titulo')+'</h3>' +
+        '<p style="margin:0 0 20px;font-size:12px;color:rgba(232,228,220,.4);">'+t('cli.cat.envio.subtitulo')+'</p>' +
         '<div style="display:flex;flex-direction:column;gap:10px;">' +
-        _catCampo('catEnvNome','Seu nome completo *','text','Fulano de Tal') +
-        _catCampo('catEnvEmpresa','Empresa / Produtora','text','Nome da empresa') +
-        _catCampo('catEnvContato','E-mail ou WhatsApp *','text','email@empresa.com') +
-        _catCampo('catEnvProjeto','Nome do projeto','text','Série, filme, jogo...') +
-        _catCampo('catEnvPrazo','Prazo estimado de conclusão','date','') +
-        '<div><label style="font-size:11px;color:rgba(232,228,220,.5);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em;">Observações</label>' +
-        '<textarea id="catEnvObs" placeholder="Informações adicionais..." style="width:100%;height:70px;padding:10px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#e8e4dc;font-size:13px;outline:none;resize:none;box-sizing:border-box;font-family:DM Sans,sans-serif;"></textarea></div>' +
+        _catCampo('catEnvNome',t('cli.cat.envio.nomeCompleto'),'text','Fulano de Tal') +
+        _catCampo('catEnvEmpresa',t('cli.cat.envio.empresa'),'text','Nome da empresa') +
+        _catCampo('catEnvContato',t('cli.cat.envio.contato'),'text','email@empresa.com') +
+        _catCampo('catEnvProjeto',t('cli.cat.envio.projeto'),'text','Série, filme, jogo...') +
+        _catCampo('catEnvPrazo',t('cli.cat.envio.prazo'),'date','') +
+        '<div><label style="font-size:11px;color:rgba(232,228,220,.5);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em;">'+t('cli.cat.envio.obs')+'</label>' +
+        '<textarea id="catEnvObs" placeholder="'+t('cli.cat.envio.phObs')+'" style="width:100%;height:70px;padding:10px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#e8e4dc;font-size:13px;outline:none;resize:none;box-sizing:border-box;font-family:DM Sans,sans-serif;"></textarea></div>' +
         '</div>' +
         '<div style="display:flex;gap:8px;margin-top:20px;">' +
-        '<button onclick="document.getElementById(\'_catEnvioOv\').remove()" style="flex:1;padding:12px;background:transparent;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:rgba(232,228,220,.5);font-size:13px;cursor:pointer;">Voltar</button>' +
-        '<button onclick="_catEnviarLista()" style="flex:2;padding:12px;background:linear-gradient(135deg,#c9a84c,#a8893e);border:none;border-radius:8px;color:#1a1a1a;font-size:14px;font-weight:700;cursor:pointer;">✉ Enviar</button>' +
+        '<button onclick="document.getElementById(\'_catEnvioOv\').remove()" style="flex:1;padding:12px;background:transparent;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:rgba(232,228,220,.5);font-size:13px;cursor:pointer;">'+t('cli.cat.envio.voltar')+'</button>' +
+        '<button onclick="_catEnviarLista()" style="flex:2;padding:12px;background:linear-gradient(135deg,#c9a84c,#a8893e);border:none;border-radius:8px;color:#1a1a1a;font-size:14px;font-weight:700;cursor:pointer;">'+t('cli.cat.envio.enviar')+'</button>' +
         '</div></div>';
 
     document.body.appendChild(ov);
@@ -26205,7 +26308,7 @@ function _catMostrarTelaConclusao(dados, nomeArq) {
         '<div style="text-align:center;margin-bottom:28px;">'+
         '<div style="font-size:60px;margin-bottom:12px;">&#127881;</div>'+
         '<h2 style="font-family:Cormorant Garamond,serif;font-size:30px;color:#fff;margin:0 0 8px;">Tudo pronto!</h2>'+
-        '<p style="font-size:13px;color:rgba(232,228,220,.5);max-width:380px;margin:0 auto;">Obrigado, <strong style="color:#c9a84c;">'+(cl.nome||'')+'</strong>. Comunique o estúdio com um dos meios abaixo.</p>'+
+        '<p style="font-size:13px;color:rgba(232,228,220,.5);max-width:380px;margin:0 auto;">'+t('cli.cat.envio.obrigado',{nome:'<strong style="color:#c9a84c;">'+(cl.nome||'')+'</strong>'})+'</p>'+
         '</div>'+
         '<div style="background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.2);border-radius:10px;padding:12px 16px;margin-bottom:18px;font-size:12px;color:rgba(232,228,220,.55);line-height:1.8;text-align:center;">'+
         '&#128161; Envie a <strong style="color:#c9a84c;">planilha</strong> ou o <strong style="color:#4a9eff;">link</strong> para '+nomeEst+' pelo canal de sua preferência.'+
@@ -26237,7 +26340,7 @@ function _catMostrarTelaConclusao(dados, nomeArq) {
         '<div style="font-size:11px;color:rgba(232,228,220,.4);">Abre seu app de e-mail com assunto e lista já preenchidos</div></div></div>'+
         '<button onclick="_catAbrirMailto()" style="width:100%;padding:9px;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.25);border-radius:7px;color:#34d399;font-size:12px;font-weight:600;cursor:pointer;">&#128231; Abrir e-mail para '+nomeEst+'</button>'+
         '</div>':'') +
-        '<button onclick="_cliRenderCatalogo()" style="display:block;margin:24px auto 0;padding:9px 26px;background:transparent;border:1.5px solid rgba(255,255,255,.1);border-radius:28px;color:rgba(232,228,220,.3);font-size:12px;cursor:pointer;font-family:DM Sans,sans-serif;">&#8592; Ver catálogo novamente</button>'+
+        '<button onclick="_cliRenderCatalogo()" style="display:block;margin:24px auto 0;padding:9px 26px;background:transparent;border:1.5px solid rgba(255,255,255,.1);border-radius:28px;color:rgba(232,228,220,.3);font-size:12px;cursor:pointer;font-family:DM Sans,sans-serif;">'+t('cli.cat.verCatalogo')+'</button>'+
         '</div>';
 }
 
