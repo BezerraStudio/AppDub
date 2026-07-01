@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.650</title>
+    <title>Sistema de Dublagem v12.651</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.650</p>
+        <p>v12.651</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.650</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.651</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1748,7 +1748,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.650</footer>
+    <footer>🎬 Sistema de Dublagem v12.651</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -6316,7 +6316,7 @@ function salvarProjetos() {
 // ─── BACKUP / RESTORE ─────────────────────────────────────────────────────────
 function exportarBackup() {
     var data = new Date().toISOString().slice(0,10);
-    var versao = 'v12.650';
+    var versao = 'v12.651';
 
     // Ler todas as chaves do sistema do localStorage
     function lerChave(k) {
@@ -25326,7 +25326,7 @@ function _cliRenderListaCasting() {
             '<div>' +
             '<div style="padding:6px 10px 0;text-align:center;">' +
             '<div style="font-family:Cormorant Garamond,serif;font-size:15px;font-weight:600;color:#fff;line-height:1.2;margin-bottom:2px;">'+p.nome+'</div>' +
-            '<div style="font-size:10px;color:#c9a84c;margin-bottom:3px;letter-spacing:.04em;">'+p.perfil+letraP(pi)+'</div>' +
+            '<div style="font-size:10px;color:#c9a84c;margin-bottom:3px;letter-spacing:.04em;">'+_tPerfil(p.perfil)+letraP(pi)+'</div>' +
             '<div style="font-size:10px;color:rgba(232,228,220,.38);margin-bottom:4px;">'+(p.genero||'&nbsp;')+'</div>' +
             '</div>' +
             // Descrição — altura maior para mostrar mais texto
@@ -25459,7 +25459,7 @@ function _cliCandCard(d, persId, escolhas, permit2) {
         '</div>' +
         // Rodapé — margin-top:auto empurra para o fundo
         '<div style="padding:8px 8px 8px;margin-top:auto;">' +
-        '<button onclick="event.stopPropagation();cliOuvirCard(\''+d.id+'\',this)" class="cli-btn-demo">▶ Demo</button>' +
+        '<button onclick="event.stopPropagation();cliOuvirCard(\''+d.id+'\',this)" class="cli-btn-demo">▶ '+t('cli.ficha.ouvirDemo').replace('▶ ','')+'</button>' +
         '<div id="cliAudioCard_'+d.id+'" style="margin-top:3px;"></div>' +
         btnsEscolha +
         '</div>' +
