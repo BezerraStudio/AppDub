@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.651</title>
+    <title>Sistema de Dublagem v12.653</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.651</p>
+        <p>v12.653</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.651</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.653</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1247,7 +1247,7 @@
               <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
                 <img src="https://www.gstatic.com/images/branding/product/1x/drive_2020q4_48dp.png" style="width:28px;height:28px;" onerror="this.style.display='none'">
                 <h3 style="margin:0;font-size:15px;color:#2c3e50;">Google Drive / Sheets API</h3>
-                <span id="cfgGoogleStatus" style="margin-left:auto;font-size:11px;padding:3px 10px;border-radius:12px;background:#ecf0f1;color:#7f8c8d;" data-i18n="cfg.drive.naoConfig">Não configurado</span>
+                <span id="cfgGoogleStatus" style="margin-left:auto;font-size:11px;padding:3px 10px;border-radius:12px;background:#ecf0f1;color:#7f8c8d;">Não configurado</span>
               </div>
 
               <div style="background:#f4d03f;border:1px solid #f9ca24;border-radius:8px;padding:12px;margin-bottom:16px;font-size:12px;color:#7d6608;">
@@ -1748,7 +1748,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.651</footer>
+    <footer>🎬 Sistema de Dublagem v12.653</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -6316,7 +6316,7 @@ function salvarProjetos() {
 // ─── BACKUP / RESTORE ─────────────────────────────────────────────────────────
 function exportarBackup() {
     var data = new Date().toISOString().slice(0,10);
-    var versao = 'v12.651';
+    var versao = 'v12.653';
 
     // Ler todas as chaves do sistema do localStorage
     function lerChave(k) {
@@ -15536,7 +15536,7 @@ function cfgCarregar() {
     if(pc) pc.value = cfg.pastaClientesId || '';
     if(pr) pr.value = cfg.pastaRaizId || '';
     cfgAtualizarStatus();
-    if(cfg.pastaRaizId) driveAtualizarStatusUI();
+    if(cfg.pastaRaizId) { driveAtualizarStatusUI(); cfgAtualizarStatus(); }
 }
 
 function cfgSalvarLocal() {
@@ -15582,20 +15582,33 @@ function cfgGet() {
 function cfgAtualizarStatus() {
     const cfg = cfgGet();
     const el = document.getElementById('cfgGoogleStatus');
-    if(!el) return;
-    if(cfg.clientId && cfg.apiKey) {
-        el.textContent = t('notif.configurado');
-        el.style.background = '#d5f5e3';
-        el.style.color = '#1e8449';
+    if (!el) return;
+    if (cfg.clientId && cfg.apiKey && cfg.pastaRaizId) {
+        // Tem credenciais — verificar se tem token ativo
+        const temToken = typeof _driveToken === 'function' && !!_driveToken();
+        if (temToken) {
+            el.textContent = t('notif.configurado');        // ✅ Configurado
+            el.style.background = '#d5f5e3';
+            el.style.color = '#1e8449';
+        } else {
+            el.textContent = t('cfg.drive.statusConectando') || '🔗 ' + t('cfg.drive.btnSincronizar');
+            el.style.background = '#fef9e7';
+            el.style.color = '#b7770d';
+        }
+    } else if (cfg.clientId && cfg.apiKey) {
+        // Tem credenciais mas sem pasta raiz
+        el.textContent = t('cfg.drive.semPasta') || '⚠ ' + t('misc.notif.naoConfig');
+        el.style.background = '#fef9e7';
+        el.style.color = '#b7770d';
     } else {
-        el.textContent = t('misc.notif.naoConfig');
-        el.style.background = '#ecf0f1';
-        el.style.color = '#7f8c8d';
+        el.textContent = t('misc.notif.naoConfig');         // Não configurado
+        el.style.background = '#fde8e8';
+        el.style.color = '#c0392b';
     }
 }
 
 // Inicializar GAPI + GIS
-let _gapiInited = false, _gisInited = false, _tokenClient = null;
+let _gapiInited = false, _gisInited = false, _tokenClient = null, _authTentativaSilenciosa = false;
 
 function cfgCarregarGapi(callback) {
     const cfg = cfgGet();
@@ -15660,9 +15673,6 @@ function cfgAutenticar(callback, onError) {
     // Tenta restaurar token salvo do localStorage
     try {
         var saved = JSON.parse(localStorage.getItem('_gtoken') || 'null');
-        // Só usa token salvo se tiver escopo de spreadsheets E o escopo Drive
-        // completo (não o antigo "drive.file", que é restrito e não enxerga
-        // pastas/arquivos compartilhados por outras contas)
         var escopos  = saved && saved.scope ? saved.scope.split(' ') : [];
         var temSheets = escopos.indexOf('https://www.googleapis.com/auth/spreadsheets') !== -1;
         var temDriveCompleto = escopos.indexOf('https://www.googleapis.com/auth/drive') !== -1;
@@ -15671,29 +15681,52 @@ function cfgAutenticar(callback, onError) {
             callback();
             return;
         } else if (saved && (!temSheets || !temDriveCompleto)) {
-            // Token existe mas com escopo desatualizado/restrito — limpar para forçar re-auth com scope completo
             localStorage.removeItem('_gtoken');
             gapi.client.setToken('');
         }
     } catch(e) {}
 
-    // Token ausente ou expirado — pede nova autorização
+    // Token ausente ou expirado — callback que salva token + email (login_hint)
     _tokenClient.callback = (resp) => {
-        if(resp.error) {
+        if (resp.error) {
+            // Se prompt:none falhou por interação necessária, tentar com seletor
+            if ((resp.error === 'interaction_required' || resp.error === 'consent_required') && _authTentativaSilenciosa) {
+                _authTentativaSilenciosa = false;
+                _tokenClient.requestAccessToken({ prompt: '' });
+                return;
+            }
             if (onError) { onError(resp.error); }
             else { mostrarNotificacao(t('misc.notif.erroAuthGoogle', {msg: resp.error}), 'erro'); }
             return;
         }
-        // Salva token com expiração (55 minutos para margem de segurança)
+        // Salva token com expiração (55 min) + email para login_hint futuro
         var token = gapi.client.getToken();
         if (token) {
             token.expiry = Date.now() + (55 * 60 * 1000);
-            localStorage.setItem('_gtoken', JSON.stringify(token));
+            // Buscar email da conta para evitar seletor na próxima renovação
+            fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+                headers: { Authorization: 'Bearer ' + token.access_token }
+            }).then(function(r){ return r.json(); }).then(function(info){
+                if (info.email) token.hint = info.email;
+                localStorage.setItem('_gtoken', JSON.stringify(token));
+            }).catch(function(){
+                localStorage.setItem('_gtoken', JSON.stringify(token));
+            });
         }
         callback();
     };
-    if(gapi.client.getToken() === null) {
-        _tokenClient.requestAccessToken({ prompt: '' });
+
+    if (gapi.client.getToken() === null) {
+        // Tentar renovação silenciosa primeiro (pula o seletor de conta)
+        var savedHint = '';
+        try { var sv = JSON.parse(localStorage.getItem('_gtoken')||'null'); if(sv&&sv.hint) savedHint=sv.hint; } catch(e){}
+        if (savedHint) {
+            _authTentativaSilenciosa = true;
+            _tokenClient.requestAccessToken({ prompt: 'none', login_hint: savedHint });
+        } else {
+            _authTentativaSilenciosa = false;
+            _tokenClient.requestAccessToken({ prompt: '' });
+        }
     } else {
         callback();
     }
@@ -15745,7 +15778,7 @@ function cfgDesconectar() {
     const token = gapi.client?.getToken?.();
     if(token) { google.accounts.oauth2.revoke(token.access_token); gapi.client.setToken(''); }
     cfgLimparTokenSalvo();
-    _gapiInited = false; _gisInited = false; _tokenClient = null;
+    _gapiInited = false; _gisInited = false; _tokenClient = null; _authTentativaSilenciosa = false;
     _driveSistemaId = null; // reset cache da pasta _SISTEMA
     mostrarNotificacao(t('cfg.drive.notifDesconectado'), 'info');
 }
@@ -16992,6 +17025,7 @@ async function _driveSalvarInterno() {
         }
         await _driveAtualizarArquivo(_driveFileId, conteudo);
         driveAtualizarStatusUI(t('cfg.drive.statusSincOk', {hora: new Date().toLocaleTimeString()}));
+        cfgAtualizarStatus(); // badge fica verde após sync confirmado
     } catch(e) {
         console.warn('Drive sync falhou silenciosamente:', e.message);
         driveAtualizarStatusUI(t('cfg.drive.statusSincFalhou'));
