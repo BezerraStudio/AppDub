@@ -685,7 +685,7 @@
                 <div class="projetos-col">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
                         <h2 style="margin:0;" data-i18n="proj.h1.novo">1️⃣ NOVO PROJETO</h2>
-                        <button onclick="novoProjetoLimpar()" style="font-size:12px;padding:5px 12px;background:#27ae60;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:700;" title="Limpar formulário para criar um novo projeto">➕ Novo</button>
+                        <button onclick="novoProjetoLimpar()" style="font-size:12px;padding:5px 12px;background:#27ae60;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:700;" title="Limpar formulário para criar um novo projeto" data-i18n="proj.btn.novo">➕ Novo</button>
                     </div>
 
                     <div class="form-group">
@@ -718,13 +718,13 @@
                         <!-- Linha Drive (visível apenas quando projeto tem pasta SRTs do Projeto) -->
                         <div id="srtDriveRow" style="display:none;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:6px;padding:6px 8px;background:#eaf4fb;border:1px solid #aed6f1;border-radius:6px;">
                             <span style="font-size:11px;color:#1a5276;font-weight:600;">☁️ Drive:</span>
-                            <a id="srtDriveLink" href="#" target="_blank" style="font-size:11px;color:#2471a3;text-decoration:underline;word-break:break-all;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="">📂 SRTs do Projeto</a>
-                            <button id="btnCarregarSRTsDrive" onclick="carregarSRTsDrive()" style="font-size:11px;padding:4px 10px;background:#2471a3;color:#fff;border:none;border-radius:5px;cursor:pointer;font-weight:700;white-space:nowrap;">📥 Carregar do Drive</button>
+                            <a id="srtDriveLink" href="#" target="_blank" style="font-size:11px;color:#2471a3;text-decoration:underline;word-break:break-all;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="" data-i18n="proj.srt.driveLabel">📂 SRTs do Projeto</a>
+                            <button id="btnCarregarSRTsDrive" onclick="carregarSRTsDrive()" style="font-size:11px;padding:4px 10px;background:#2471a3;color:#fff;border:none;border-radius:5px;cursor:pointer;font-weight:700;white-space:nowrap;" data-i18n="proj.btn.carregarDrive">📥 Carregar do Drive</button>
                         </div>
                         <!-- Botão de criar/recriar pastas no Drive (aparece quando projeto existe mas links não estão configurados) -->
                         <div id="driveCriarPastasRow" style="display:none;align-items:center;gap:6px;margin-bottom:6px;padding:6px 8px;background:#fef9e7;border:1px solid #f9e79f;border-radius:6px;">
-                            <span style="font-size:11px;color:#7d6608;">⚠️ Pastas do Drive ainda não criadas para este projeto.</span>
-                            <button onclick="_criarPastasProjetoAtual()" style="font-size:11px;padding:4px 10px;background:#f39c12;color:#fff;border:none;border-radius:5px;cursor:pointer;font-weight:700;white-space:nowrap;">🔍 Buscar pasta no Drive</button>
+                            <span style="font-size:11px;color:#7d6608;" data-i18n="proj.drive.pastasNaoCriadas">⚠️ Pastas do Drive ainda não criadas para este projeto.</span>
+                            <button onclick="_criarPastasProjetoAtual()" style="font-size:11px;padding:4px 10px;background:#f39c12;color:#fff;border:none;border-radius:5px;cursor:pointer;font-weight:700;white-space:nowrap;" data-i18n="proj.drive.buscarPasta">🔍 Buscar pasta no Drive</button>
                         </div>
                         <!-- Linha local (sempre visível) -->
                         <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
@@ -1254,8 +1254,8 @@
                 <span data-i18n-html="cfg.drive.configTitulo"><b>Como configurar:</b></span> <span data-i18n="cfg.drive.acesse">Acesse</span> <a href="https://console.cloud.google.com/" target="_blank" style="color:#2980b9;">console.cloud.google.com</a> →
                 <span data-i18n-html="cfg.drive.configTexto">Criar projeto → Ativar <b>Google Sheets API</b> e <b>Google Drive API</b> →
                 Credenciais → Criar <b>ID do cliente OAuth 2.0</b> (tipo: Aplicativo da Web) →
-                Adicionar <b>http://localhost</b> e o caminho do arquivo em "Origens autorizadas" →
-                Criar <b>Chave de API</b>. Cole os valores abaixo.</span>
+                Em <b>Origens JavaScript autorizadas</b>, adicionar <b>https://bezerrastudio.github.io</b> →
+                Criar <b>Chave de API</b> e restringi-la ao mesmo domínio. Cole os valores abaixo.</span>
               </div>
 
               <div style="display:grid;gap:14px;">
@@ -1307,7 +1307,7 @@
               <div style="display:flex;gap:10px;margin-top:12px;align-items:center;flex-wrap:wrap;">
                 <button onclick="driveSincronizar()" style="padding:7px 14px;background:#27ae60;color:white;border:none;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;" data-i18n="cfg.drive.btnSincronizar">🔄 Sincronizar Drive</button>
                 <button onclick="driveCarregarDados()" style="padding:7px 14px;background:#5dade2;color:#1a5276;border:none;border-radius:6px;cursor:pointer;font-size:12px;" data-i18n="cfg.drive.btnCarregar">⬇️ Carregar do Drive</button>
-                <button id="btnCompartilharTodos" onclick="_driveCompartilharTodosProjetos()" style="padding:7px 14px;background:#7c3aed;color:white;border:none;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;" title="Libera as pastas de upload de todos os projetos para que membros da equipe possam enviar arquivos com a própria conta Google">🔗 Compartilhar pastas de todos os projetos</button>
+                <button id="btnCompartilharTodos" onclick="_driveCompartilharTodosProjetos()" style="padding:7px 14px;background:#7c3aed;color:white;border:none;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;" title="Libera as pastas de upload de todos os projetos para que membros da equipe possam enviar arquivos com a própria conta Google" data-i18n="cfg.drive.btnCompartilhar">🔗 Compartilhar pastas de todos os projetos</button>
                 <div id="cfgDriveStatus" style="font-size:11px;color:#7f8c8d;min-height:14px;"></div>
               </div>
 
@@ -2997,7 +2997,7 @@ var _i18n = {
         'cfg.estudio.logoHint':          'A logo aparece no header do cliente.',
         'cfg.estudio.favPeso':           '• Peso: até <strong>200KB</strong>',
         'cfg.drive.configTitulo':        '<b>Como configurar:</b>',
-        'cfg.drive.configTexto':         'Criar projeto → Ativar <b>Google Sheets API</b> e <b>Google Drive API</b> → Credenciais → Criar <b>ID do cliente OAuth 2.0</b> (tipo: Aplicativo da Web) → Adicionar <b>http://localhost</b> e o caminho do arquivo em "Origens autorizadas" → Criar <b>Chave de API</b>. Cole os valores abaixo.',
+        'cfg.drive.configTexto':         'Criar projeto → Ativar <b>Google Sheets API</b> e <b>Google Drive API</b> → Credenciais → Criar <b>ID do cliente OAuth 2.0</b> (tipo: Aplicativo da Web) → Em <b>Origens JavaScript autorizadas</b>, adicionar <b>https://bezerrastudio.github.io</b> → Criar <b>Chave de API</b> e restringi-la ao mesmo domínio. Cole os valores abaixo.',
         'cfg.drive.phPastaRaiz':         'ID da pasta APP Dublagem no Drive',
         'cfg.drive.hintRaiz':            '_SISTEMA/ e ELENCO/ ficam aqui — dados permanentes do estúdio.',
         'cfg.drive.phPastaClientes':     'ID da pasta Clientes no Drive',
@@ -3976,7 +3976,22 @@ var _i18n = {
         'ficha.vozInterp':              '🎙️ Voz e interpretação',
         'ficha.impressoes':             '💬 Impressões',
         'ficha.avaliacoes':             '⭐ Avaliações',
-        'ficha.historico':              '📺 Histórico de séries'
+        'ficha.historico':              '📺 Histórico de séries',
+        // ── Auditoria i18n — aba Projects + Drive ─────────────────────────
+        'proj.btn.novo':                '➕ Novo',
+        'proj.srt.driveLabel':          '📂 SRTs do Projeto',
+        'proj.btn.carregarDrive':       '📥 Carregar do Drive',
+        'proj.drive.pastasNaoCriadas':  '⚠️ Pastas do Drive ainda não criadas para este projeto.',
+        'proj.drive.buscarPasta':       '🔍 Buscar pasta no Drive',
+        'proj.badge.castingsRecebidos': '🎭 {n} casting{pl} recebido{pl}',
+        'cfg.drive.btnCompartilhar':    '🔗 Compartilhar pastas de todos os projetos',
+        // ── Auditoria i18n — perfis de personagem ─────────────────────────
+        'prat.perfil.protagonista':     'Protagonista',
+        'prat.perfil.antagonista':      'Antagonista',
+        'prat.perfil.coadjuvante':      'Coadjuvante',
+        'prat.perfil.ponta':            'Ponta',
+        'prat.perfil.narrador':         'Narrador',
+        'prat.perfil.outro':            'Outro'
     },
     en: {
         // ── Navigation tabs ────────────────────────────────────────────────
@@ -4754,7 +4769,7 @@ var _i18n = {
         'cfg.estudio.logoHint':          'The logo appears in the client header.',
         'cfg.estudio.favPeso':           '• Weight: up to <strong>200KB</strong>',
         'cfg.drive.configTitulo':        '<b>How to configure:</b>',
-        'cfg.drive.configTexto':         'Create project → Enable <b>Google Sheets API</b> and <b>Google Drive API</b> → Credentials → Create <b>OAuth 2.0 Client ID</b> (type: Web Application) → Add <b>http://localhost</b> and the file path in "Authorized origins" → Create <b>API Key</b>. Paste the values below.',
+        'cfg.drive.configTexto':         'Create project → Enable <b>Google Sheets API</b> and <b>Google Drive API</b> → Credentials → Create <b>OAuth 2.0 Client ID</b> (type: Web Application) → Under <b>Authorized JavaScript origins</b>, add <b>https://bezerrastudio.github.io</b> → Create <b>API Key</b> and restrict it to the same domain. Paste the values below.',
         'cfg.drive.phPastaRaiz':         'APP Dubbing folder ID in Drive',
         'cfg.drive.hintRaiz':            '_SISTEMA/ and ELENCO/ go here — permanent studio data.',
         'cfg.drive.phPastaClientes':     'Clients folder ID in Drive',
@@ -5512,7 +5527,22 @@ var _i18n = {
         'ficha.vozInterp':              '🎙️ Voice & Interpretation',
         'ficha.impressoes':             '💬 Impressions',
         'ficha.avaliacoes':             '⭐ Ratings',
-        'ficha.historico':              '📺 Series History'
+        'ficha.historico':              '📺 Series History',
+        // ── Audit i18n — Projects tab + Drive ───────────────────────────────
+        'proj.btn.novo':                '➕ New',
+        'proj.srt.driveLabel':          '📂 Project SRTs',
+        'proj.btn.carregarDrive':       '📥 Load from Drive',
+        'proj.drive.pastasNaoCriadas':  '⚠️ Drive folders not yet created for this project.',
+        'proj.drive.buscarPasta':       '🔍 Search folder in Drive',
+        'proj.badge.castingsRecebidos': '🎭 {n} casting{pl} received',
+        'cfg.drive.btnCompartilhar':    '🔗 Share all project folders',
+        // ── Audit i18n — character profiles ─────────────────────────────────
+        'prat.perfil.protagonista':     'Protagonist',
+        'prat.perfil.antagonista':      'Antagonist',
+        'prat.perfil.coadjuvante':      'Supporting',
+        'prat.perfil.ponta':            'Minor',
+        'prat.perfil.narrador':         'Narrator',
+        'prat.perfil.outro':            'Other'
 
     }
 };
@@ -7957,7 +7987,7 @@ function _pratAddPersonagem(idxEditar) {
         '<input id="_pfNome" type="text" value="'+(p?p.nome:'')+'" placeholder="Ex: Atlas Dukas" style="width:100%;padding:8px;border:2px solid #dde;border-radius:6px;font-size:13px;box-sizing:border-box;"></div>' +
         '<div><label style="font-size:11px;font-weight:700;color:#555;display:block;margin-bottom:3px;">'+t('prat.form.labelPerfil')+'</label>' +
         '<select id="_pfPerfil" style="width:100%;padding:8px;border:2px solid #dde;border-radius:6px;font-size:13px;">'+
-        _PERFIS_PERS.map(function(pf){ return '<option value="'+pf+'"'+(p&&p.perfil===pf?' selected':'')+'>'+pf+'</option>'; }).join('') +
+        _PERFIS_PERS.map(function(pf){ return '<option value="'+pf+'"'+(p&&p.perfil===pf?' selected':'')+'>'+_tPerfil(pf)+'</option>'; }).join('') +
         '</select></div>' +
         '<div><label style="font-size:11px;font-weight:700;color:#555;display:block;margin-bottom:3px;">'+t('prat.form.labelGenero')+'</label>' +
         '<select id="_pfGenero" style="width:100%;padding:8px;border:2px solid #dde;border-radius:6px;font-size:13px;">' +
@@ -8132,7 +8162,7 @@ function _pratRenderCasting(cont) {
         '<select id="_pratGenero" onchange="_pratRenderListaDubs()" style="padding:4px;border:1.5px solid #dde;border-radius:5px;font-size:11px;"><option value="">'+t('prat.cast.optGenero')+'</option><option value="Feminino">Fem.</option><option value="Masculino">Masc.</option><option value="Neutro">Neutro</option></select>' +
         '<select id="_pratFaixa" onchange="_pratRenderListaDubs()" style="padding:4px;border:1.5px solid #dde;border-radius:5px;font-size:11px;"><option value="">'+t('prat.cast.optFaixa')+'</option><option value="Criança">'+t('prat.cast.faixaCrianca')+'</option><option value="Adolescente">'+t('prat.cast.faixaAdolesc')+'</option><option value="Jovem">'+t('prat.cast.faixaJovem')+'</option><option value="Adulto">'+t('prat.cast.faixaAdulto')+'</option><option value="Meia-idade">'+t('prat.cast.faixaMeia')+'</option><option value="Idoso">'+t('prat.cast.faixaIdoso')+'</option></select>' +
         '<select id="_pratQualidade" onchange="_pratRenderListaDubs()" style="padding:4px;border:1.5px solid #dde;border-radius:5px;font-size:11px;"><option value="">'+t('prat.cast.optQualidade')+'</option><option value="Professional-Studio">Professional-Studio</option><option value="Home-Studio">Home-Studio</option><option value="Basic-Studio">Basic-Studio</option></select>' +
-        '<select id="_pratPapel" onchange="_pratRenderListaDubs()" style="padding:4px;border:1.5px solid #dde;border-radius:5px;font-size:11px;"><option value="">'+t('prat.cast.optPapel')+'</option><option value="Protagonista">Protagonista</option><option value="Antagonista">Antagonista</option><option value="Coadjuvante">Coadjuvante</option><option value="Narrador">Narrador</option></select>' +
+        '<select id="_pratPapel" onchange="_pratRenderListaDubs()" style="padding:4px;border:1.5px solid #dde;border-radius:5px;font-size:11px;"><option value="">'+t('prat.cast.optPapel')+'</option><option value="Protagonista">'+_tPerfil('Protagonista')+'</option><option value="Antagonista">'+_tPerfil('Antagonista')+'</option><option value="Coadjuvante">'+_tPerfil('Coadjuvante')+'</option><option value="Narrador">'+_tPerfil('Narrador')+'</option></select>' +
         '</div>' +
         '<label style="font-size:11px;color:#555;display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="_pratBloquearChoque" onchange="_pratRenderListaDubs()"> '+t('prat.cast.semChoque')+'</label>' +
         '</div>' +
@@ -16713,7 +16743,7 @@ async function _driveCompartilharTodosProjetos(silencioso) {
             if (await _driveCompartilharParaEnvio(pastasParaCompartilhar[j])) ok++;
         }
     }
-    if (btn && !silencioso) { btn.disabled = false; btn.textContent = '🔗 Compartilhar pastas de todos os projetos'; }
+    if (btn && !silencioso) { btn.disabled = false; btn.textContent = t('cfg.drive.btnCompartilhar'); }
     if (!silencioso && total > 0) mostrarNotificacao('✅ Compartilhamento aplicado em '+ok+'/'+total+' pastas.', 'sucesso', 5000);
 }
 
@@ -25509,6 +25539,19 @@ function _cliAtualizarBarra() {
 }
 
 // ── Ficha do personagem (modal simples com info + descrição) ──────────────
+// ── Helper: traduz valor de perfil de personagem para idioma atual ────────────
+function _tPerfil(perfil) {
+    var mapa = {
+        'Protagonista': 'prat.perfil.protagonista',
+        'Antagonista':  'prat.perfil.antagonista',
+        'Coadjuvante':  'prat.perfil.coadjuvante',
+        'Ponta':        'prat.perfil.ponta',
+        'Narrador':     'prat.perfil.narrador',
+        'Outro':        'prat.perfil.outro'
+    };
+    return mapa[perfil] ? t(mapa[perfil]) : (perfil || '');
+}
+
 function cliAbrirFichaPersonagem(persId) {
     var proj = _cliProj; if(!proj) return;
     var p = (proj.personagensCasting||[]).find(function(x){ return x.id===persId; }); if(!p) return;
@@ -25525,11 +25568,11 @@ function cliAbrirFichaPersonagem(persId) {
         '<div id="cliPersFotoModal" style="width:160px;height:213px;border-radius:10px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:52px;overflow:hidden;border:2px solid rgba(201,168,76,.5);flex-shrink:0;">🎭</div>' +
         '<div style="flex:1;min-width:0;padding-top:4px;">' +
         '<h2 style="font-family:Cormorant Garamond,serif;font-size:24px;font-weight:600;color:#fff;margin:0 0 3px;line-height:1.2;">'+p.nome+'</h2>' +
-        '<div style="font-size:11px;color:#c9a84c;letter-spacing:.04em;margin-bottom:8px;">'+p.perfil+(p.genero?' · <span style="color:rgba(232,228,220,.45);">'+p.genero+'</span>':'')+'</div>' +
+        '<div style="font-size:11px;color:#c9a84c;letter-spacing:.04em;margin-bottom:8px;">'+_tPerfil(p.perfil)+(p.genero?' · <span style="color:rgba(232,228,220,.45);">'+p.genero+'</span>':'')+'</div>' +
         // Linha separadora
         '<div style="height:1px;background:rgba(255,255,255,.08);margin-bottom:10px;"></div>' +
         // Descrição ao lado da foto — scroll vertical
-        '<div style="font-size:9px;color:rgba(201,168,76,.6);font-weight:700;letter-spacing:.07em;text-transform:uppercase;margin-bottom:5px;"><span data-i18n="misc.descricao">Descrição</span></div>' +
+        '<div style="font-size:9px;color:rgba(201,168,76,.6);font-weight:700;letter-spacing:.07em;text-transform:uppercase;margin-bottom:5px;">'+t('misc.descricao')+'</div>' +
         '<div style="font-size:12px;color:rgba(232,228,220,.7);line-height:1.7;height:110px;overflow-y:auto;overflow-x:hidden;word-break:break-word;white-space:pre-wrap;scrollbar-width:thin;scrollbar-color:rgba(201,168,76,.3) transparent;padding-right:6px;border-left:2px solid rgba(201,168,76,.3);padding-left:10px;">'+(_txtBi(p.descricao,p.descricaoEn)||'<span style="color:rgba(232,228,220,.2);">'+(_getIdioma()==='en'?'No description.':'Sem descrição.')+'</span>')+'</div>' +
         '</div></div>' +
         // ── Candidatos escalados ──
@@ -26525,7 +26568,7 @@ function _catAtualizarBadge(n) {
     var badge = document.getElementById('_catBadgeProjetos');
     if (!badge) return;
     if (n > 0) {
-        badge.textContent = '🎭 ' + n + ' casting' + (n > 1 ? 's' : '') + ' recebido' + (n > 1 ? 's' : '');
+        badge.textContent = t('proj.badge.castingsRecebidos', {n: n, pl: (n > 1 ? 's' : '')});
         badge.style.display = 'inline-flex';
         // Pulsar
         if (!_catBadgeInterval) {
