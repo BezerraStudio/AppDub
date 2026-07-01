@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.649</p>
+        <p>v12.650</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.649</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.650</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -3955,7 +3955,28 @@ var _i18n = {
         'prat.cast.faixaJovem':         'Jovem',
         'prat.cast.faixaAdulto':        'Adulto',
         'prat.cast.faixaMeia':          'Meia-idade',
-        'prat.cast.faixaIdoso':         'Idoso'
+        'prat.cast.faixaIdoso':         'Idoso',
+        // ── Auditoria i18n — ficha do dublador (tela cliente) ─────────────
+        'cli.ficha.ouvirDemo':          '▶ Ouvir demo',
+        'cli.ficha.verVideo':           '🎬 Ver vídeo',
+        'cli.ficha.escolher':           'Escolher este dublador',
+        'cli.ficha.escolhido':          '✓ Escolhido — clique para remover',
+        'cli.ficha.def1Op':             '⭐ Definir 1ª Opção',
+        'cli.ficha.1op':                '✓ 1ª Opção',
+        'cli.ficha.def2Op':             'Definir 2ª Opção',
+        'cli.ficha.2op':                '✓ 2ª Opção',
+        'cli.ficha.nota':               'Nota',
+        'cli.ficha.fechar':             'Fechar',
+        'cli.ficha.candsEscalados':     'Candidatos Escalados',
+        // ── Auditoria i18n — ficha do dublador (admin) ────────────────────
+        'ficha.dubHeaderTitle':         'DUBLADOR',
+        'ficha.amostraVoz':             '🎵 Amostra de voz',
+        'ficha.assistirVideo':          '🎬 Assistir vídeo demonstrativo',
+        'ficha.faixasDubla':            '📅 Faixas que dubla',
+        'ficha.vozInterp':              '🎙️ Voz e interpretação',
+        'ficha.impressoes':             '💬 Impressões',
+        'ficha.avaliacoes':             '⭐ Avaliações',
+        'ficha.historico':              '📺 Histórico de séries'
     },
     en: {
         // ── Navigation tabs ────────────────────────────────────────────────
@@ -5470,7 +5491,28 @@ var _i18n = {
         'prat.cast.faixaJovem':         'Young Adult',
         'prat.cast.faixaAdulto':        'Adult',
         'prat.cast.faixaMeia':          'Mid-age',
-        'prat.cast.faixaIdoso':         'Senior'
+        'prat.cast.faixaIdoso':         'Senior',
+        // ── Audit i18n — dubber bio modal (client screen) ──────────────────
+        'cli.ficha.ouvirDemo':          '▶ Listen to demo',
+        'cli.ficha.verVideo':           '🎬 Watch video',
+        'cli.ficha.escolher':           'Choose this voice actor',
+        'cli.ficha.escolhido':          '✓ Chosen — click to remove',
+        'cli.ficha.def1Op':             '⭐ Set 1st Choice',
+        'cli.ficha.1op':                '✓ 1st Choice',
+        'cli.ficha.def2Op':             'Set 2nd Choice',
+        'cli.ficha.2op':                '✓ 2nd Choice',
+        'cli.ficha.nota':               'Rating',
+        'cli.ficha.fechar':             'Close',
+        'cli.ficha.candsEscalados':     'Assigned Candidates',
+        // ── Audit i18n — admin dubber profile modal ─────────────────────────
+        'ficha.dubHeaderTitle':         'VOICE ACTOR',
+        'ficha.amostraVoz':             '🎵 Voice Sample',
+        'ficha.assistirVideo':          '🎬 Watch Demo Video',
+        'ficha.faixasDubla':            '📅 Voice Ranges',
+        'ficha.vozInterp':              '🎙️ Voice & Interpretation',
+        'ficha.impressoes':             '💬 Impressions',
+        'ficha.avaliacoes':             '⭐ Ratings',
+        'ficha.historico':              '📺 Series History'
 
     }
 };
@@ -6244,7 +6286,7 @@ function salvarProjetos() {
 // ─── BACKUP / RESTORE ─────────────────────────────────────────────────────────
 function exportarBackup() {
     var data = new Date().toISOString().slice(0,10);
-    var versao = 'v12.649';
+    var versao = 'v12.650';
 
     // Ler todas as chaves do sistema do localStorage
     function lerChave(k) {
@@ -14524,7 +14566,7 @@ function abrirFichaDublador(dubId) {
     // Rankings
     const rankArea = document.getElementById('fichaDubRankArea');
     const rankEl   = document.getElementById('fichaDubRanks');
-    const RANK_LABELS = { comunicacao:'📞 Comunicação', prazos:'⏰ Prazos', equipamento:'🎛️ Equipamento', atuacao:'🎭 Atuação', voz:'🎙️ Voz', som:'🎚️ Som' };
+    const RANK_LABELS = { comunicacao:t('cfg.rank.comunicacao'), prazos:t('cfg.rank.prazos'), equipamento:t('cfg.dub.rankEquipamento'), atuacao:t('cfg.dub.rankAtuacao'), voz:t('cfg.dub.rankVoz'), som:t('cfg.dub.rankSom') };
     const rankItems = Object.entries(RANK_LABELS).map(([k, label]) => {
         const val = rk[k];
         if (!val) return '';
@@ -25493,7 +25535,7 @@ function cliAbrirFichaPersonagem(persId) {
         // ── Candidatos escalados ──
         (cands.length ?
         '<div style="height:1px;background:rgba(255,255,255,.08);margin-bottom:10px;"></div>' +
-        '<div style="font-size:9px;color:rgba(201,168,76,.6);font-weight:700;letter-spacing:.07em;text-transform:uppercase;margin-bottom:8px;">Candidatos Escalados</div>' +
+        '<div style="font-size:9px;color:rgba(201,168,76,.6);font-weight:700;letter-spacing:.07em;text-transform:uppercase;margin-bottom:8px;">'+t('cli.ficha.candsEscalados')+'</div>' +
         '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;">' +
         cands.map(function(d){
             return '<div style="display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:3px 10px 3px 5px;">' +
@@ -25502,7 +25544,7 @@ function cliAbrirFichaPersonagem(persId) {
             '</div>';
         }).join('') + '</div>' : '') +
         // ── Fechar ──
-        '<button onclick="cliFecharFicha()" style="width:100%;padding:11px;border:1px solid rgba(255,255,255,.12);border-radius:9px;background:rgba(255,255,255,.05);color:rgba(232,228,220,.6);font-size:13px;cursor:pointer;font-family:DM Sans,sans-serif;margin-top:2px;">Fechar</button>';
+        '<button onclick="cliFecharFicha()" style="width:100%;padding:11px;border:1px solid rgba(255,255,255,.12);border-radius:9px;background:rgba(255,255,255,.05);color:rgba(232,228,220,.6);font-size:13px;cursor:pointer;font-family:DM Sans,sans-serif;margin-top:2px;">'+t('cli.ficha.fechar')+'</button>';
 
     // Foto async
     var idbKey = 'foto_pers_' + (_cliProj?_cliProj.id:'') + '___casting__' + p.id;
@@ -25544,17 +25586,17 @@ function cliAbrirFicha(dubId, persId) {
         if (permit2) {
             btnEscolha =
                 '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px;">' +
-                '<button onclick="cliEscolher(\''+persId+'\',\''+dubId+'\',\'op1\');cliFecharFicha();" class="cli-btn-gold" style="background:'+(isOp1?'linear-gradient(135deg,#4ade80,#22c55e)':'linear-gradient(135deg,#c9a84c,#e8c96a)')+';color:#0d0f14;">'+(isOp1?'✓ 1ª Opção':'⭐ Definir 1ª Opção')+'</button>' +
-                '<button onclick="cliEscolher(\''+persId+'\',\''+dubId+'\',\'op2\');cliFecharFicha();" style="padding:12px;border:1px solid '+(isOp2?'rgba(74,222,128,.6)':'rgba(255,255,255,.15)')+';border-radius:9px;background:'+(isOp2?'rgba(74,222,128,.12)':'rgba(255,255,255,.04)')+';color:'+(isOp2?'#4ade80':'rgba(232,228,220,.7)')+';font-size:13px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif;">'+(isOp2?'✓ 2ª Opção':'Definir 2ª Opção')+'</button>' +
+                '<button onclick="cliEscolher(\''+persId+'\',\''+dubId+'\',\'op1\');cliFecharFicha();" class="cli-btn-gold" style="background:'+(isOp1?'linear-gradient(135deg,#4ade80,#22c55e)':'linear-gradient(135deg,#c9a84c,#e8c96a)')+';color:#0d0f14;">'+(isOp1?t('cli.ficha.1op'):t('cli.ficha.def1Op'))+'</button>' +
+                '<button onclick="cliEscolher(\''+persId+'\',\''+dubId+'\',\'op2\');cliFecharFicha();" style="padding:12px;border:1px solid '+(isOp2?'rgba(74,222,128,.6)':'rgba(255,255,255,.15)')+';border-radius:9px;background:'+(isOp2?'rgba(74,222,128,.12)':'rgba(255,255,255,.04)')+';color:'+(isOp2?'#4ade80':'rgba(232,228,220,.7)')+';font-size:13px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif;">'+(isOp2?t('cli.ficha.2op'):t('cli.ficha.def2Op'))+'</button>' +
                 '</div>';
         } else {
             btnEscolha =
-                '<button onclick="cliEscolher(\''+persId+'\',\''+dubId+'\',\'op1\');cliFecharFicha();" class="cli-btn-gold" style="margin-top:16px;background:'+(isOp1?'linear-gradient(135deg,#4ade80,#22c55e)':'linear-gradient(135deg,#c9a84c,#e8c96a)')+';color:#0d0f14;">'+(isOp1?'✓ Escolhido — clique para remover':'Escolher este dublador')+'</button>';
+                '<button onclick="cliEscolher(\''+persId+'\',\''+dubId+'\',\'op1\');cliFecharFicha();" class="cli-btn-gold" style="margin-top:16px;background:'+(isOp1?'linear-gradient(135deg,#4ade80,#22c55e)':'linear-gradient(135deg,#c9a84c,#e8c96a)')+';color:#0d0f14;">'+(isOp1?t('cli.ficha.escolhido'):t('cli.ficha.escolher'))+'</button>';
         }
     }
 
     // Notas individuais com barrinhas
-    var notasCfg = [['som','Som'],['voz','Voz'],['atuacao','Atuação'],['prazos','Prazos'],['equipamento','Equip.']];
+    var notasCfg = [['som',t('cfg.dub.rankSom')],['voz',t('cfg.dub.rankVoz')],['atuacao',t('cfg.dub.rankAtuacao')],['prazos',t('cfg.rank.prazos')],['equipamento',t('cfg.dub.rankEquipamento')]];
     // Notas individuais — números por categoria
     var notasHtml = '';
     var comNotas = notasCfg.filter(function(n){ return rk[n[0]]>0; });
@@ -25593,7 +25635,7 @@ function cliAbrirFicha(dubId, persId) {
         '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;">' +
         (media>0?
         '<div style="display:flex;align-items:baseline;gap:2px;margin-right:4px;">' +
-        '<span style="font-size:9px;color:rgba(232,228,220,.38);text-transform:uppercase;letter-spacing:.06em;">Nota</span> ' +
+        '<span style="font-size:9px;color:rgba(232,228,220,.38);text-transform:uppercase;letter-spacing:.06em;">'+t('cli.ficha.nota')+'</span> ' +
         '<span style="font-family:Cormorant Garamond,serif;font-size:22px;font-weight:700;color:#c9a84c;line-height:1;margin:0 1px;">'+media.toFixed(1)+'</span>' +
         '<span style="font-size:10px;color:rgba(201,168,76,.38);">/10</span>' +
         '</div>':'') +
@@ -25609,16 +25651,16 @@ function cliAbrirFicha(dubId, persId) {
         // ── Players ──
         '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">' +
         '<div>' +
-        '<button onclick="cliOuvirModal(\''+d.id+'\')" style="width:100%;padding:8px;background:rgba(74,158,255,.1);border:1px solid rgba(74,158,255,.25);border-radius:8px;color:#4a9eff;font-size:12px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif;">▶ Ouvir demo</button>' +
+        '<button onclick="cliOuvirModal(\''+d.id+'\')" style="width:100%;padding:8px;background:rgba(74,158,255,.1);border:1px solid rgba(74,158,255,.25);border-radius:8px;color:#4a9eff;font-size:12px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif;">'+t('cli.ficha.ouvirDemo')+'</button>' +
         '<div id="cliModalAudio_'+d.id+'" style="margin-top:5px;"></div>' +
         '</div>' +
         '<div>' +
-        '<button onclick="cliVerVideoModal(\''+d.id+'\')" style="width:100%;padding:8px;background:rgba(192,132,252,.1);border:1px solid rgba(192,132,252,.25);border-radius:8px;color:#c084fc;font-size:12px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif;">🎬 Ver vídeo</button>' +
+        '<button onclick="cliVerVideoModal(\''+d.id+'\')" style="width:100%;padding:8px;background:rgba(192,132,252,.1);border:1px solid rgba(192,132,252,.25);border-radius:8px;color:#c084fc;font-size:12px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif;">'+t('cli.ficha.verVideo')+'</button>' +
         '<div id="cliModalVideo_'+d.id+'" style="margin-top:5px;"></div>' +
         '</div></div>' +
         // ── Botões de escolha ──
         btnEscolha +
-        '<button onclick="cliFecharFicha()" style="width:100%;margin-top:8px;padding:9px;border:1px solid rgba(255,255,255,.08);border-radius:9px;background:none;color:rgba(232,228,220,.38);font-size:12px;cursor:pointer;font-family:DM Sans,sans-serif;">Fechar</button>';
+        '<button onclick="cliFecharFicha()" style="width:100%;margin-top:8px;padding:9px;border:1px solid rgba(255,255,255,.08);border-radius:9px;background:none;color:rgba(232,228,220,.38);font-size:12px;cursor:pointer;font-family:DM Sans,sans-serif;">'+t('cli.ficha.fechar')+'</button>';
 
     // Foto async portrait
     _dubMidiaCarregarPorId('foto',d.id).then(function(foto){
@@ -25643,7 +25685,7 @@ function cliOuvirCard(dubId, btn) {
     _dubMidiaCarregarPorId('audio', dubId).then(function(src){
         if (!src) { mostrarNotificacao(t('membro.dub.audioIndisponivel'),'aviso',1500); return; }
         area.innerHTML = '<audio src="'+src+'" controls autoplay style="width:100%;height:28px;margin-top:2px;border-radius:6px;"></audio>';
-        btn.textContent = '⏹ Fechar';
+        btn.textContent = '⏹ '+t('cli.ficha.fechar');
     }).catch(function(){ mostrarNotificacao(t('membro.dub.audioIndisponivel'),'aviso',1500); });
 }
 
@@ -27429,7 +27471,7 @@ window.addEventListener('load', function() {
             <div id="fichaDubHeader" style="padding:12px 16px;background:#2c3e50;border-radius:14px 14px 0 0;display:flex;align-items:center;gap:10px;cursor:grab;user-select:none;">
                 <div id="fichaDubAvatar" style="width:36px;height:36px;border-radius:50%;background:#3498db;color:white;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;flex-shrink:0;">?</div>
                 <div style="flex:1;">
-                    <div style="font-size:10px;color:rgba(255,255,255,0.6);font-weight:600;">DUBLADOR</div>
+                    <div style="font-size:10px;color:rgba(255,255,255,0.6);font-weight:600;" data-i18n="ficha.dubHeaderTitle">DUBLADOR</div>
                     <div id="fichaDubNome" style="font-size:15px;font-weight:700;color:white;"></div>
                 </div>
                 <button onclick="fecharFichaDublador()" style="background:rgba(255,255,255,0.2);border:none;color:white;width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:15px;">×</button>
@@ -27449,46 +27491,46 @@ window.addEventListener('load', function() {
 
                 <!-- Áudio/vídeo -->
                 <div id="fichaDubAudioArea" style="display:none;">
-                    <div style="font-size:11px;font-weight:700;color:#555;margin-bottom:4px;">🎵 Amostra de voz</div>
+                    <div style="font-size:11px;font-weight:700;color:#555;margin-bottom:4px;" data-i18n="ficha.amostraVoz">🎵 Amostra de voz</div>
                     <audio id="fichaDubAudio" controls style="width:100%;height:30px;"></audio>
                 </div>
                 <div id="fichaDubVideoArea" style="display:none;">
-                    <button id="fichaDubVideoBt" style="width:100%;padding:7px;background:#8e44ad;color:white;border:none;border-radius:7px;font-size:12px;cursor:pointer;font-weight:600;">🎬 Assistir vídeo demonstrativo</button>
+                    <button id="fichaDubVideoBt" style="width:100%;padding:7px;background:#8e44ad;color:white;border:none;border-radius:7px;font-size:12px;cursor:pointer;font-weight:600;" data-i18n="ficha.assistirVideo">🎬 Assistir vídeo demonstrativo</button>
                 </div>
 
                 <!-- Faixas etárias -->
                 <div id="fichaDubIdadesArea" style="display:none;">
-                    <div style="font-size:11px;font-weight:700;color:#555;margin-bottom:4px;">📅 Faixas que dubla</div>
+                    <div style="font-size:11px;font-weight:700;color:#555;margin-bottom:4px;" data-i18n="ficha.faixasDubla">📅 Faixas que dubla</div>
                     <div id="fichaDubIdades" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
                 </div>
 
                 <!-- Papéis ideais -->
                 <div id="fichaDubPapeisArea" style="display:none;">
-                    <div style="font-size:11px;font-weight:700;color:#555;margin-bottom:4px;">🎭 Voz ideal para</div>
+                    <div style="font-size:11px;font-weight:700;color:#555;margin-bottom:4px;" data-i18n="cfg.dub.labelVozIdeal">🎭 Voz ideal para</div>
                     <div id="fichaDubPapeis" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
                 </div>
 
                 <!-- Voz e interpretação -->
                 <div id="fichaDubVozArea" style="display:none;">
-                    <div style="font-size:11px;font-weight:700;color:#555;margin-bottom:3px;">🎙️ Voz e interpretação</div>
+                    <div style="font-size:11px;font-weight:700;color:#555;margin-bottom:3px;" data-i18n="ficha.vozInterp">🎙️ Voz e interpretação</div>
                     <div id="fichaDubVoz" style="font-size:12px;color:#555;background:#f8f9fa;padding:8px;border-radius:6px;line-height:1.5;"></div>
                 </div>
 
                 <!-- Feedback -->
                 <div id="fichaDubFeedbackArea" style="display:none;">
-                    <div style="font-size:11px;font-weight:700;color:#555;margin-bottom:3px;">💬 Impressões</div>
+                    <div style="font-size:11px;font-weight:700;color:#555;margin-bottom:3px;" data-i18n="ficha.impressoes">💬 Impressões</div>
                     <div id="fichaDubFeedback" style="font-size:12px;color:#555;background:#f8f9fa;padding:8px;border-radius:6px;line-height:1.5;"></div>
                 </div>
 
                 <!-- Rankings -->
                 <div id="fichaDubRankArea" style="display:none;">
-                    <div style="font-size:11px;font-weight:700;color:#555;margin-bottom:5px;">⭐ Avaliações</div>
+                    <div style="font-size:11px;font-weight:700;color:#555;margin-bottom:5px;" data-i18n="ficha.avaliacoes">⭐ Avaliações</div>
                     <div id="fichaDubRanks" style="display:grid;grid-template-columns:1fr 1fr;gap:5px;"></div>
                 </div>
 
                 <!-- Histórico -->
                 <div id="fichaDubHistArea" style="display:none;">
-                    <div style="font-size:11px;font-weight:700;color:#555;margin-bottom:5px;">📺 Histórico de séries</div>
+                    <div style="font-size:11px;font-weight:700;color:#555;margin-bottom:5px;" data-i18n="ficha.historico">📺 Histórico de séries</div>
                     <div id="fichaDubHist" style="font-size:12px;"></div>
                 </div>
             </div>
