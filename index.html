@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.655</title>
+    <title>Sistema de Dublagem v12.657</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.655</p>
+        <p>v12.657</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.655</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.657</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -939,10 +939,10 @@
                 </div>
                 <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
                   <label style="font-size:12px;color:#2c3e50;white-space:nowrap;">
-                    <input type="checkbox" id="filtroMostrarInativos" onchange="renderizarListaDubladores()" data-i18n-nextsibling="esc.check.inativos"> + Inativos
+                    <input type="checkbox" id="filtroMostrarInativos" onchange="renderizarListaDubladores()"> <span data-i18n="esc.check.inativos">+ Inativos</span>
                   </label>
                   <label style="font-size:12px;color:#2c3e50;white-space:nowrap;" title="Oculta dubladores escalados em outros projetos nesta semana" data-i18n-title="tooltip.ocultaChoque">
-                    <input type="checkbox" id="filtroBloquearChoque" onchange="renderizarListaDubladores()"> 🚫 S/ choque em projetos
+                    <input type="checkbox" id="filtroBloquearChoque" onchange="renderizarListaDubladores()"> <span data-i18n="esc.check.semChoqueLabel">🚫 S/ choque em projetos</span>
                   </label>
                 </div>
                 <select id="filtroDubladorPapel" onchange="renderizarListaDubladores()" style="width:100%;padding:5px;border:2px solid #dde;border-radius:5px;font-size:13px;">
@@ -1749,7 +1749,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.655</footer>
+    <footer>🎬 Sistema de Dublagem v12.657</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -2093,7 +2093,7 @@
 
       <!-- SEÇÃO 0: Links das subpastas do projeto (preenchido automaticamente) -->
       <div id="lnkSecSubpastas" style="display:none;background:#f0f7ff;border-radius:8px;padding:14px;border-left:4px solid #3498db;font-size:12px;"></div>
-      <button onclick="_linksRecriarPastasDrive()" style="align-self:flex-start;padding:7px 14px;background:#5dade2;color:#1a5276;border:none;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;">🔄 Recriar/atualizar links das pastas no Drive</button>
+      <button onclick="_linksRecriarPastasDrive()" style="align-self:flex-start;padding:7px 14px;background:#5dade2;color:#1a5276;border:none;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;" data-i18n="links.btn.recriarPastas">🔄 Recriar/atualizar links das pastas no Drive</button>
 
       <!-- SEÇÃO 1: Links globais da série -->
       <div style="background:#f8f9fa;border-radius:8px;padding:16px;border-left:4px solid #3498db;">
@@ -2110,12 +2110,12 @@
               style="width:100%;padding:7px 9px;border:2px solid #ecf0f1;border-radius:6px;font-size:12px;box-sizing:border-box;">
           </div>
           <div>
-            <label style="font-size:11px;color:#7f8c8d;font-weight:600;display:block;margin-bottom:4px;">🔁 Pasta de upload dos retakes</label>
+            <label style="font-size:11px;color:#7f8c8d;font-weight:600;display:block;margin-bottom:4px;" data-i18n="links.lnk.pastaRetakes">🔁 Pasta de upload dos retakes</label>
             <input id="lnkPastaRetakes" type="url" placeholder="https://drive.google.com/drive/folders/..."
               style="width:100%;padding:7px 9px;border:2px solid #ecf0f1;border-radius:6px;font-size:12px;box-sizing:border-box;">
           </div>
           <div>
-            <label style="font-size:11px;color:#7f8c8d;font-weight:600;display:block;margin-bottom:4px;">📅 Data de entrega geral (Unificado)</label>
+            <label style="font-size:11px;color:#7f8c8d;font-weight:600;display:block;margin-bottom:4px;" data-i18n="links.lnk.dataGeral">📅 Data de entrega geral (Unificado)</label>
             <input id="lnkDataGeral" type="date"
               style="width:100%;padding:7px 9px;border:2px solid #ecf0f1;border-radius:6px;font-size:12px;box-sizing:border-box;">
           </div>
@@ -2126,7 +2126,7 @@
       <div style="background:#f8f9fa;border-radius:8px;padding:16px;border-left:4px solid #8e44ad;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
           <h3 style="margin:0;font-size:13px;color:#2c3e50;display:flex;align-items:center;gap:6px;" data-i18n="links.lotes.titulo">📦 Lotes de Entrega por Episódio</h3>
-          <button onclick="linksAdicionarLote()" style="padding:5px 12px;background:#8e44ad;color:white;border:none;border-radius:5px;cursor:pointer;font-size:11px;font-weight:600;">➕ Novo Lote</button>
+          <button onclick="linksAdicionarLote()" style="padding:5px 12px;background:#8e44ad;color:white;border:none;border-radius:5px;cursor:pointer;font-size:11px;font-weight:600;" data-i18n="links.btn.novoLote">➕ Novo Lote</button>
         </div>
         <p style="font-size:11px;color:#95a5a6;margin:0 0 10px;" data-i18n="links.lotes.desc">Agrupe episódios em lotes com datas diferentes. Ex: EP 01–05 = Lote 1, EP 06–10 = Lote 2.</p>
         <div id="listaLotes" style="display:flex;flex-direction:column;gap:8px;max-height:280px;overflow-y:auto;"></div>
@@ -2334,6 +2334,12 @@ var _i18n = {
         'esc.opt.papel':              '🎭 Voz ideal para...',
         'esc.check.inativos':         '+ Inativos',
         'esc.check.semChoque':        '🚫 S/ choque',
+        // ── Auditoria i18n — aba Escalação/Roteiro ────────────────────────
+        'esc.opt.semDublador':        '— sem dublador —',
+        'esc.check.semChoqueLabel':   '🚫 S/ choque em projetos',
+        'esc.cast.barraDetalhe':      '{esc} de {total} personagens · {palEsc} de {palTotal} pal.',
+        'esc.cast.semDubladorMsg':    'sem dublador',
+        'esc.cast.semDubPersonagens': '{n} personagem(ns) sem dublador',
         'esc.player.amostra':         '▶️ Amostra',
         'esc.th.personagem':          'Personagem',
         'esc.th.dublador':            'Dublador',
@@ -3992,7 +3998,23 @@ var _i18n = {
         'prat.perfil.coadjuvante':      'Coadjuvante',
         'prat.perfil.ponta':            'Ponta',
         'prat.perfil.narrador':         'Narrador',
-        'prat.perfil.outro':            'Outro'
+        'prat.perfil.outro':            'Outro',
+        // ── Auditoria i18n — aba Links ─────────────────────────────────────
+        'links.btn.recriarPastas':      '🔄 Recriar/atualizar links das pastas no Drive',
+        'links.lnk.pastaRetakes':       '🔁 Pasta de upload dos retakes',
+        'links.lnk.dataGeral':          '📅 Data de entrega geral (Unificado)',
+        'links.btn.novoLote':           '➕ Novo Lote',
+        'links.pastas.titulo':          'PASTAS DO PROJETO NO DRIVE',
+        'links.pastas.abrir':           '🔗 Abrir',
+        'links.pastas.pastaProjeto':    '📁 Pasta do Projeto',
+        'links.pastas.videos':          '📥 Vídeos Para Dublagem',
+        'links.pastas.dubladores':      '🎙️ Dubladores',
+        'links.pastas.retakes':         '🔁 Retakes',
+        'links.pastas.srtRevisao':      '📄 SRT para Revisão',
+        'links.pastas.materiais':       '📽️ Vídeos Para Conferência',
+        'links.pastas.srtsFinais':      '📤 SRTs Finais',
+        'links.pastas.finalFiles':      '🎬 Final Files',
+        'links.pastas.planilhas':       '📊 Planilhas'
     },
     en: {
         // ── Navigation tabs ────────────────────────────────────────────────
@@ -4171,6 +4193,12 @@ var _i18n = {
         'esc.opt.papel':              '🎭 Ideal voice for...',
         'esc.check.inativos':         '+ Inactive',
         'esc.check.semChoque':        '🚫 No conflict',
+        // ── Audit i18n — Casting/Script tab ─────────────────────────────────
+        'esc.opt.semDublador':        '— no dubber —',
+        'esc.check.semChoqueLabel':   '🚫 No project conflicts',
+        'esc.cast.barraDetalhe':      '{esc} of {total} characters · {palEsc} of {palTotal} words',
+        'esc.cast.semDubladorMsg':    'no dubber',
+        'esc.cast.semDubPersonagens': '{n} character(s) with no dubber',
         'esc.player.amostra':         '▶️ Sample',
         'esc.th.personagem':          'Character',
         'esc.th.dublador':            'Dubber',
@@ -5543,7 +5571,23 @@ var _i18n = {
         'prat.perfil.coadjuvante':      'Supporting',
         'prat.perfil.ponta':            'Minor',
         'prat.perfil.narrador':         'Narrator',
-        'prat.perfil.outro':            'Other'
+        'prat.perfil.outro':            'Other',
+        // ── Audit i18n — Links tab ───────────────────────────────────────────
+        'links.btn.recriarPastas':      '🔄 Recreate/update Drive folder links',
+        'links.lnk.pastaRetakes':       '🔁 Retake upload folder',
+        'links.lnk.dataGeral':          '📅 Overall delivery date (Unified)',
+        'links.btn.novoLote':           '➕ New Batch',
+        'links.pastas.titulo':          'PROJECT FOLDERS IN DRIVE',
+        'links.pastas.abrir':           '🔗 Open',
+        'links.pastas.pastaProjeto':    '📁 Project Folder',
+        'links.pastas.videos':          '📥 Videos for Dubbing',
+        'links.pastas.dubladores':      '🎙️ Voice Actors',
+        'links.pastas.retakes':         '🔁 Retakes',
+        'links.pastas.srtRevisao':      '📄 SRT for Review',
+        'links.pastas.materiais':       '📽️ Videos for Review',
+        'links.pastas.srtsFinais':      '📤 Final SRTs',
+        'links.pastas.finalFiles':      '🎬 Final Files',
+        'links.pastas.planilhas':       '📊 Spreadsheets'
 
     }
 };
@@ -6317,7 +6361,7 @@ function salvarProjetos() {
 // ─── BACKUP / RESTORE ─────────────────────────────────────────────────────────
 function exportarBackup() {
     var data = new Date().toISOString().slice(0,10);
-    var versao = 'v12.655';
+    var versao = 'v12.657';
 
     // Ler todas as chaves do sistema do localStorage
     function lerChave(k) {
@@ -12228,7 +12272,7 @@ function renderizarEscalacao() {
             </td>`;
         } else {
             // Select com dubladores disponíveis (filtrados)
-            let optsHtml = '<option value="">— sem dublador —</option>';
+            let optsHtml = '<option value="">' + t('esc.opt.semDublador') + '</option>';
             dubsFinais.forEach(d => {
                 optsHtml += `<option value="${d.id}">${d.nome}</option>`;
             });
@@ -12585,7 +12629,12 @@ function renderizarContagem() {
             <div style="background:${corBarra};width:${Math.min(100,pctEscalado).toFixed(1)}%;height:100%;border-radius:6px;transition:width 0.4s ease;"></div>
         </div>
         <div style="font-size:10px;color:#95a5a6;margin-top:3px;">
-            ${persEscalados} de ${totalPers} personagens · ${totalEscalado.toLocaleString('pt-BR')} de ${totalGeral.toLocaleString('pt-BR')} pal.
+            ${t('esc.cast.barraDetalhe', {
+                esc: persEscalados,
+                total: totalPers,
+                palEsc: totalEscalado.toLocaleString(),
+                palTotal: totalGeral.toLocaleString()
+            })}
         </div>`;
     painel.appendChild(divProg);
 
@@ -13592,15 +13641,15 @@ function abrirModalLinks() {
     var secEl = document.getElementById('lnkSecSubpastas');
     if (secEl) {
         var linkMap = {
-            'pastaProjeto':    '📁 Pasta do Projeto',
-            'pastaVideos':     '📥 Videos Para Dublagem',
-            'pastaDubladores': '🎙️ Dubladores',
-            'pastaRetakes':    '🔁 Retakes',
-            'pastaSRTRevisao': '📄 SRT para Revisão',
-            'pastaMateriais':  '📽️ Videos Para Conferencia',
-            'pastaSRTsFinais': '📤 SRTs Finais',
-            'pastaFinalFiles': '🎬 Final Files',
-            'pastaPlanilhas':  '📊 Planilhas',
+            'pastaProjeto':    t('links.pastas.pastaProjeto'),
+            'pastaVideos':     t('links.pastas.videos'),
+            'pastaDubladores': t('links.pastas.dubladores'),
+            'pastaRetakes':    t('links.pastas.retakes'),
+            'pastaSRTRevisao': t('links.pastas.srtRevisao'),
+            'pastaMateriais':  t('links.pastas.materiais'),
+            'pastaSRTsFinais': t('links.pastas.srtsFinais'),
+            'pastaFinalFiles': t('links.pastas.finalFiles'),
+            'pastaPlanilhas':  t('links.pastas.planilhas'),
         };
         var linhasHtml = Object.entries(linkMap).map(function(entry) {
             var chave = entry[0], label = entry[1];
@@ -13608,14 +13657,14 @@ function abrirModalLinks() {
             if (!url) return '';
             return '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f0f0f0;">' +
                 '<span style="font-size:12px;color:#2c3e50;flex:1;">' + label + '</span>' +
-                '<a href="' + url + '" target="_blank" style="font-size:11px;color:#3498db;white-space:nowrap;">🔗 Abrir</a>' +
+                '<a href="' + url + '" target="_blank" style="font-size:11px;color:#3498db;white-space:nowrap;">' + t('links.pastas.abrir') + '</a>' +
                 '<button onclick="navigator.clipboard.writeText(\'' + url.replace(/'/g,"\\'") + '\');mostrarNotificacao(\'📋 Link copiado!\',\'sucesso\',1200);" ' +
                 'style="padding:2px 8px;background:#ecf0f1;border:none;border-radius:4px;font-size:11px;cursor:pointer;">📋</button>' +
             '</div>';
         }).filter(Boolean).join('');
         secEl.style.display = linhasHtml ? '' : 'none';
         secEl.innerHTML = linhasHtml
-            ? '<h4 style="margin:0 0 8px;font-size:12px;color:#7f8c8d;font-weight:600;">PASTAS DO PROJETO NO DRIVE</h4>' + linhasHtml
+            ? '<h4 style="margin:0 0 8px;font-size:12px;color:#7f8c8d;font-weight:600;">' + t('links.pastas.titulo') + '</h4>' + linhasHtml
             : '';
     }
 
@@ -17775,7 +17824,7 @@ function prodAbrirModalFaltaGravar() {
             var ok = dubId && projetoAtual.producao?.[dubId]?.eps?.[ep]?.[campo] === 'ok';
             if (!ok) {
                 var dub = dubId ? lista.find(function(x){ return x.id===dubId; }) : null;
-                faltando.push(pers + ' (' + (dub ? dub.nome : 'sem dublador') + ')');
+                faltando.push(pers + ' (' + (dub ? dub.nome : t('esc.cast.semDubladorMsg')) + ')');
             }
         });
         if (faltando.length) faltam[ep] = faltando;
@@ -17887,7 +17936,7 @@ function prodRenderizar() {
             const ok = dubId && projetoAtual.producao?.[dubId]?.eps?.[ep]?.[campo] === 'ok';
             if (!ok) {
                 const dub = dubId ? lista.find(d => d.id === dubId) : null;
-                faltando.push(pers + ' (' + (dub ? dub.nome : 'sem dublador') + ')');
+                faltando.push(pers + ' (' + (dub ? dub.nome : t('esc.cast.semDubladorMsg')) + ')');
             }
         });
 
@@ -18776,7 +18825,7 @@ function _revConcluirRevisao() {
 
     // Modal de confirmação no centro da tela
     var semDubTxt = resumo.semDublador.length
-        ? '<span style="color:#e74c3c;">⚠️ ' + resumo.semDublador.length + ' personagem(ns) sem dublador:<br><b>' + resumo.semDublador.join(', ') + '</b></span>'
+        ? '<span style="color:#e74c3c;">⚠️ ' + t('esc.cast.semDubPersonagens',{n: resumo.semDublador.length}) + ':<br><b>' + resumo.semDublador.join(', ') + '</b></span>'
         : '<span style="color:#16a085;">✅ Todos os personagens escalados</span>';
     var html = '<div id="modalRevisaoConcluida" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);z-index:99999;display:flex;align-items:center;justify-content:center;">' +
         '<div style="background:white;border-radius:14px;padding:30px;max-width:460px;width:90%;box-shadow:0 12px 40px rgba(0,0,0,.3);text-align:center;">' +
