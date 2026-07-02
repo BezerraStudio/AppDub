@@ -2335,11 +2335,13 @@ var _i18n = {
         'esc.check.inativos':         '+ Inativos',
         'esc.check.semChoque':        '🚫 S/ choque',
         // ── Auditoria i18n — aba Escalação/Roteiro ────────────────────────
-        'esc.opt.semDublador':        '— sem dublador —',
-        'esc.check.semChoqueLabel':   '🚫 S/ choque em projetos',
-        'esc.cast.barraDetalhe':      '{esc} de {total} personagens · {palEsc} de {palTotal} pal.',
-        'esc.cast.semDubladorMsg':    'sem dublador',
-        'esc.cast.semDubPersonagens': '{n} personagem(ns) sem dublador',
+        'esc.opt.semDublador':           '— sem dublador —',
+        'esc.check.semChoqueLabel':      '🚫 S/ choque em projetos',
+        'esc.cast.de':                   'de',
+        'esc.cast.personagens':          'personagens',
+        'esc.cast.pal':                  'pal.',
+        'esc.cast.semDubladorMsg':       'sem dublador',
+        'esc.cast.semDubPersonagens':    '{n} personagem(ns) sem dublador',
         'esc.player.amostra':         '▶️ Amostra',
         'esc.th.personagem':          'Personagem',
         'esc.th.dublador':            'Dublador',
@@ -4194,11 +4196,13 @@ var _i18n = {
         'esc.check.inativos':         '+ Inactive',
         'esc.check.semChoque':        '🚫 No conflict',
         // ── Audit i18n — Casting/Script tab ─────────────────────────────────
-        'esc.opt.semDublador':        '— no dubber —',
-        'esc.check.semChoqueLabel':   '🚫 No project conflicts',
-        'esc.cast.barraDetalhe':      '{esc} of {total} characters · {palEsc} of {palTotal} words',
-        'esc.cast.semDubladorMsg':    'no dubber',
-        'esc.cast.semDubPersonagens': '{n} character(s) with no dubber',
+        'esc.opt.semDublador':           '— no dubber —',
+        'esc.check.semChoqueLabel':      '🚫 No project conflicts',
+        'esc.cast.de':                   'of',
+        'esc.cast.personagens':          'characters',
+        'esc.cast.pal':                  'words',
+        'esc.cast.semDubladorMsg':       'no dubber',
+        'esc.cast.semDubPersonagens':    '{n} character(s) with no dubber',
         'esc.player.amostra':         '▶️ Sample',
         'esc.th.personagem':          'Character',
         'esc.th.dublador':            'Dubber',
@@ -12629,12 +12633,7 @@ function renderizarContagem() {
             <div style="background:${corBarra};width:${Math.min(100,pctEscalado).toFixed(1)}%;height:100%;border-radius:6px;transition:width 0.4s ease;"></div>
         </div>
         <div style="font-size:10px;color:#95a5a6;margin-top:3px;">
-            ${t('esc.cast.barraDetalhe', {
-                esc: persEscalados,
-                total: totalPers,
-                palEsc: totalEscalado.toLocaleString(),
-                palTotal: totalGeral.toLocaleString()
-            })}
+            ${persEscalados} ${t('esc.cast.de')} ${totalPers} ${t('esc.cast.personagens')} · ${totalEscalado.toLocaleString()} ${t('esc.cast.de')} ${totalGeral.toLocaleString()} ${t('esc.cast.pal')}
         </div>`;
     painel.appendChild(divProg);
 
@@ -18825,7 +18824,7 @@ function _revConcluirRevisao() {
 
     // Modal de confirmação no centro da tela
     var semDubTxt = resumo.semDublador.length
-        ? '<span style="color:#e74c3c;">⚠️ ' + t('esc.cast.semDubPersonagens',{n: resumo.semDublador.length}) + ':<br><b>' + resumo.semDublador.join(', ') + '</b></span>'
+        ? '<span style="color:#e74c3c;">⚠️ ' + t('esc.cast.semDubPersonagens',{n:resumo.semDublador.length}) + ':<br><b>' + resumo.semDublador.join(', ') + '</b></span>'
         : '<span style="color:#16a085;">✅ Todos os personagens escalados</span>';
     var html = '<div id="modalRevisaoConcluida" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);z-index:99999;display:flex;align-items:center;justify-content:center;">' +
         '<div style="background:white;border-radius:14px;padding:30px;max-width:460px;width:90%;box-shadow:0 12px 40px rgba(0,0,0,.3);text-align:center;">' +
