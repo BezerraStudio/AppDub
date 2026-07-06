@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.658</title>
+    <title>Sistema de Dublagem v12.660</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.658</p>
+        <p>v12.660</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.658</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.660</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1749,7 +1749,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.658</footer>
+    <footer>🎬 Sistema de Dublagem v12.660</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -3944,6 +3944,10 @@ var _i18n = {
         'cli.cat.envio.prazo':          'Prazo estimado de conclusão',
         'cli.cat.envio.obs':            'Observações',
         'cli.cat.envio.phObs':          'Informações adicionais...',
+        'cli.cat.envio.phNome':         'Fulano de Tal',
+        'cli.cat.envio.phEmpresa':      'Nome da empresa',
+        'cli.cat.envio.phContato':      'email@empresa.com',
+        'cli.cat.envio.phProjeto':      'Série, filme, jogo...',
         'cli.cat.envio.voltar':         'Voltar',
         'cli.cat.envio.enviar':         '✉ Enviar',
         'cli.cat.envio.obrigado':       'Obrigado, {nome}. Comunique o estúdio com um dos meios abaixo.',
@@ -5519,6 +5523,10 @@ var _i18n = {
         'cli.cat.envio.prazo':          'Estimated completion date',
         'cli.cat.envio.obs':            'Notes',
         'cli.cat.envio.phObs':          'Additional information...',
+        'cli.cat.envio.phNome':         'Your full name',
+        'cli.cat.envio.phEmpresa':      'Company name',
+        'cli.cat.envio.phContato':      'email@company.com',
+        'cli.cat.envio.phProjeto':      'Series, film, game...',
         'cli.cat.envio.voltar':         'Back',
         'cli.cat.envio.enviar':         '✉ Send',
         'cli.cat.envio.obrigado':       'Thank you, {nome}. Please contact the studio using one of the options below.',
@@ -6365,7 +6373,7 @@ function salvarProjetos() {
 // ─── BACKUP / RESTORE ─────────────────────────────────────────────────────────
 function exportarBackup() {
     var data = new Date().toISOString().slice(0,10);
-    var versao = 'v12.658';
+    var versao = 'v12.660';
 
     // Ler todas as chaves do sistema do localStorage
     function lerChave(k) {
@@ -7998,7 +8006,7 @@ function _pratRenderPersonagens(cont) {
                     '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">' +
                     '<span style="font-size:14px;font-weight:700;color:#1e293b;">'+p.nome+letra+'</span>' + perfBadge + palavrasHtml +
                     '</div>' +
-                    '<div style="font-size:12px;color:#64748b;margin-bottom:4px;">'+( p.descricao||'<em>'+t('prat.pers.semDescricao')+'</em>' )+'</div>' +
+                    '<div style="font-size:12px;color:#64748b;margin-bottom:4px;">'+( _txtBi(p.descricao, p.descricaoEn)||'<em>'+t('prat.pers.semDescricao')+'</em>' )+'</div>' +
                     '<div style="display:flex;gap:6px;flex-wrap:wrap;">' +
                     (p.genero?'<span style="font-size:10px;padding:2px 7px;border-radius:8px;background:#dbeafe;color:#1d4ed8;">'+p.genero+'</span>':'') +
                     (p.faixas&&p.faixas.length?p.faixas.map(function(f){ return '<span style="font-size:10px;padding:2px 7px;border-radius:8px;background:#f1f5f9;color:#475569;">'+f+'</span>'; }).join(''):'') +
@@ -26388,10 +26396,10 @@ function _catAbrirEnvio() {
         '<h3 style="margin:0 0 6px;font-family:Cormorant Garamond,serif;font-size:22px;color:#fff;">'+t('cli.cat.envio.titulo')+'</h3>' +
         '<p style="margin:0 0 20px;font-size:12px;color:rgba(232,228,220,.4);">'+t('cli.cat.envio.subtitulo')+'</p>' +
         '<div style="display:flex;flex-direction:column;gap:10px;">' +
-        _catCampo('catEnvNome',t('cli.cat.envio.nomeCompleto'),'text','Fulano de Tal') +
-        _catCampo('catEnvEmpresa',t('cli.cat.envio.empresa'),'text','Nome da empresa') +
-        _catCampo('catEnvContato',t('cli.cat.envio.contato'),'text','email@empresa.com') +
-        _catCampo('catEnvProjeto',t('cli.cat.envio.projeto'),'text','Série, filme, jogo...') +
+        _catCampo('catEnvNome',t('cli.cat.envio.nomeCompleto'),'text',t('cli.cat.envio.phNome')) +
+        _catCampo('catEnvEmpresa',t('cli.cat.envio.empresa'),'text',t('cli.cat.envio.phEmpresa')) +
+        _catCampo('catEnvContato',t('cli.cat.envio.contato'),'text',t('cli.cat.envio.phContato')) +
+        _catCampo('catEnvProjeto',t('cli.cat.envio.projeto'),'text',t('cli.cat.envio.phProjeto')) +
         _catCampo('catEnvPrazo',t('cli.cat.envio.prazo'),'date','') +
         '<div><label style="font-size:11px;color:rgba(232,228,220,.5);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em;">'+t('cli.cat.envio.obs')+'</label>' +
         '<textarea id="catEnvObs" placeholder="'+t('cli.cat.envio.phObs')+'" style="width:100%;height:70px;padding:10px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#e8e4dc;font-size:13px;outline:none;resize:none;box-sizing:border-box;font-family:DM Sans,sans-serif;"></textarea></div>' +
