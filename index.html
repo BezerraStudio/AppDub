@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.664</title>
+    <title>Sistema de Dublagem v12.665</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.664</p>
+        <p>v12.665</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.664</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.665</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1503,10 +1503,30 @@
                   </div>
                 </div>
 
+                <!-- ── FUNÇÕES DAS PASTAS ──────────────────────────────────────────── -->
+                <div style="margin-top:24px;border-top:2px solid #e8ecf0;padding-top:20px;">
+                  <h4 style="margin:0 0 4px;font-size:14px;color:#2c3e50;" data-i18n="cfg.funcoes.h4">🔧 Funções das Pastas</h4>
+                  <p style="margin:0 0 4px;font-size:12px;color:#7f8c8d;" data-i18n="cfg.funcoes.subtitle">Diga ao sistema qual pasta desempenha cada função. O nome aqui deve ser idêntico ao nome na estrutura acima.</p>
+                  <p style="margin:0 0 14px;font-size:11px;color:#95a5a6;background:#fafbfc;border:1px solid #e8ecf0;border-radius:6px;padding:7px 10px;" data-i18n="cfg.funcoes.hintMatch">O nome precisa ser exatamente igual ao que aparece na lista de subpastas (incluindo maiúsculas/minúsculas).</p>
+
+                  <!-- Cabeçalho -->
+                  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;padding:0 0 6px;border-bottom:2px solid #2c3e50;margin-bottom:4px;">
+                    <div style="font-size:10px;font-weight:700;color:#7f8c8d;text-transform:uppercase;letter-spacing:.05em;" data-i18n="cfg.funcoes.colFuncao">Função no Sistema</div>
+                    <div style="font-size:10px;font-weight:700;color:#7f8c8d;text-transform:uppercase;letter-spacing:.05em;" data-i18n="cfg.funcoes.colNome">Nome da Pasta no Drive</div>
+                    <div style="font-size:10px;font-weight:700;color:#7f8c8d;text-transform:uppercase;letter-spacing:.05em;" data-i18n="cfg.funcoes.colOnde">Onde é usado</div>
+                  </div>
+
+                  <!-- Linhas geradas pelo JS -->
+                  <div id="secFuncoesPastas"></div>
+
+                  <div style="margin-top:12px;text-align:right;">
+                    <button onclick="_cfgNomesSalvar()" style="padding:6px 18px;background:#27ae60;color:white;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;" data-i18n="cfg.funcoes.btnSalvar">💾 Salvar nomes</button>
+                  </div>
+                </div>
+                <!-- ── /FUNÇÕES DAS PASTAS ─────────────────────────────────────────── -->
+
                 </div>
               </div>
-
-            <!-- PAINEL ESTÚDIO -->
             <div id="cfgPainelEstudio" style="display:none;">
               <div style="background:white;border-radius:10px;border:1px solid #dde;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,.06);">
 
@@ -1749,7 +1769,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.664</footer>
+    <footer>🎬 Sistema de Dublagem v12.665</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -2893,6 +2913,35 @@ var _i18n = {
         'cfg.painel.cli.subtitle':       'Cadastro de clientes com perfil de serviços vinculado',
         'cfg.painel.cli.btnNovo':        '➕ Novo Cliente',
         'cfg.painel.links.h3':           '🔗 Estrutura de Pastas no Drive',
+        // ── Funções das Pastas ──────────────────────────────────────────────
+        'cfg.funcoes.h4':               '🔧 Funções das Pastas',
+        'cfg.funcoes.subtitle':         'Diga ao sistema qual pasta desempenha cada função. O nome aqui deve ser idêntico ao nome na estrutura acima.',
+        'cfg.funcoes.colFuncao':        'Função no Sistema',
+        'cfg.funcoes.colNome':          'Nome da Pasta no Drive',
+        'cfg.funcoes.colOnde':          'Onde é usado',
+        'cfg.funcoes.btnSalvar':        '💾 Salvar nomes',
+        'cfg.funcoes.saved':            '✅ Nomes salvos!',
+        'cfg.funcoes.warnNotFound':     '⚠️ Nome não encontrado na estrutura acima',
+        'cfg.funcoes.hintMatch':        'O nome precisa ser exatamente igual ao que aparece na lista de subpastas (incluindo maiúsculas/minúsculas).',
+        // Labels das 9 funções
+        'cfg.funcoes.pastaSRTsProjeto': '📥 Importar SRTs para o projeto',
+        'cfg.funcoes.ondeSRTsProjeto':  'Aba PROJETOS → botão "Carregar do Drive"',
+        'cfg.funcoes.pastaDubladores':  '🎙 Upload de áudio (dubladores)',
+        'cfg.funcoes.ondeDubladores':   'Tela do dublador + coluna Upload na planilha',
+        'cfg.funcoes.pastaRetakes':     '🔁 Upload de retakes',
+        'cfg.funcoes.ondeRetakes':      'Planilha → linha de retakes por lote',
+        'cfg.funcoes.pastaVideos':      '🎬 Download de vídeos (dublagem)',
+        'cfg.funcoes.ondeVideos':       'Planilha → coluna Download por dublador',
+        'cfg.funcoes.pastaSRTRevisao':  '📄 Upload de SRT revisado (conferente)',
+        'cfg.funcoes.ondeSRTRevisao':   'Tela do conferente → enviar SRT corrigido',
+        'cfg.funcoes.pastaSRTsFinais':  '✅ SRT Final aprovado (conferente)',
+        'cfg.funcoes.ondeSRTsFinais':   'Tela do conferente → envio final ao projeto',
+        'cfg.funcoes.pastaMateriais':   '🎥 Vídeos para conferência / edição',
+        'cfg.funcoes.ondeMateriais':    'Tela do conferente/editor → vídeos de trabalho',
+        'cfg.funcoes.pastaFinalFiles':  '📦 Entrega final ao cliente',
+        'cfg.funcoes.ondeFinalFiles':   'Link de referência na aba Links do projeto',
+        'cfg.funcoes.pastaPlanilhas':   '📊 Planilhas exportadas',
+        'cfg.funcoes.ondePlanilhas':    'Link de referência na aba Links do projeto',
         'cfg.painel.links.subtitle':     'Você cria a pasta raiz manualmente. O app cria o restante automaticamente ao criar cada projeto.',
         'cfg.painel.links.labelSubpastas':'📂 Subpastas de cada projeto',
         'links.globais':              '🌐 Links Globais da Série',
@@ -4764,6 +4813,35 @@ var _i18n = {
         'cfg.painel.cli.subtitle':       'Client register with linked service profile',
         'cfg.painel.cli.btnNovo':        '➕ New Client',
         'cfg.painel.links.h3':           '🔗 Drive Folder Structure',
+        // ── Folder Functions ────────────────────────────────────────────────
+        'cfg.funcoes.h4':               '🔧 Folder Functions',
+        'cfg.funcoes.subtitle':         'Tell the system which folder performs each function. The name here must be identical to the name in the structure above.',
+        'cfg.funcoes.colFuncao':        'System Function',
+        'cfg.funcoes.colNome':          'Drive Folder Name',
+        'cfg.funcoes.colOnde':          'Where used',
+        'cfg.funcoes.btnSalvar':        '💾 Save names',
+        'cfg.funcoes.saved':            '✅ Names saved!',
+        'cfg.funcoes.warnNotFound':     '⚠️ Name not found in the structure above',
+        'cfg.funcoes.hintMatch':        'The name must be exactly as it appears in the subfolders list (including upper/lowercase).',
+        // Labels for the 9 functions
+        'cfg.funcoes.pastaSRTsProjeto': '📥 Import SRTs into project',
+        'cfg.funcoes.ondeSRTsProjeto':  'PROJECTS tab → "Load from Drive" button',
+        'cfg.funcoes.pastaDubladores':  '🎙 Audio upload (voice actors)',
+        'cfg.funcoes.ondeDubladores':   'Voice actor screen + Upload column in spreadsheet',
+        'cfg.funcoes.pastaRetakes':     '🔁 Retake upload',
+        'cfg.funcoes.ondeRetakes':      'Spreadsheet → retakes row per batch',
+        'cfg.funcoes.pastaVideos':      '🎬 Video download (dubbing)',
+        'cfg.funcoes.ondeVideos':       'Spreadsheet → Download column per voice actor',
+        'cfg.funcoes.pastaSRTRevisao':  '📄 Reviewed SRT upload (reviewer)',
+        'cfg.funcoes.ondeSRTRevisao':   'Reviewer screen → send corrected SRT',
+        'cfg.funcoes.pastaSRTsFinais':  '✅ Approved Final SRT (reviewer)',
+        'cfg.funcoes.ondeSRTsFinais':   'Reviewer screen → final submission to project',
+        'cfg.funcoes.pastaMateriais':   '🎥 Videos for review / editing',
+        'cfg.funcoes.ondeMateriais':    'Reviewer/editor screen → working videos',
+        'cfg.funcoes.pastaFinalFiles':  '📦 Final delivery to client',
+        'cfg.funcoes.ondeFinalFiles':   'Reference link in the project Links tab',
+        'cfg.funcoes.pastaPlanilhas':   '📊 Exported spreadsheets',
+        'cfg.funcoes.ondePlanilhas':    'Reference link in the project Links tab',
         'cfg.painel.links.subtitle':     'You create the root folder manually. The app creates the rest automatically when creating each project.',
         'cfg.painel.links.labelSubpastas':'📂 Subfolders per project',
         'cfg.painel.links.btnAdicionar': '+ Add',
@@ -6385,7 +6463,7 @@ function salvarProjetos() {
 // ─── BACKUP / RESTORE ─────────────────────────────────────────────────────────
 function exportarBackup() {
     var data = new Date().toISOString().slice(0,10);
-    var versao = 'v12.664';
+    var versao = 'v12.665';
 
     // Ler todas as chaves do sistema do localStorage
     function lerChave(k) {
@@ -11623,6 +11701,7 @@ function _cfgSubAba(aba) {
         var el = document.getElementById('cfgLinkRaiz');
         if (el) el.value = cfgDrive.pastaClientesId || '';
         _cfgLinksRenderizarLista();
+        _cfgNomesRenderizar();
     }
 }
 var _cfgPastasPadrao = [
@@ -11636,6 +11715,113 @@ var _cfgPastasPadrao = [
     {nome:'Final Files', filhos:[]},
     {nome:'Planilhas', filhos:[]},
 ];
+
+// ── Funções das Pastas ─────────────────────────────────────────────────────
+// Mapeamento campo→nome-padrão. Editável pelo usuário em Configurações → Links.
+var _cfgNomesDefaults = {
+    pastaSRTsProjetoId: 'SRTs do Projeto',
+    pastaDubladores:    'Dubladores',
+    pastaRetakes:       'Retakes',
+    pastaVideos:        'Videos Para Dublagem',
+    pastaSRTRevisao:    'SRTs para revisão',
+    pastaSRTsFinais:    'SRTs Revisada - Final',
+    pastaMateriais:     'Videos Para Revisão',
+    pastaFinalFiles:    'Final Files',
+    pastaPlanilhas:     'Planilhas',
+};
+
+function _cfgNomesCarregar() {
+    try {
+        var salvo = JSON.parse(localStorage.getItem('cfg_nomes_pastas') || '{}');
+        var resultado = {};
+        Object.keys(_cfgNomesDefaults).forEach(function(k) {
+            resultado[k] = (salvo[k] && salvo[k].trim()) ? salvo[k].trim() : _cfgNomesDefaults[k];
+        });
+        return resultado;
+    } catch(e) { return Object.assign({}, _cfgNomesDefaults); }
+}
+
+function _cfgNomesSalvar() {
+    var nomes = {};
+    Object.keys(_cfgNomesDefaults).forEach(function(k) {
+        var el = document.getElementById('cfgFn_' + k);
+        nomes[k] = el ? el.value.trim() : _cfgNomesDefaults[k];
+    });
+    localStorage.setItem('cfg_nomes_pastas', JSON.stringify(nomes));
+    mostrarNotificacao(t('cfg.funcoes.saved'), 'sucesso', 2000);
+    _cfgNomesRenderizar(); // re-render para atualizar validações visuais
+}
+
+// Achata a árvore de pastas em um Set de nomes para validação
+function _cfgNomesTodosOsNomes() {
+    var todos = new Set();
+    function flatten(arr) {
+        (arr||[]).forEach(function(item) {
+            if (item.nome) todos.add(item.nome);
+            if (item.filhos) flatten(item.filhos);
+        });
+    }
+    flatten(_cfgLinksCarregarPastas());
+    return todos;
+}
+
+function _cfgNomesRenderizar() {
+    var cont = document.getElementById('secFuncoesPastas');
+    if (!cont) return;
+    var nomes = _cfgNomesCarregar();
+    var existentes = _cfgNomesTodosOsNomes();
+
+    var linhas = [
+        { k:'pastaSRTsProjetoId', lbl:t('cfg.funcoes.pastaSRTsProjeto'), onde:t('cfg.funcoes.ondeSRTsProjeto') },
+        { k:'pastaDubladores',    lbl:t('cfg.funcoes.pastaDubladores'),   onde:t('cfg.funcoes.ondeDubladores') },
+        { k:'pastaRetakes',       lbl:t('cfg.funcoes.pastaRetakes'),      onde:t('cfg.funcoes.ondeRetakes') },
+        { k:'pastaVideos',        lbl:t('cfg.funcoes.pastaVideos'),       onde:t('cfg.funcoes.ondeVideos') },
+        { k:'pastaSRTRevisao',    lbl:t('cfg.funcoes.pastaSRTRevisao'),   onde:t('cfg.funcoes.ondeSRTRevisao') },
+        { k:'pastaSRTsFinais',    lbl:t('cfg.funcoes.pastaSRTsFinais'),   onde:t('cfg.funcoes.ondeSRTsFinais') },
+        { k:'pastaMateriais',     lbl:t('cfg.funcoes.pastaMateriais'),    onde:t('cfg.funcoes.ondeMateriais') },
+        { k:'pastaFinalFiles',    lbl:t('cfg.funcoes.pastaFinalFiles'),   onde:t('cfg.funcoes.ondeFinalFiles') },
+        { k:'pastaPlanilhas',     lbl:t('cfg.funcoes.pastaPlanilhas'),    onde:t('cfg.funcoes.ondePlanilhas') },
+    ];
+
+    cont.innerHTML = linhas.map(function(row) {
+        var val    = nomes[row.k] || _cfgNomesDefaults[row.k];
+        var existe = existentes.has(val);
+        var aviso  = (!existe && val)
+            ? '<div style="font-size:10px;color:#e67e22;margin-top:2px;">'+t('cfg.funcoes.warnNotFound')+'</div>'
+            : '';
+        var borda  = (!existe && val) ? '#e67e22' : '#dde';
+        return '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;align-items:start;padding:8px 0;border-bottom:1px solid #f0f0f0;">'
+            + '<div style="font-size:12px;color:#2c3e50;font-weight:500;padding-top:6px;">' + row.lbl + '</div>'
+            + '<div>'
+              + '<input id="cfgFn_'+row.k+'" type="text" value="'+val.replace(/"/g,'&quot;')+'" '
+              + 'style="width:100%;padding:5px 8px;border:1px solid '+borda+';border-radius:5px;font-size:12px;" '
+              + 'onchange="_cfgNomesValidarCampo(\''+row.k+'\')" />'
+              + aviso
+            + '</div>'
+            + '<div style="font-size:11px;color:#7f8c8d;padding-top:6px;">'+row.onde+'</div>'
+            + '</div>';
+    }).join('');
+}
+
+function _cfgNomesValidarCampo(campo) {
+    var el  = document.getElementById('cfgFn_' + campo);
+    if (!el) return;
+    var val = el.value.trim();
+    var existentes = _cfgNomesTodosOsNomes();
+    var existe = !val || existentes.has(val);
+    el.style.borderColor = existe ? '#dde' : '#e67e22';
+    var avisoId = 'cfgFnAviso_' + campo;
+    var avisoEl = document.getElementById(avisoId);
+    if (!existe && !avisoEl) {
+        var d = document.createElement('div');
+        d.id = avisoId;
+        d.style.cssText = 'font-size:10px;color:#e67e22;margin-top:2px;';
+        d.textContent = t('cfg.funcoes.warnNotFound');
+        el.parentNode.appendChild(d);
+    } else if (existe && avisoEl) {
+        avisoEl.remove();
+    }
+}
 
 function _cfgLinksCarregarPastas() {
     var cfg = JSON.parse(localStorage.getItem('cfg_links') || '{}');
@@ -13656,10 +13842,11 @@ function abrirModalLinks() {
     document.getElementById('lnkPastaRetakes').value = L.pastaRetakes || '';
     document.getElementById('lnkDataGeral').value    = L.dataGeral    || '';
 
-    // Seção de links das subpastas do projeto
+    // Seção de links das subpastas do projeto — com legenda de função de cada pasta
     var secEl = document.getElementById('lnkSecSubpastas');
     if (secEl) {
-        var linkMap = {
+        // Descrição de função para cada campo (o que cada pasta faz no sistema)
+        var funcaoMap = {
             'pastaProjeto':    t('links.pastas.pastaProjeto'),
             'pastaVideos':     t('links.pastas.videos'),
             'pastaDubladores': t('links.pastas.dubladores'),
@@ -13670,15 +13857,31 @@ function abrirModalLinks() {
             'pastaFinalFiles': t('links.pastas.finalFiles'),
             'pastaPlanilhas':  t('links.pastas.planilhas'),
         };
-        var linhasHtml = Object.entries(linkMap).map(function(entry) {
+        // Onde cada pasta é usada no sistema
+        var ondeMap = {
+            'pastaProjeto':    t('cfg.funcoes.ondeSRTsProjeto').split('→')[0].trim(),
+            'pastaVideos':     t('cfg.funcoes.ondeVideos'),
+            'pastaDubladores': t('cfg.funcoes.ondeDubladores'),
+            'pastaRetakes':    t('cfg.funcoes.ondeRetakes'),
+            'pastaSRTRevisao': t('cfg.funcoes.ondeSRTRevisao'),
+            'pastaMateriais':  t('cfg.funcoes.ondeMateriais'),
+            'pastaSRTsFinais': t('cfg.funcoes.ondeSRTsFinais'),
+            'pastaFinalFiles': t('cfg.funcoes.ondeFinalFiles'),
+            'pastaPlanilhas':  t('cfg.funcoes.ondePlanilhas'),
+        };
+        var linhasHtml = Object.entries(funcaoMap).map(function(entry) {
             var chave = entry[0], label = entry[1];
             var url = L[chave] || '';
             if (!url) return '';
-            return '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f0f0f0;">' +
-                '<span style="font-size:12px;color:#2c3e50;flex:1;">' + label + '</span>' +
-                '<a href="' + url + '" target="_blank" style="font-size:11px;color:#3498db;white-space:nowrap;">' + t('links.pastas.abrir') + '</a>' +
+            var onde = ondeMap[chave] || '';
+            return '<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #f0f0f0;">' +
+                '<div style="flex:1;min-width:0;">' +
+                  '<div style="font-size:12px;color:#2c3e50;font-weight:500;">' + label + '</div>' +
+                  (onde ? '<div style="font-size:10px;color:#95a5a6;margin-top:1px;">📍 ' + onde + '</div>' : '') +
+                '</div>' +
+                '<a href="' + url + '" target="_blank" style="font-size:11px;color:#3498db;white-space:nowrap;flex-shrink:0;">' + t('links.pastas.abrir') + '</a>' +
                 '<button onclick="navigator.clipboard.writeText(\'' + url.replace(/'/g,"\\'") + '\');mostrarNotificacao(\'📋 Link copiado!\',\'sucesso\',1200);" ' +
-                'style="padding:2px 8px;background:#ecf0f1;border:none;border-radius:4px;font-size:11px;cursor:pointer;">📋</button>' +
+                'style="padding:2px 8px;background:#ecf0f1;border:none;border-radius:4px;font-size:11px;cursor:pointer;flex-shrink:0;">📋</button>' +
             '</div>';
         }).filter(Boolean).join('');
         secEl.style.display = linhasHtml ? '' : 'none';
@@ -16868,17 +17071,18 @@ async function driveCriarPastaProjeto(nomeProjeto, nomeCliente) {
         var subpastas = (cfgLinks.subpastas && cfgLinks.subpastas.length && typeof cfgLinks.subpastas[0]==='object')
             ? cfgLinks.subpastas
             : JSON.parse(JSON.stringify(_cfgPastasPadrao));
-        var linkMap = {
-            'Videos Para Dublagem':    'pastaVideos',
-            'Dubladores':              'pastaDubladores',
-            'Retakes':                 'pastaRetakes',
-            'SRTs para revisão':       'pastaSRTRevisao',
-            'Videos Para Revisão':     'pastaMateriais',
-            'SRTs Revisada - Final':   'pastaSRTsFinais',
-            'Final Files':             'pastaFinalFiles',
-            'Planilhas':               'pastaPlanilhas',
-            'SRTs do Projeto':         'pastaSRTsProjeto',   // fix: salvar URL correta
-        };
+        // Nomes configuráveis — usa os salvos pelo usuário ou os padrões
+        var nomes = _cfgNomesCarregar();
+        var linkMap = {};
+        linkMap[nomes.pastaVideos]        = 'pastaVideos';
+        linkMap[nomes.pastaDubladores]    = 'pastaDubladores';
+        linkMap[nomes.pastaRetakes]       = 'pastaRetakes';
+        linkMap[nomes.pastaSRTRevisao]    = 'pastaSRTRevisao';
+        linkMap[nomes.pastaMateriais]     = 'pastaMateriais';
+        linkMap[nomes.pastaSRTsFinais]    = 'pastaSRTsFinais';
+        linkMap[nomes.pastaFinalFiles]    = 'pastaFinalFiles';
+        linkMap[nomes.pastaPlanilhas]     = 'pastaPlanilhas';
+        linkMap[nomes.pastaSRTsProjetoId] = 'pastaSRTsProjeto';
         var ids = {};
         async function criarRecursivo(arr, paiId) {
             for (var si = 0; si < arr.length; si++) {
@@ -16899,17 +17103,22 @@ async function driveCriarPastaProjeto(nomeProjeto, nomeCliente) {
                 var chave = linkMap[nome];
                 if (chave) projetos[idx].links[chave] = base + ids[nome];
             });
-            // A pasta "Dubladores" é onde o áudio é enviado — usar também como pastaUpload
-            // (chave que a exportação para Sheets espera para o link de upload de áudio)
-            if (ids['Dubladores']) projetos[idx].links.pastaUpload = base + ids['Dubladores'];
-            // Salvar ID bruto da pasta SRTs do Projeto para uso na API
-            if (ids['SRTs do Projeto']) {
-                projetos[idx].links.pastaSRTsProjetoId = ids['SRTs do Projeto'];
+            // A pasta de upload do dublador é a mesma que pastaDubladores —
+            // também salva como pastaUpload (chave que a exportação Sheets usa)
+            var nomeDub = nomes.pastaDubladores || 'Dubladores';
+            if (ids[nomeDub]) projetos[idx].links.pastaUpload = base + ids[nomeDub];
+            // Salvar ID bruto da pasta SRTs do Projeto (necessário para a API Drive)
+            var nomeSRTsProj = nomes.pastaSRTsProjetoId || 'SRTs do Projeto';
+            if (ids[nomeSRTsProj]) {
+                projetos[idx].links.pastaSRTsProjetoId = ids[nomeSRTsProj];
             }
             salvarProjetos();
-            // Compartilhar pastas de envio automaticamente (Dubladores + SRTs Revisada - Final)
-            // para que membros da equipe possam fazer upload sem precisar ser admin do Drive
-            var _pastasEnvio = ['Dubladores', 'SRTs Revisada - Final'];
+            // Compartilhar pastas de envio automaticamente para que membros
+            // possam fazer upload sem precisar ter conta admin no Drive
+            var _pastasEnvio = [
+                nomes.pastaDubladores || 'Dubladores',
+                nomes.pastaSRTsFinais || 'SRTs Revisada - Final'
+            ];
             _pastasEnvio.forEach(function(nomePasta) {
                 if (ids[nomePasta]) {
                     _driveCompartilharParaEnvio(ids[nomePasta]).catch(function(e){
@@ -16957,7 +17166,7 @@ const _DRIVE_BACKUP_CHAVES_ARRAY = [
 // OBJETO/TEXTO simples: o Drive substitui o local quando presente (configurações
 // administrativas que normalmente só o Sydney mexe, sem necessidade de mesclar)
 const _DRIVE_BACKUP_CHAVES_OBJETO = [
-    'cfg_geral', 'cfg_links', 'cfg_servicos', 'cfg_servicos_var',
+    'cfg_geral', 'cfg_links', 'cfg_nomes_pastas', 'cfg_servicos', 'cfg_servicos_var',
     'cfg_funcoes_var', 'senhaPadraoEquipe', 'cfg_google'
 ];
 
