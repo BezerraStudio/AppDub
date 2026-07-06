@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.662</title>
+    <title>Sistema de Dublagem v12.664</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.662</p>
+        <p>v12.664</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.662</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.664</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1749,7 +1749,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.662</footer>
+    <footer>🎬 Sistema de Dublagem v12.664</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -6385,7 +6385,7 @@ function salvarProjetos() {
 // ─── BACKUP / RESTORE ─────────────────────────────────────────────────────────
 function exportarBackup() {
     var data = new Date().toISOString().slice(0,10);
-    var versao = 'v12.662';
+    var versao = 'v12.664';
 
     // Ler todas as chaves do sistema do localStorage
     function lerChave(k) {
@@ -27225,6 +27225,13 @@ const _SB_LOCAL_ONLY = new Set([
     '_ultimo_projeto_id'  // por dispositivo: qual projeto estava aberto no F5
 ]);
 
+// Retorna true se a chave NÃO deve ir para o Supabase.
+// backup_dublagem_* são grandes (~1.7MB cada) e já ficam no Drive — duplicar
+// no Supabase só gera egress desnecessário em todos os carregamentos iniciais.
+function _sbIsLocalOnly(chave) {
+    return _SB_LOCAL_ONLY.has(chave) || chave.startsWith('backup_dublagem_');
+}
+
 let _sbClient   = null;
 let _sbPendente = {};
 let _sbTimer    = null;
@@ -27234,7 +27241,7 @@ let _sbTimer    = null;
 const _lsSetOrig = localStorage.setItem.bind(localStorage);
 localStorage.setItem = function(chave, valor) {
     _lsSetOrig(chave, valor);
-    if (_sbClient && !_SB_LOCAL_ONLY.has(chave)) {
+    if (_sbClient && !_sbIsLocalOnly(chave)) {
         _sbPendente[chave] = valor;
         clearTimeout(_sbTimer);
         _sbTimer = setTimeout(_sbFlush, 1500);
@@ -27440,21 +27447,26 @@ async function _sbCarregarDados() {
 // não percebe nada, porque o objeto projetoAtual que a tela usa nunca é
 // substituído por essa rotina.
 let _sbPollingAtivo = false;
-const _SB_POLL_INTERVALO_MS = 45000; // 45s
+const _SB_POLL_INTERVALO_MS       = 45000;  // 45s — admin (sessão ativa com mudanças frequentes)
+const _SB_POLL_INTERVALO_MEMBRO   = 150000; // 2.5min — membros (só precisam detectar novo EP liberado)
 
 function _sbIniciarPolling() {
     if (_sbPollingAtivo) return;
     _sbPollingAtivo = true;
+    // Admins têm sessão em sessionStorage; membros não — usam intervalo maior
+    var ehAdmin = !!(sessionStorage.getItem('adm_logado'));
+    var intervalo = ehAdmin ? _SB_POLL_INTERVALO_MS : _SB_POLL_INTERVALO_MEMBRO;
     setInterval(async function() {
         try {
             // 1) Busca o que outras pessoas/projetos mudaram desde o último ciclo
             await _sbCarregarDados();
-            // 2) Autosave silencioso do que está sendo editado agora, se houver
-            //    (a mescla por id em salvarProjetos() protege os demais projetos)
-            if (typeof projetoAtual !== 'undefined' && projetoAtual && typeof salvarProjetos === 'function') {
-                salvarProjetos();
-            }
-            // 3) Atualiza os dados em memória — sem tocar na tela, sem recarregar
+            // NOTA: salvarProjetos() foi removido daqui intencionalmente.
+            // Chamá-lo a cada 45s causava egress massivo: serializa ~2MB de dados,
+            // empurra ao Supabase, atualiza o timestamp, e TODAS as outras sessões
+            // abertas detectam a mudança e baixam 2MB a cada ciclo — loop de GB/dia.
+            // O save já acontece automaticamente via StorageAdapter (1.5s após
+            // qualquer mudança real do usuário). Autosave redundante aqui = storm.
+            // 2) Atualiza os dados em memória — sem tocar na tela, sem recarregar
             //    a página. projetoAtual continua sendo o MESMO objeto que a tela
             //    já está usando, então nada visualmente muda para quem está editando.
             var freshRaw = localStorage.getItem('projetos_dublagem');
@@ -27472,7 +27484,7 @@ function _sbIniciarPolling() {
                 }
             }
         } catch(e) { console.warn('Sincronização silenciosa falhou:', e); }
-    }, _SB_POLL_INTERVALO_MS);
+    }, intervalo);
 }
 
 function _sbInit() {
@@ -27481,6 +27493,18 @@ function _sbInit() {
         return;
     }
     _sbClient = window.supabase.createClient(_SB_URL, _SB_KEY);
+    // Purgar backup_dublagem_* que possam existir no Supabase de versões anteriores.
+    // Esses backups (~1.7MB cada) não têm utilidade no banco — ficam no Drive.
+    // Executado uma única vez por sessão, em background.
+    setTimeout(function() {
+        if (!_sbClient) return;
+        _sbClient.from('app_data')
+            .delete()
+            .like('chave', 'backup_dublagem_%')
+            .then(function(res) {
+                if (!res.error) console.log('Supabase: backups antigos purgados do banco.');
+            }).catch(function(){});
+    }, 5000);
 }
 
 // ── Retry automático ao reconectar ───────────────────────────────────────────
