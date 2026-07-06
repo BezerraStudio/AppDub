@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.665</title>
+    <title>Sistema de Dublagem v12.666</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.665</p>
+        <p>v12.666</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.665</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.666</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1519,9 +1519,8 @@
                   <!-- Linhas geradas pelo JS -->
                   <div id="secFuncoesPastas"></div>
 
-                  <div style="margin-top:12px;text-align:right;">
-                    <button onclick="_cfgNomesSalvar()" style="padding:6px 18px;background:#27ae60;color:white;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;" data-i18n="cfg.funcoes.btnSalvar">💾 Salvar nomes</button>
-                  </div>
+                  <!-- Botões de ação — controlados por _cfgNomesAtualizarBotoes() -->
+                  <div id="cfgFuncoesAcoes" style="margin-top:12px;"></div>
                 </div>
                 <!-- ── /FUNÇÕES DAS PASTAS ─────────────────────────────────────────── -->
 
@@ -1769,7 +1768,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.665</footer>
+    <footer>🎬 Sistema de Dublagem v12.666</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -6463,7 +6462,7 @@ function salvarProjetos() {
 // ─── BACKUP / RESTORE ─────────────────────────────────────────────────────────
 function exportarBackup() {
     var data = new Date().toISOString().slice(0,10);
-    var versao = 'v12.665';
+    var versao = 'v12.666';
 
     // Ler todas as chaves do sistema do localStorage
     function lerChave(k) {
@@ -11783,6 +11782,7 @@ function _cfgNomesRenderizar() {
         { k:'pastaPlanilhas',     lbl:t('cfg.funcoes.pastaPlanilhas'),    onde:t('cfg.funcoes.ondePlanilhas') },
     ];
 
+    // Campos sempre desabilitados no render — só o botão Editar os ativa
     cont.innerHTML = linhas.map(function(row) {
         var val    = nomes[row.k] || _cfgNomesDefaults[row.k];
         var existe = existentes.has(val);
@@ -11793,14 +11793,173 @@ function _cfgNomesRenderizar() {
         return '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;align-items:start;padding:8px 0;border-bottom:1px solid #f0f0f0;">'
             + '<div style="font-size:12px;color:#2c3e50;font-weight:500;padding-top:6px;">' + row.lbl + '</div>'
             + '<div>'
-              + '<input id="cfgFn_'+row.k+'" type="text" value="'+val.replace(/"/g,'&quot;')+'" '
-              + 'style="width:100%;padding:5px 8px;border:1px solid '+borda+';border-radius:5px;font-size:12px;" '
-              + 'onchange="_cfgNomesValidarCampo(\''+row.k+'\')" />'
+              + '<input id="cfgFn_'+row.k+'" type="text" value="'+val.replace(/"/g,'&quot;')+'" disabled '
+              + 'style="width:100%;padding:5px 8px;border:1px solid '+borda+';border-radius:5px;font-size:12px;'
+              + 'background:#f8f9fa;color:#5d6d7e;cursor:not-allowed;" '
+              + 'oninput="_cfgNomesValidarCampo(\''+row.k+'\')" />'
               + aviso
             + '</div>'
             + '<div style="font-size:11px;color:#7f8c8d;padding-top:6px;">'+row.onde+'</div>'
             + '</div>';
     }).join('');
+
+    // Botão de ação — sempre mostra Editar quando travado
+    _cfgNomesAtualizarBotoes(false);
+}
+
+function _cfgNomesAtualizarBotoes(editando) {
+    var div = document.getElementById('cfgFuncoesAcoes');
+    if (!div) return;
+    if (editando) {
+        div.innerHTML =
+            '<div style="background:#fff8e1;border:1px solid #f39c12;border-radius:6px;padding:8px 12px;margin-bottom:8px;font-size:11px;color:#7d6608;">'
+            + '⚠️ <strong>Modo edição ativo.</strong> Altere o nome da pasta e clique em Salvar.'
+            + ' O sistema tentará renomear automaticamente as pastas no Drive em todos os projetos que usam esse nome.'
+            + ' Certifique-se de que o novo nome seja <strong>idêntico</strong> ao que está na estrutura de pastas acima.'
+            + '</div>'
+            + '<div style="display:flex;gap:8px;justify-content:flex-end;">'
+            + '<button onclick="_cfgNomesCancelar()" style="padding:6px 16px;background:#e74c3c;color:white;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;">🔒 Cancelar</button>'
+            + '<button onclick="_cfgNomesSalvar()" style="padding:6px 18px;background:#27ae60;color:white;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;">💾 Salvar e renomear no Drive</button>'
+            + '</div>';
+    } else {
+        div.innerHTML =
+            '<div style="display:flex;justify-content:flex-end;">'
+            + '<button onclick="_cfgNomesHabilitar()" style="padding:6px 16px;background:#3498db;color:white;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;">✏️ Editar nomes</button>'
+            + '</div>';
+    }
+}
+
+function _cfgNomesHabilitar() {
+    // Desbloqueia todos os campos
+    Object.keys(_cfgNomesDefaults).forEach(function(k) {
+        var el = document.getElementById('cfgFn_' + k);
+        if (!el) return;
+        el.disabled = false;
+        el.style.background = '#fff';
+        el.style.color = '#2c3e50';
+        el.style.cursor = 'text';
+    });
+    _cfgNomesAtualizarBotoes(true);
+}
+
+function _cfgNomesCancelar() {
+    // Restaura os valores salvos e trava novamente
+    var nomes = _cfgNomesCarregar();
+    Object.keys(_cfgNomesDefaults).forEach(function(k) {
+        var el = document.getElementById('cfgFn_' + k);
+        if (!el) return;
+        el.value = nomes[k] || _cfgNomesDefaults[k];
+        el.disabled = true;
+        el.style.background = '#f8f9fa';
+        el.style.color = '#5d6d7e';
+        el.style.cursor = 'not-allowed';
+        el.style.borderColor = '#dde';
+        var av = document.getElementById('cfgFnAviso_' + k);
+        if (av) av.remove();
+    });
+    _cfgNomesAtualizarBotoes(false);
+}
+
+async function _cfgNomesSalvar() {
+    var antigosNomes = _cfgNomesCarregar();
+    var novosNomes   = {};
+    var mudancas     = []; // [{k, antigo, novo}]
+
+    Object.keys(_cfgNomesDefaults).forEach(function(k) {
+        var el  = document.getElementById('cfgFn_' + k);
+        var val = el ? el.value.trim() : _cfgNomesDefaults[k];
+        novosNomes[k] = val || _cfgNomesDefaults[k];
+        if (novosNomes[k] !== antigosNomes[k]) {
+            mudancas.push({ k: k, antigo: antigosNomes[k], novo: novosNomes[k] });
+        }
+    });
+
+    // 1. Salvar no localStorage
+    localStorage.setItem('cfg_nomes_pastas', JSON.stringify(novosNomes));
+
+    // 2. Se não houve mudanças, apenas confirma e trava
+    if (!mudancas.length) {
+        mostrarNotificacao(t('cfg.funcoes.saved'), 'sucesso', 2000);
+        _cfgNomesCancelar();
+        return;
+    }
+
+    // 3. Tentar renomear no Drive — para cada campo alterado, busca as pastas em todos os projetos
+    var driveOk = await _garantirDriveConectado().catch(function(){ return false; });
+    var token   = _driveToken();
+    var totalRenomeados = 0;
+    var totalErros      = 0;
+
+    if (token && mudancas.length) {
+        mostrarNotificacao('🔄 Renomeando pastas no Drive... aguarde.', 'info', 8000);
+
+        for (var i = 0; i < mudancas.length; i++) {
+            var m = mudancas[i];
+            // Coletar todos os IDs únicos desse campo em todos os projetos
+            var ids = [];
+            projetos.forEach(function(p) {
+                var lk  = p.links || {};
+                var url = '';
+                if (m.k === 'pastaSRTsProjetoId') {
+                    // Campo especial: guarda ID bruto, não URL
+                    if (lk.pastaSRTsProjetoId && lk.pastaSRTsProjetoId.length > 5) {
+                        ids.push(lk.pastaSRTsProjetoId);
+                    }
+                } else {
+                    url = lk[m.k] || '';
+                    var match = url.match(/folders\/([a-zA-Z0-9_-]{10,})/);
+                    if (match && !ids.includes(match[1])) ids.push(match[1]);
+                    // pastaDubladores == pastaUpload — checar também
+                    if (m.k === 'pastaDubladores') {
+                        var url2 = lk.pastaUpload || '';
+                        var m2 = url2.match(/folders\/([a-zA-Z0-9_-]{10,})/);
+                        if (m2 && !ids.includes(m2[1])) ids.push(m2[1]);
+                    }
+                }
+            });
+
+            // PATCH no Drive para cada ID único
+            for (var j = 0; j < ids.length; j++) {
+                try {
+                    var resp = await fetch(
+                        'https://www.googleapis.com/drive/v3/files/' + ids[j] + '?fields=id,name',
+                        {
+                            method: 'PATCH',
+                            headers: {
+                                'Authorization': 'Bearer ' + token,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ name: m.novo })
+                        }
+                    );
+                    if (resp.ok) {
+                        totalRenomeados++;
+                        console.log('Drive: renomeado', m.antigo, '→', m.novo, '(ID:', ids[j]+')');
+                    } else {
+                        var err = await resp.json().catch(function(){ return {}; });
+                        console.warn('Drive: erro ao renomear', ids[j], err.error && err.error.message);
+                        totalErros++;
+                    }
+                } catch(e) {
+                    console.warn('Drive: falha na requisição', e.message);
+                    totalErros++;
+                }
+            }
+        }
+
+        if (totalRenomeados > 0 && totalErros === 0) {
+            mostrarNotificacao('✅ '+totalRenomeados+' pasta(s) renomeada(s) no Drive!', 'sucesso', 3500);
+        } else if (totalRenomeados > 0 && totalErros > 0) {
+            mostrarNotificacao('⚠️ '+totalRenomeados+' renomeada(s), '+totalErros+' com erro. Verifique o console.', 'aviso', 4000);
+        } else if (totalErros > 0) {
+            mostrarNotificacao('❌ Não foi possível renomear no Drive — verifique se o Drive está conectado.', 'erro', 4000);
+        }
+    } else if (mudancas.length) {
+        mostrarNotificacao('⚠️ Nomes salvos, mas Drive não conectado — pastas no Drive não foram renomeadas.', 'aviso', 4000);
+    }
+
+    mostrarNotificacao(t('cfg.funcoes.saved'), 'sucesso', 2000);
+    _cfgNomesRenderizar(); // Re-render com campos travados e validação atualizada
 }
 
 function _cfgNomesValidarCampo(campo) {
@@ -11814,9 +11973,9 @@ function _cfgNomesValidarCampo(campo) {
     var avisoEl = document.getElementById(avisoId);
     if (!existe && !avisoEl) {
         var d = document.createElement('div');
-        d.id = avisoId;
+        d.id  = avisoId;
         d.style.cssText = 'font-size:10px;color:#e67e22;margin-top:2px;';
-        d.textContent = t('cfg.funcoes.warnNotFound');
+        d.textContent   = t('cfg.funcoes.warnNotFound');
         el.parentNode.appendChild(d);
     } else if (existe && avisoEl) {
         avisoEl.remove();
