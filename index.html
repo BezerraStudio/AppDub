@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.657</title>
+    <title>Sistema de Dublagem v12.658</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.657</p>
+        <p>v12.658</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.657</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.658</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1749,7 +1749,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.657</footer>
+    <footer>🎬 Sistema de Dublagem v12.658</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -6365,7 +6365,7 @@ function salvarProjetos() {
 // ─── BACKUP / RESTORE ─────────────────────────────────────────────────────────
 function exportarBackup() {
     var data = new Date().toISOString().slice(0,10);
-    var versao = 'v12.657';
+    var versao = 'v12.658';
 
     // Ler todas as chaves do sistema do localStorage
     function lerChave(k) {
@@ -8426,7 +8426,7 @@ function _pratVerResumo() {
         '<span style="font-size:17px;font-weight:700;">'+t('prat.resumo.titulo',{nome:_pratCastAtual().nome})+'</span>' +
         '<button onclick="var co=document.getElementById(\'_pratConteudo\');if(co)_pratRenderCasting(co);" style="padding:8px 18px;border:none;background:#1a7abf;color:white;border-radius:7px;cursor:pointer;font-size:14px;font-weight:700;">'+t('prat.resumo.voltar')+'</button>' +
         '</div>' +
-        persList.map(function(p){
+        persList.filter(function(p){ return !p.oculto; }).map(function(p){
             if(!perfilIdx2[p.perfil])perfilIdx2[p.perfil]=0; perfilIdx2[p.perfil]++;
             var letra=perfilTot[p.perfil]>1?' ('+String.fromCharCode(64+perfilIdx2[p.perfil])+')':'';
             var cands=_pratCandsPers(p.id).map(function(id){var d=todos.find(function(x){return x.id===id;});return d?d.nome:'?';});
@@ -8520,7 +8520,7 @@ function _pratRenderEnvio(cont) {
             '<label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;color:#475569;">' +
             '<input type="checkbox" id="perm2op_'+c.id+'" '+(c.permitir2op?'checked':'')+' style="width:14px;height:14px;cursor:pointer;accent-color:#16a34a;"> '+t('prat.envio.permitir2op')+'</label>' +
             '</div>' +
-            persList.map(function(p){
+            persList.filter(function(p){ return !p.oculto; }).map(function(p){
                 var cands=(c.candidatos[p.id]||[]).map(function(id){var d=todos.find(function(x){return x.id===id;});return d?d.nome:'?';});
                 return '<div style="font-size:13px;padding:2px 0;"><strong>'+p.nome+':</strong> '+
                     (cands.length?'<span style="color:#16a34a;">'+cands.join(', ')+'</span>':'<span style="color:#dc2626;">'+t('prat.envio.semCands')+'</span>')+
@@ -25390,6 +25390,7 @@ function _cliRenderListaCasting() {
     var html = '<div style="max-width:1100px;margin:0 auto;padding:0 24px;">';
 
     persList.forEach(function(p, pi) {
+        if (p.oculto) return; // personagem oculto — não exibir ao cliente
         var cands = (cast.candidatos[p.id]||[]).map(function(id){ return _cliDubById(id); }).filter(Boolean);
         var esc   = escolhas[p.id]||{};
         var op1d  = esc.op1 ? _cliDubById(esc.op1) : null;
@@ -25591,11 +25592,12 @@ function _cliAtualizarBarra() {
     var cast = (proj.pratCastings||[])[_cliCastIdxAtivo]; if(!cast) return;
     var persList = proj.personagensCasting||[];
     var esc = _cliEscolhas[cast.id]||{};
-    var feitos = persList.filter(function(p){ var e=esc[p.id]||{}; return !!e.op1; }).length;
-    var pct = persList.length ? Math.round(feitos/persList.length*100) : 0;
+    var persVis = persList.filter(function(p){ return !p.oculto; });
+    var feitos = persVis.filter(function(p){ var e=esc[p.id]||{}; return !!e.op1; }).length;
+    var pct = persVis.length ? Math.round(feitos/persVis.length*100) : 0;
     var lbl = document.getElementById('cliBarLabel');
     var fil = document.getElementById('cliBarFill');
-    if (lbl) lbl.textContent = t('misc.personagensEscolhidos',{n:feitos,total:persList.length});
+    if (lbl) lbl.textContent = t('misc.personagensEscolhidos',{n:feitos,total:persVis.length});
     if (fil) fil.style.width = pct+'%';
 
     // Botão Finalizar — adapta ao status do casting atual
