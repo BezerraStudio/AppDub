@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.669</title>
+    <title>Sistema de Dublagem v12.668</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.669</p>
+        <p>v12.668</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.669</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.668</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1768,7 +1768,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.669</footer>
+    <footer>🎬 Sistema de Dublagem v12.668</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -6468,7 +6468,7 @@ function salvarProjetos() {
 // ─── BACKUP / RESTORE ─────────────────────────────────────────────────────────
 function exportarBackup() {
     var data = new Date().toISOString().slice(0,10);
-    var versao = 'v12.669';
+    var versao = 'v12.668';
 
     // Ler todas as chaves do sistema do localStorage
     function lerChave(k) {
@@ -11883,26 +11883,6 @@ async function _cfgNomesSalvar() {
     // 1. Salvar no localStorage
     localStorage.setItem('cfg_nomes_pastas', JSON.stringify(novosNomes));
 
-    // ── Sincronizar renomes na estrutura de pastas ────────────────────────────
-    // Se um nome mudou em Funções das Pastas, atualiza o mesmo nome na estrutura
-    // builder (cfg_links.subpastas), mantendo as duas listas em sincronia.
-    if (mudancas.length) {
-        var estrutura = _cfgLinksCarregarPastas();
-        var estruturaMudou = false;
-        function _renomearNaEstrutura(arr, antigo, novo) {
-            arr.forEach(function(item) {
-                if (item.nome === antigo) { item.nome = novo; estruturaMudou = true; }
-                if (item.filhos && item.filhos.length) _renomearNaEstrutura(item.filhos, antigo, novo);
-            });
-        }
-        mudancas.forEach(function(m) { _renomearNaEstrutura(estrutura, m.antigo, m.novo); });
-        if (estruturaMudou) {
-            _cfgLinksSalvarPastas(estrutura);
-            _cfgLinksRenderizarLista(); // re-render o builder com o novo nome
-        }
-    }
-    // ─────────────────────────────────────────────────────────────────────────
-
     // 2. Se não houve mudanças, apenas confirma e trava
     if (!mudancas.length) {
         mostrarNotificacao(t('cfg.funcoes.saved'), 'sucesso', 2000);
@@ -12049,10 +12029,7 @@ function _cfgLinksRenderHtml(arr, path) {
             '<span style="color:#bdc3c7;font-size:14px;cursor:grab;flex-shrink:0;" title="'+t('tooltip.arrastar')+'">⠿</span>' +
             '<span style="color:#7f8c8d;font-size:11px;flex-shrink:0;">📁</span>' +
             '<input type="text" value="' + item.nome.replace(/"/g,'&quot;') + '" ' +
-            'data-nome-original="' + item.nome.replace(/"/g,'&quot;') + '" ' +
-            'oninput="cfgLinksPreview()" ' +
-            'onfocus="this.dataset.nomeOriginal=this.value" ' +
-            'onblur="cfgSalvarLinks()" data-path="' + pathStr + '" placeholder="Nome" ' +
+            'oninput="cfgLinksPreview()" onblur="cfgSalvarLinks()" data-path="' + pathStr + '" placeholder="Nome" ' +
             'style="flex:1;padding:3px 5px;border:none;font-size:13px;outline:none;background:transparent;">' +
             '<button onclick="cfgLinksAdicionarFilho(\'' + pathStr + '\')" title="'+ t('tooltip.adicionarSubpasta') +'" ' +
             'style="background:none;border:none;color:#3498db;font-size:13px;cursor:pointer;padding:0 2px;" title="Subpasta">↳+</button>' +
@@ -12174,20 +12151,10 @@ function cfgSalvarLinks() {
         var el = document.getElementById('cfgPastaClientesId');
         if (el) el.value = raizId;
     }
-    // Coletar nomes editados e detectar renomes
+    // Coletar nomes editados
     var inputs = document.querySelectorAll('#cfgListaPastas input[data-path]');
     var nomeMap = {};
-    var renomes = []; // [{antigo, novo}]
-    inputs.forEach(function(el) {
-        var novoNome = el.value.trim() || el.placeholder;
-        nomeMap[el.dataset.path] = novoNome;
-        // data-nome-original é definido no onfocus do input
-        var nomeOriginal = el.dataset.nomeOriginal;
-        if (nomeOriginal && nomeOriginal !== novoNome) {
-            renomes.push({ antigo: nomeOriginal, novo: novoNome });
-            el.dataset.nomeOriginal = novoNome; // atualiza para próxima edição
-        }
-    });
+    inputs.forEach(function(el){ nomeMap[el.dataset.path] = el.value.trim() || el.placeholder; });
     function applyNames(arr, path) {
         arr.forEach(function(item, i) {
             var p = path ? path+'-'+i : String(i);
@@ -12198,28 +12165,6 @@ function cfgSalvarLinks() {
     var pastas = _cfgLinksCarregarPastas();
     applyNames(pastas, '');
     _cfgLinksSalvarPastas(pastas);
-
-    // ── Sincronizar renomes em Funções das Pastas ─────────────────────────────
-    // Se um nome na estrutura foi alterado e esse nome existe em cfg_nomes_pastas,
-    // atualiza automaticamente o campo correspondente.
-    if (renomes.length) {
-        var nomes = _cfgNomesCarregar();
-        var nomesMudaram = false;
-        renomes.forEach(function(r) {
-            Object.keys(nomes).forEach(function(campo) {
-                if (nomes[campo] === r.antigo) {
-                    nomes[campo] = r.novo;
-                    nomesMudaram = true;
-                }
-            });
-        });
-        if (nomesMudaram) {
-            localStorage.setItem('cfg_nomes_pastas', JSON.stringify(nomes));
-            _cfgNomesRenderizar(); // re-render Funções das Pastas com o novo nome
-        }
-    }
-    // ─────────────────────────────────────────────────────────────────────────
-
     mostrarNotificacao(t('misc.notif.estruturaSalva'), 'sucesso', 2000);
 }
 
@@ -14069,19 +14014,17 @@ function abrirModalLinks() {
     // Seção de links das subpastas do projeto — com legenda de função de cada pasta
     var secEl = document.getElementById('lnkSecSubpastas');
     if (secEl) {
-        // Nomes configurados pelo usuário (ou padrões) — sincronizados com Funções das Pastas
-        var nomesConf = _cfgNomesCarregar();
         // Descrição de função para cada campo (o que cada pasta faz no sistema)
         var funcaoMap = {
             'pastaProjeto':    t('links.pastas.pastaProjeto'),
-            'pastaVideos':     nomesConf.pastaVideos     || t('links.pastas.videos'),
-            'pastaDubladores': nomesConf.pastaDubladores || t('links.pastas.dubladores'),
-            'pastaRetakes':    nomesConf.pastaRetakes    || t('links.pastas.retakes'),
-            'pastaSRTRevisao': nomesConf.pastaSRTRevisao || t('links.pastas.srtRevisao'),
-            'pastaMateriais':  nomesConf.pastaMateriais  || t('links.pastas.materiais'),
-            'pastaSRTsFinais': nomesConf.pastaSRTsFinais || t('links.pastas.srtsFinais'),
-            'pastaFinalFiles': nomesConf.pastaFinalFiles || t('links.pastas.finalFiles'),
-            'pastaPlanilhas':  nomesConf.pastaPlanilhas  || t('links.pastas.planilhas'),
+            'pastaVideos':     t('links.pastas.videos'),
+            'pastaDubladores': t('links.pastas.dubladores'),
+            'pastaRetakes':    t('links.pastas.retakes'),
+            'pastaSRTRevisao': t('links.pastas.srtRevisao'),
+            'pastaMateriais':  t('links.pastas.materiais'),
+            'pastaSRTsFinais': t('links.pastas.srtsFinais'),
+            'pastaFinalFiles': t('links.pastas.finalFiles'),
+            'pastaPlanilhas':  t('links.pastas.planilhas'),
         };
         // Onde cada pasta é usada no sistema
         var ondeMap = {
