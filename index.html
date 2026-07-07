@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.666</title>
+    <title>Sistema de Dublagem v12.667</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.666</p>
+        <p>v12.667</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.666</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.667</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1768,7 +1768,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.666</footer>
+    <footer>🎬 Sistema de Dublagem v12.667</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -6462,7 +6462,7 @@ function salvarProjetos() {
 // ─── BACKUP / RESTORE ─────────────────────────────────────────────────────────
 function exportarBackup() {
     var data = new Date().toISOString().slice(0,10);
-    var versao = 'v12.666';
+    var versao = 'v12.667';
 
     // Ler todas as chaves do sistema do localStorage
     function lerChave(k) {
@@ -14061,22 +14061,46 @@ function fecharModalLinks() {
 // ficou desatualizado/errado e o usuário quer corrigir sem precisar copiar
 // e colar manualmente. Reaproveita as pastas já existentes (não duplica) e
 // regrava os links no projeto a partir do que existe de fato no Drive agora.
-function _linksRecriarPastasDrive() {
-    if (!projetoAtual) return;
+async function _linksRecriarPastasDrive() {
+    if (!projetoAtual) { mostrarNotificacao('Abra um projeto primeiro.', 'aviso'); return; }
+
     var cfg = cfgGet();
     if (!cfg.pastaRaizId) {
-        mostrarNotificacao('Configure a pasta raiz do Drive em Configurações primeiro.', 'aviso');
+        mostrarNotificacao('Configure o ID da Pasta Raiz em Configurações → Drive primeiro.', 'aviso', 4000);
         return;
     }
-    var clientes = carregarClientes();
-    var cliente = clientes.find(function(c){ return c.id === projetoAtual.clienteId; });
-    var nomeCliente = cliente ? cliente.nome : '';
-    mostrarNotificacao('🔄 Atualizando links das pastas no Drive...', 'info');
-    cfgCarregarGapi(() => cfgAutenticar(async () => {
+
+    var btn = document.querySelector('[onclick="_linksRecriarPastasDrive()"]');
+    if (btn) { btn.disabled = true; btn.textContent = '⏳ Atualizando...'; }
+
+    mostrarNotificacao('🔄 Conectando ao Drive e verificando pastas...', 'info', 6000);
+
+    try {
+        var conectado = await _garantirDriveConectado();
+        if (!conectado) {
+            mostrarNotificacao('❌ Drive não conectado — acesse Configurações → Drive para conectar.', 'erro', 4000);
+            if (btn) { btn.disabled = false; btn.textContent = t('links.btn.recriarPastas'); }
+            return;
+        }
+
+        var clientes  = carregarClientes();
+        var cliente   = clientes.find(function(c){ return c.id === projetoAtual.clienteId; });
+        var nomeCliente = cliente ? cliente.nome : 'Clientes';
+
+        // driveCriarPastaProjeto usa _driveGarantirPasta internamente —
+        // ele acha a pasta pelo nome se já existir, cria somente se não existir.
+        // No final salva todos os links encontrados no projeto.
         await driveCriarPastaProjeto(projetoAtual.nome, nomeCliente);
-        mostrarNotificacao('✅ Links das pastas atualizados!', 'sucesso');
-        abrirModalLinks(); // reabre já com os links frescos nos campos
-    }));
+
+        mostrarNotificacao('✅ Links das pastas atualizados com sucesso!', 'sucesso', 3000);
+        salvarProjetos();
+        abrirModalLinks(); // reabre com os links novos
+    } catch(e) {
+        console.error('_linksRecriarPastasDrive:', e);
+        mostrarNotificacao('❌ Erro ao atualizar pastas: ' + (e.message||e), 'erro', 5000);
+    } finally {
+        if (btn) { btn.disabled = false; btn.textContent = t('links.btn.recriarPastas'); }
+    }
 }
 
 function salvarModalLinks() {
