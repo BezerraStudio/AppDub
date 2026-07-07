@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.668</title>
+    <title>Sistema de Dublagem v12.667</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.668</p>
+        <p>v12.667</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.668</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.667</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1768,7 +1768,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.668</footer>
+    <footer>🎬 Sistema de Dublagem v12.667</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -2114,35 +2114,29 @@
       <div id="lnkSecSubpastas" style="display:none;background:#f0f7ff;border-radius:8px;padding:14px;border-left:4px solid #3498db;font-size:12px;"></div>
       <button onclick="_linksRecriarPastasDrive()" style="align-self:flex-start;padding:7px 14px;background:#5dade2;color:#1a5276;border:none;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;" data-i18n="links.btn.recriarPastas">🔄 Recriar/atualizar links das pastas no Drive</button>
 
-      <!-- SEÇÃO 1: Links globais da série — campos protegidos por padrão -->
+      <!-- SEÇÃO 1: Links globais da série -->
       <div style="background:#f8f9fa;border-radius:8px;padding:16px;border-left:4px solid #3498db;">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-          <h3 style="margin:0;font-size:13px;color:#2c3e50;" data-i18n="links.globais">🌐 Links Globais da Série</h3>
-          <div id="lnkBotoesGlobais"></div>
-        </div>
-        <div id="lnkAvisoEdicao" style="display:none;background:#fff8e1;border:1px solid #f39c12;border-radius:6px;padding:8px 12px;margin-bottom:10px;font-size:11px;color:#7d6608;">
-          ⚠️ <strong>Modo edição ativo.</strong> Altere os links e clique em <strong>💾 Salvar</strong> para confirmar, ou em <strong>🔒 Cancelar</strong> para desfazer.
-        </div>
+        <h3 style="margin:0 0 12px;font-size:13px;color:#2c3e50;" data-i18n="links.globais">🌐 Links Globais da Série</h3>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
           <div>
             <label style="font-size:11px;color:#7f8c8d;font-weight:600;display:block;margin-bottom:4px;" data-i18n="links.baixarVideos">📥 Baixar Vídeos (link da pasta no Drive)</label>
             <input id="lnkPastaVideos" type="url" placeholder="https://drive.google.com/drive/folders/..."
-              style="width:100%;padding:7px 9px;border:2px solid #ecf0f1;border-radius:6px;font-size:12px;box-sizing:border-box;background:#f8f9fa;cursor:not-allowed;" disabled>
+              style="width:100%;padding:7px 9px;border:2px solid #ecf0f1;border-radius:6px;font-size:12px;box-sizing:border-box;">
           </div>
           <div>
             <label style="font-size:11px;color:#7f8c8d;font-weight:600;display:block;margin-bottom:4px;" data-i18n="links.uploadGravacoes">📤 Pasta de upload das gravações</label>
             <input id="lnkPastaUpload" type="url" placeholder="https://drive.google.com/drive/folders/..."
-              style="width:100%;padding:7px 9px;border:2px solid #ecf0f1;border-radius:6px;font-size:12px;box-sizing:border-box;background:#f8f9fa;cursor:not-allowed;" disabled>
+              style="width:100%;padding:7px 9px;border:2px solid #ecf0f1;border-radius:6px;font-size:12px;box-sizing:border-box;">
           </div>
           <div>
             <label style="font-size:11px;color:#7f8c8d;font-weight:600;display:block;margin-bottom:4px;" data-i18n="links.lnk.pastaRetakes">🔁 Pasta de upload dos retakes</label>
             <input id="lnkPastaRetakes" type="url" placeholder="https://drive.google.com/drive/folders/..."
-              style="width:100%;padding:7px 9px;border:2px solid #ecf0f1;border-radius:6px;font-size:12px;box-sizing:border-box;background:#f8f9fa;cursor:not-allowed;" disabled>
+              style="width:100%;padding:7px 9px;border:2px solid #ecf0f1;border-radius:6px;font-size:12px;box-sizing:border-box;">
           </div>
           <div>
             <label style="font-size:11px;color:#7f8c8d;font-weight:600;display:block;margin-bottom:4px;" data-i18n="links.lnk.dataGeral">📅 Data de entrega geral (Unificado)</label>
             <input id="lnkDataGeral" type="date"
-              style="width:100%;padding:7px 9px;border:2px solid #ecf0f1;border-radius:6px;font-size:12px;box-sizing:border-box;background:#f8f9fa;cursor:not-allowed;" disabled>
+              style="width:100%;padding:7px 9px;border:2px solid #ecf0f1;border-radius:6px;font-size:12px;box-sizing:border-box;">
           </div>
         </div>
       </div>
@@ -6468,7 +6462,7 @@ function salvarProjetos() {
 // ─── BACKUP / RESTORE ─────────────────────────────────────────────────────────
 function exportarBackup() {
     var data = new Date().toISOString().slice(0,10);
-    var versao = 'v12.668';
+    var versao = 'v12.667';
 
     // Ler todas as chaves do sistema do localStorage
     function lerChave(k) {
@@ -13998,7 +13992,6 @@ function roteiroGetLinha(epNum, linhaIdx) {
 // ─── MODAL LINKS & ENTREGAS ───────────────────────────────────────────────────
 
 function abrirModalLinks() {
-    _lnkEditando = false; // começa sempre travado ao abrir
     if (!projetoAtual) { _avisar('Abra um projeto primeiro.', 'Links & Entregas', '🔗'); return; }
     if (!projetoAtual.links) projetoAtual.links = { pastaVideos:'', pastaUpload:'', pastaRetakes:'', dataGeral:'', lotes:[] };
     const L = projetoAtual.links;
@@ -14007,9 +14000,6 @@ function abrirModalLinks() {
     document.getElementById('lnkPastaUpload').value  = L.pastaUpload  || '';
     document.getElementById('lnkPastaRetakes').value = L.pastaRetakes || '';
     document.getElementById('lnkDataGeral').value    = L.dataGeral    || '';
-
-    // Aplicar estado travado (sempre começa locked quando modal abre)
-    _lnkAtualizarModoEdicao();
 
     // Seção de links das subpastas do projeto — com legenda de função de cada pasta
     var secEl = document.getElementById('lnkSecSubpastas');
@@ -14113,52 +14103,7 @@ async function _linksRecriarPastasDrive() {
     }
 }
 
-var _lnkEditando = false; // estado de edição dos Links Globais da Série
-
-function _lnkAtualizarModoEdicao() {
-    var ids = ['lnkPastaVideos','lnkPastaUpload','lnkPastaRetakes','lnkDataGeral'];
-    ids.forEach(function(id) {
-        var el = document.getElementById(id);
-        if (!el) return;
-        el.disabled = !_lnkEditando;
-        el.style.background   = _lnkEditando ? '#fff' : '#f8f9fa';
-        el.style.cursor       = _lnkEditando ? 'text'  : 'not-allowed';
-        el.style.borderColor  = _lnkEditando ? '#3498db' : '#ecf0f1';
-    });
-    var aviso = document.getElementById('lnkAvisoEdicao');
-    if (aviso) aviso.style.display = _lnkEditando ? '' : 'none';
-    var div = document.getElementById('lnkBotoesGlobais');
-    if (!div) return;
-    if (_lnkEditando) {
-        div.innerHTML =
-            '<button onclick="_lnkCancelar()" style="padding:5px 14px;background:#e74c3c;color:white;border:none;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer;">🔒 Cancelar</button>';
-    } else {
-        div.innerHTML =
-            '<button onclick="_lnkHabilitar()" style="padding:5px 14px;background:#3498db;color:white;border:none;border-radius:5px;font-size:11px;font-weight:600;cursor:pointer;">✏️ Editar links</button>';
-    }
-}
-
-function _lnkHabilitar() {
-    _lnkEditando = true;
-    _lnkAtualizarModoEdicao();
-}
-
-function _lnkCancelar() {
-    // Restaura os valores originais (o que está salvo no projeto)
-    if (projetoAtual && projetoAtual.links) {
-        var L = projetoAtual.links;
-        var v = document.getElementById('lnkPastaVideos');
-        var u = document.getElementById('lnkPastaUpload');
-        var r = document.getElementById('lnkPastaRetakes');
-        var d = document.getElementById('lnkDataGeral');
-        if (v) v.value = L.pastaVideos  || '';
-        if (u) u.value = L.pastaUpload  || L.pastaDubladores || '';
-        if (r) r.value = L.pastaRetakes || '';
-        if (d) d.value = L.dataGeral    || '';
-    }
-    _lnkEditando = false;
-    _lnkAtualizarModoEdicao();
-}
+function salvarModalLinks() {
     try {
         if (!projetoAtual.links) projetoAtual.links = {};
         const L = projetoAtual.links;
@@ -14168,26 +14113,6 @@ function _lnkCancelar() {
         L.dataGeral       = document.getElementById('lnkDataGeral').value;
         L.lotes           = linksColetarLotes();
         salvarProjetos();
-        _lnkEditando = false; // trava os campos após salvar
-        mostrarNotificacao('Links salvos!', 'sucesso');
-    } catch(e) {
-        console.error('Erro ao salvar links:', e);
-    } finally {
-        fecharModalLinks();
-    }
-}
-
-function salvarModalLinks() {
-    try {
-        if (!projetoAtual.links) projetoAtual.links = {};
-        const L = projetoAtual.links;
-        L.pastaVideos  = document.getElementById('lnkPastaVideos').value.trim();
-        L.pastaUpload  = document.getElementById('lnkPastaUpload').value.trim();
-        L.pastaRetakes = document.getElementById('lnkPastaRetakes').value.trim();
-        L.dataGeral    = document.getElementById('lnkDataGeral').value;
-        L.lotes        = linksColetarLotes();
-        salvarProjetos();
-        _lnkEditando = false;
         mostrarNotificacao('Links salvos!', 'sucesso');
     } catch(e) {
         console.error('Erro ao salvar links:', e);
