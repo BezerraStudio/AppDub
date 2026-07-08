@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.670</title>
+    <title>Sistema de Dublagem v12.671</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.670</p>
+        <p>v12.671</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.670</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.671</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1616,8 +1616,8 @@
                   <h3 style="margin:0;font-size:16px;color:#c0392b;" data-i18n="cfg.admins.h3">🔐 Controle de Acesso — Administradores</h3>
                   <p style="margin:4px 0 0;font-size:12px;color:#6b7280;" data-i18n="cfg.admins.subtitle">Gerencie usuários com acesso administrativo ao sistema.</p>
                 </div>
-                <div style="display:flex;gap:8px;">
-                  <button onclick="cfgAdminsResetar()" style="padding:8px 14px;background:#fff7ed;border:1px solid #fed7aa;color:#c2410c;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;" title="Limpa cfg_admins e recria superadmin com senha admin123" data-i18n="cfg.admins.resetar">🔄 Resetar</button>
+                <div id="cfgAdminsBotoesTopo" style="display:flex;gap:8px;">
+                  <button id="cfgAdminsBtnResetar" onclick="cfgAdminsResetar()" style="padding:8px 14px;background:#fff7ed;border:1px solid #fed7aa;color:#c2410c;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;" title="Limpa cfg_admins e recria superadmin com senha admin123" data-i18n="cfg.admins.resetar">🔄 Resetar</button>
                   <button onclick="cfgAdminsAbrirModal()" style="padding:8px 16px;background:#c0392b;color:white;border:none;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;" data-i18n="cfg.admins.novoAdmin">➕ Novo Admin</button>
                 </div>
               </div>
@@ -1768,7 +1768,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.670</footer>
+    <footer>🎬 Sistema de Dublagem v12.671</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -2723,6 +2723,7 @@ var _i18n = {
         'cfg.admins.tituloNovo':         'Novo Admin',
         'cfg.admins.tituloEditar':       'Editar Admin',
         'cfg.admins.superadmin':         '🔴 Superadmin',
+        'cfg.admins.masteradmin':        '🔑 MasterAdmin',
         'cfg.admins.admin':              '🟠 Admin',
         'cfg.admins.visualizador':       '🔵 Visualizador',
         'cfg.admins.usuario':            '🟢 Usuário',
@@ -4624,6 +4625,7 @@ var _i18n = {
         'cfg.admins.tituloNovo':         'New Admin',
         'cfg.admins.tituloEditar':       'Edit Admin',
         'cfg.admins.superadmin':         '🔴 Superadmin',
+        'cfg.admins.masteradmin':        '🔑 MasterAdmin',
         'cfg.admins.admin':              '🟠 Admin',
         'cfg.admins.visualizador':       '🔵 Viewer',
         'cfg.admins.usuario':            '🟢 User',
@@ -6328,7 +6330,7 @@ function _trocarAba(abaDestino) {
 var _CFG_ABAS_ADMIN = ['cfgTabEstudio','cfgTabLinks','cfgTabDrive','cfgTabAdmins','cfgTabSeparadorAdmin'];
 
 function _cfgAplicarPermissoesAbas() {
-    var ehAdmin = _admEhSuperadmin() || (function(){ var s=_admSessao(); return s && s.role==='admin'; })();
+    var ehAdmin = _admEhSuperadmin() || (function(){ var s=_admSessao(); return s && (s.role==='admin' || s.role==='masteradmin'); })();
     _CFG_ABAS_ADMIN.forEach(function(id){
         var el = document.getElementById(id);
         if (el) el.style.display = ehAdmin ? '' : 'none';
@@ -6470,7 +6472,7 @@ function salvarProjetos() {
 // ─── BACKUP / RESTORE ─────────────────────────────────────────────────────────
 function exportarBackup() {
     var data = new Date().toISOString().slice(0,10);
-    var versao = 'v12.670';
+    var versao = 'v12.671';
 
     // Ler todas as chaves do sistema do localStorage
     function lerChave(k) {
@@ -11449,6 +11451,13 @@ function _adminsHash(senha) {
     return 'h' + (h >>> 0).toString(16).padStart(8,'0') + String(senha.length);
 }
 
+// ── Identidade imutável do Superadmin ───────────────────────────────────────
+// Estas constantes estão gravadas no código e não podem ser alteradas via UI.
+// O login do superadmin funciona mesmo se os dados forem apagados do localStorage.
+var _SA_NOME  = 'sydneysilva';                  // nome de login fixo
+var _SA_HASH  = 'hb47e6d448';                   // hash djb2 de @Syd1709
+// ────────────────────────────────────────────────────────────────────────────
+
 function _adminsGet() {
     try { return JSON.parse(localStorage.getItem('cfg_admins') || '[]'); } catch(e) { return []; }
 }
@@ -11458,17 +11467,36 @@ function _adminsSalvar(lista) {
 }
 
 function _adminsGarantirSuperadmin() {
-    // sempre garante que exista 1 superadmin com hash correto (novo algoritmo)
+    // Garante que o superadmin sempre existe com nome e hash fixos embutidos no código.
+    // Nenhuma operação de UI pode mudar o nome ou remover o superadmin.
     var lista = _adminsGet();
-    var sa = null;
-    for (var i = 0; i < lista.length; i++) { if (lista[i].role === 'superadmin') { sa = lista[i]; break; } }
+    var sa = null; var saIdx = -1;
+    for (var i = 0; i < lista.length; i++) {
+        if (lista[i].role === 'superadmin') { sa = lista[i]; saIdx = i; break; }
+    }
     if (!sa) {
-        lista.unshift({ id:'adm_superadmin', nome:'Admin', email:'', senhaHash:_adminsHash('admin123'), role:'superadmin', ativo:true, criado:new Date().toISOString() });
+        // Superadmin sumiu (dados apagados) — recriar com identidade fixa
+        lista.unshift({
+            id: 'adm_superadmin',
+            nome: _SA_NOME,
+            email: '',
+            senhaHash: _SA_HASH,
+            role: 'superadmin',
+            ativo: true,
+            criado: new Date().toISOString()
+        });
         _adminsSalvar(lista);
-    } else if (!sa.senhaHash || sa.senhaHash.indexOf('h') !== 0) {
-        // hash gerado pelo crypto.subtle antigo (formato hex de 64 chars) — reseta para admin123
-        sa.senhaHash = _adminsHash('admin123');
-        _adminsSalvar(lista);
+    } else {
+        var mudou = false;
+        // Garantir que nome fixo nunca foi alterado por bypass
+        if (sa.nome !== _SA_NOME) { sa.nome = _SA_NOME; mudou = true; }
+        // Garantir que a senha nunca foi zerada ou corrompida
+        if (!sa.senhaHash || sa.senhaHash.indexOf('h') !== 0) {
+            sa.senhaHash = _SA_HASH; mudou = true;
+        }
+        // Garantir que continua ativo
+        if (!sa.ativo) { sa.ativo = true; mudou = true; }
+        if (mudou) _adminsSalvar(lista);
     }
 }
 
@@ -11482,23 +11510,55 @@ function _admEhSuperadmin() {
     var s = _admSessao();
     return s && s.role === 'superadmin';
 }
+// Retorna true se o admin logado for masteradmin
+function _admEhMasterAdmin() {
+    var s = _admSessao();
+    return s && s.role === 'masteradmin';
+}
+// Retorna true se o admin logado for superadmin OU masteradmin
+function _admEhMasterOuSuper() {
+    var s = _admSessao();
+    return s && (s.role === 'superadmin' || s.role === 'masteradmin');
+}
 
 function cfgAdminsRenderizar() {
     _adminsGarantirSuperadmin();
-    var lista = _adminsGet();
-    var cont = document.getElementById('cfgAdminsLista');
+    // Resetar → visível SOMENTE para o superadmin
+    var btnResetar = document.getElementById('cfgAdminsBtnResetar');
+    if (btnResetar) btnResetar.style.display = _admEhSuperadmin() ? '' : 'none';
+
+    var lista  = _adminsGet();
+    var sessao = _admSessao();
+    var cont   = document.getElementById('cfgAdminsLista');
     if (!cont) return;
-    var roleLabel = { superadmin:t('cfg.admins.superadmin'), admin:t('cfg.admins.admin'), usuario:t('cfg.admins.usuario'), visualizador:t('cfg.admins.visualizador') };
-    var roleBg    = { superadmin:'#fef2f2', admin:'#fff7ed', usuario:'#f0fdf4', visualizador:'#eff6ff' };
-    var roleColor = { superadmin:'#991b1b', admin:'#92400e', usuario:'#15803d', visualizador:'#1e40af' };
+    var roleLabel = {
+        superadmin: t('cfg.admins.superadmin'),
+        masteradmin: t('cfg.admins.masteradmin'),
+        admin: t('cfg.admins.admin'),
+        usuario: t('cfg.admins.usuario'),
+        visualizador: t('cfg.admins.visualizador')
+    };
+    var roleBg = {
+        superadmin:'#fef2f2', masteradmin:'#f5f3ff',
+        admin:'#fff7ed', usuario:'#f0fdf4', visualizador:'#eff6ff'
+    };
+    var roleColor = {
+        superadmin:'#991b1b', masteradmin:'#6d28d9',
+        admin:'#92400e', usuario:'#15803d', visualizador:'#1e40af'
+    };
+    var roleIcon = { superadmin:'👑', masteradmin:'🔑', admin:'🛡️', usuario:'👁️', visualizador:'👁️' };
     var html = '';
     lista.forEach(function(adm, i) {
         var isSa = adm.role === 'superadmin';
+        var isMa = adm.role === 'masteradmin';
+        // Admin comum e MasterAdmin não vêem a linha do superadmin
+        if (isSa && !_admEhSuperadmin()) return;
+        var ehProprio = sessao && sessao.id === adm.id;
         var stBg  = adm.ativo ? '#dcfce7' : '#f1f5f9';
         var stCor = adm.ativo ? '#166534' : '#94a3b8';
         var stLbl = adm.ativo ? t('cfg.status.atvDot') : t('cfg.status.inatvDot');
         html += '<div style="background:white;border:1px solid #e5e7eb;border-radius:10px;padding:14px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;">';
-        html += '<div style="width:36px;height:36px;border-radius:50%;background:' + (roleBg[adm.role]||'#f1f5f9') + ';display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">' + (isSa ? '👑' : adm.role === 'admin' ? '🛡️' : '👁️') + '</div>';
+        html += '<div style="width:36px;height:36px;border-radius:50%;background:' + (roleBg[adm.role]||'#f1f5f9') + ';display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">' + (roleIcon[adm.role]||'👤') + '</div>';
         html += '<div style="flex:1;min-width:140px;">';
         html += '<div style="font-size:14px;font-weight:700;color:#1e293b;">' + String(adm.nome).replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</div>';
         html += '<div style="font-size:11px;color:#64748b;margin-top:2px;">' + String(adm.email||'—').replace(/&/g,'&amp;') + '</div>';
@@ -11507,16 +11567,20 @@ function cfgAdminsRenderizar() {
         html += '<span style="padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:' + stBg + ';color:' + stCor + ';">' + stLbl + '</span>';
         html += '<div style="display:flex;gap:6px;flex-shrink:0;">';
         if (isSa) {
-            // Só o próprio superadmin pode alterar a própria senha
+            // Só o próprio superadmin vê e pode alterar sua conta
             if (_admEhSuperadmin()) {
                 html += '<button onclick="cfgAdminsEditarSuperadmin()" style="padding:5px 12px;background:#fef2f2;border:1px solid #fecaca;border-radius:6px;font-size:11px;font-weight:600;color:#991b1b;cursor:pointer;">'+t('cfg.admins.minhaSenha')+'</button>';
-            } else {
-                html += '<span style="font-size:11px;color:#94a3b8;font-style:italic;">🔒 protegido</span>';
             }
         } else {
             html += '<button onclick="cfgAdminsEditar(' + i + ')" style="padding:5px 12px;background:#f1f5f9;border:1px solid #cbd5e1;border-radius:6px;font-size:11px;font-weight:600;color:#334155;cursor:pointer;">'+t('cfg.admins.editar')+'</button>';
-            html += '<button onclick="cfgAdminsToggleAtivo(' + i + ')" style="padding:5px 12px;background:#fff7ed;border:1px solid #fed7aa;border-radius:6px;font-size:11px;font-weight:600;color:#c2410c;cursor:pointer;">' + (adm.ativo ? t('cfg.admins.desativar') : t('cfg.admins.ativar')) + '</button>';
-            html += '<button onclick="cfgAdminsExcluir(' + i + ')" style="padding:5px 12px;background:#fef2f2;border:1px solid #fecaca;border-radius:6px;font-size:11px;font-weight:600;color:#dc2626;cursor:pointer;">✕</button>';
+            if (!isMa) { // MasterAdmin não pode ser desativado/excluído por admin
+                html += '<button onclick="cfgAdminsToggleAtivo(' + i + ')" style="padding:5px 12px;background:#fff7ed;border:1px solid #fed7aa;border-radius:6px;font-size:11px;font-weight:600;color:#c2410c;cursor:pointer;">' + (adm.ativo ? t('cfg.admins.desativar') : t('cfg.admins.ativar')) + '</button>';
+                html += '<button onclick="cfgAdminsExcluir(' + i + ')" style="padding:5px 12px;background:#fef2f2;border:1px solid #fecaca;border-radius:6px;font-size:11px;font-weight:600;color:#dc2626;cursor:pointer;">✕</button>';
+            } else if (_admEhSuperadmin()) {
+                // Só o superadmin pode desativar/excluir o MasterAdmin
+                html += '<button onclick="cfgAdminsToggleAtivo(' + i + ')" style="padding:5px 12px;background:#fff7ed;border:1px solid #fed7aa;border-radius:6px;font-size:11px;font-weight:600;color:#c2410c;cursor:pointer;">' + (adm.ativo ? t('cfg.admins.desativar') : t('cfg.admins.ativar')) + '</button>';
+                html += '<button onclick="cfgAdminsExcluir(' + i + ')" style="padding:5px 12px;background:#fef2f2;border:1px solid #fecaca;border-radius:6px;font-size:11px;font-weight:600;color:#dc2626;cursor:pointer;">✕</button>';
+            }
         }
         html += '</div></div>';
     });
@@ -11539,21 +11603,63 @@ function _adminsAbrirModal(titulo, nome, email, role, idx, ocultarRole) {
     document.getElementById('admModalSenhaConf').placeholder = isEdicao ? t('cfg.admins.phSenhaVazio') : t('cfg.admins.phRepetir');
     var rr = document.getElementById('admModalRoleRow');
     if (rr) rr.style.display = ocultarRole ? 'none' : 'block';
+    // Re-habilitar campo nome (pode ter sido travado numa abertura anterior do SA)
+    var nomeEl = document.getElementById('admModalNome');
+    if (nomeEl) {
+        nomeEl.disabled = false;
+        nomeEl.style.background = '';
+        nomeEl.style.cursor     = '';
+        nomeEl.title = '';
+    }
     el.style.display = 'flex';
 }
 
-function cfgAdminsAbrirModal() { _adminsAbrirModal(t('cfg.admins.tituloNovo'), '', '', 'admin', null, false); }
+function cfgAdminsAbrirModal() {
+    _adminsAbrirModal(t('cfg.admins.tituloNovo'), '', '', 'admin', null, false);
+    _adminsAtualizarOpcoesRole('admin');
+}
+
+// Atualiza as opções do select de role conforme quem está logado
+function _adminsAtualizarOpcoesRole(roleAtual) {
+    var sel = document.getElementById('admModalRole');
+    if (!sel) return;
+    sel.innerHTML = '';
+    // Superadmin pode criar masteradmin
+    if (_admEhSuperadmin()) {
+        sel.innerHTML += '<option value="masteradmin">🔑 MasterAdmin — gerenciamento de equipe</option>';
+    }
+    sel.innerHTML += '<option value="admin">🟠 Admin — acesso total</option>';
+    sel.innerHTML += '<option value="usuario">🟢 Usuário — acesso operacional</option>';
+    // Selecionar o role atual se existir
+    if (roleAtual) sel.value = roleAtual;
+}
 
 function cfgAdminsEditar(idx) {
     var lista = _adminsGet();
     var adm = lista[idx];
     if (!adm) return;
-    // Admin comum não pode editar a conta do superadmin
+    var sessao = _admSessao();
+    // Proteção contra editar conta de nível superior
     if (adm.role === 'superadmin' && !_admEhSuperadmin()) {
-        mostrarNotificacao('Acesso negado — somente o superadmin pode alterar sua própria conta.', 'erro', 3000);
-        return;
+        mostrarNotificacao('Acesso negado.', 'erro', 2500); return;
+    }
+    if (adm.role === 'masteradmin' && !_admEhMasterOuSuper()) {
+        mostrarNotificacao('Acesso negado.', 'erro', 2500); return;
     }
     _adminsAbrirModal('Editar Admin', adm.nome, adm.email, adm.role, idx, false);
+    // Travar nome quando admin comum está editando a própria conta
+    var ehProprio = sessao && sessao.id === adm.id;
+    if (ehProprio && adm.role === 'admin') {
+        var nomeEl = document.getElementById('admModalNome');
+        if (nomeEl) {
+            nomeEl.disabled = true;
+            nomeEl.style.background = '#f1f5f9';
+            nomeEl.style.cursor = 'not-allowed';
+            nomeEl.title = 'Admins não podem alterar o próprio nome de login.';
+        }
+    }
+    // Atualizar opções do select conforme quem edita
+    _adminsAtualizarOpcoesRole(adm.role);
 }
 
 function cfgAdminsEditarSuperadmin() {
@@ -11566,7 +11672,17 @@ function cfgAdminsEditarSuperadmin() {
     for (var i = 0; i < lista.length; i++) { if (lista[i].role === 'superadmin') { idx = i; break; } }
     if (idx < 0) return;
     var adm = lista[idx];
+    // Abre o modal mas bloqueia o campo de nome (nome do SA é imutável)
     _adminsAbrirModal(t('cfg.admins.tituloSuperadmin'), adm.nome, adm.email, adm.role, idx, true);
+    // Travar o campo de nome — o SA não pode mudar seu próprio nome de login
+    var nomeEl = document.getElementById('admModalNome');
+    if (nomeEl) {
+        nomeEl.value    = _SA_NOME;
+        nomeEl.disabled = true;
+        nomeEl.style.background = '#f1f5f9';
+        nomeEl.style.cursor     = 'not-allowed';
+        nomeEl.title = 'O nome de login do superadmin é fixo e não pode ser alterado.';
+    }
 }
 
 function cfgAdminsFecharModal() {
@@ -11583,23 +11699,55 @@ function cfgAdminsSalvarModal() {
     var conf  = document.getElementById('admModalSenhaConf').value;
     if (!nome) { mostrarNotificacao(t('cfg.admins.notifNomeObrig'), 'aviso', 2000); return; }
     var lista = _adminsGet();
-    var isEdicao = idx !== '';
+    var sessao = _admSessao(); // quem está logado agora
     if (!isEdicao && !senha) { mostrarNotificacao(t('cfg.admins.notifSenhaObrig'), 'aviso', 2000); return; }
     if (senha && senha !== conf) { mostrarNotificacao(t('cfg.admins.notifSenhasNaoConf'), 'aviso', 2500); return; }
     if (isEdicao) {
         var adm = lista[parseInt(idx)];
         if (!adm) { mostrarNotificacao(t('cfg.admins.notifNaoEncontrado'), 'erro', 2000); return; }
-        // Apenas o próprio superadmin pode editar a conta de superadmin
+        // Proteções de acesso por role
         if (adm.role === 'superadmin' && !_admEhSuperadmin()) {
-            mostrarNotificacao('Acesso negado — somente o superadmin pode alterar sua própria conta.', 'erro', 3000);
-            cfgAdminsFecharModal();
+            mostrarNotificacao('Acesso negado.', 'erro', 2500); cfgAdminsFecharModal(); return;
+        }
+        if (adm.role === 'masteradmin' && !_admEhSuperadmin() && !(sessao && sessao.id === adm.id)) {
+            mostrarNotificacao('Acesso negado.', 'erro', 2500); cfgAdminsFecharModal(); return;
+        }
+
+        if (adm.role === 'superadmin') {
+            // SA: nome imutável, apenas email e senha
+            adm.nome  = _SA_NOME;
+            adm.email = email;
+            if (senha) adm.senhaHash = _adminsHash(senha);
+        } else if (adm.role === 'masteradmin') {
+            // MasterAdmin: pode alterar próprio nome e senha
+            adm.nome  = nome;
+            adm.email = email;
+            if (senha) { adm.senhaHash = _adminsHash(senha); adm.senhaDefinida = true; }
+        } else {
+            // Admin: nome bloqueado ao editar própria conta, só senha
+            var ehProprio = sessao && sessao.id === adm.id;
+            if (ehProprio && adm.role === 'admin') {
+                // admin editando si mesmo: preserva o nome, só atualiza email e senha
+                adm.email = email;
+                if (senha) { adm.senhaHash = _adminsHash(senha); adm.senhaDefinida = true; }
+            } else {
+                adm.nome  = nome;
+                adm.email = email;
+                if (!_admEhSuperadmin() && role === 'masteradmin') {
+                    // Admin não pode promover alguém para masteradmin
+                    adm.role = adm.role;
+                } else {
+                    adm.role = role;
+                }
+                if (senha) adm.senhaHash = _adminsHash(senha);
+            }
+        }
+    } else {
+        // Criando novo: superadmin e masteradmin só pelo superadmin
+        if ((role === 'superadmin' || role === 'masteradmin') && !_admEhSuperadmin()) {
+            mostrarNotificacao('Acesso negado — somente o superadmin pode criar este nível.', 'erro', 3000);
             return;
         }
-        adm.nome  = nome;
-        adm.email = email;
-        if (adm.role !== 'superadmin') adm.role = role;
-        if (senha) adm.senhaHash = _adminsHash(senha);
-    } else {
         lista.push({ id:'adm_'+Date.now(), nome:nome, email:email, senhaHash:_adminsHash(senha), role:role, ativo:true, criado:new Date().toISOString(), senhaDefinida:false });
     }
     _adminsSalvar(lista);
@@ -11612,6 +11760,10 @@ function cfgAdminsToggleAtivo(idx) {
     var lista = _adminsGet();
     var adm = lista[idx];
     if (!adm || adm.role === 'superadmin') return;
+    // Só superadmin pode desativar/ativar o MasterAdmin
+    if (adm.role === 'masteradmin' && !_admEhSuperadmin()) {
+        mostrarNotificacao('Acesso negado — somente o superadmin pode alterar o MasterAdmin.', 'erro', 2500); return;
+    }
     adm.ativo = !adm.ativo;
     _adminsSalvar(lista);
     cfgAdminsRenderizar();
@@ -11622,6 +11774,9 @@ function cfgAdminsExcluir(idx) {
     var lista = _adminsGet();
     var adm = lista[idx];
     if (!adm || adm.role === 'superadmin') return;
+    if (adm.role === 'masteradmin' && !_admEhSuperadmin()) {
+        mostrarNotificacao('Acesso negado — somente o superadmin pode excluir o MasterAdmin.', 'erro', 2500); return;
+    }
     _confirmar(t('cfg.admins.confirmarExcluir').replace('{nome}', adm.nome), function() {
         lista.splice(idx, 1);
         _adminsSalvar(lista);
@@ -11631,24 +11786,72 @@ function cfgAdminsExcluir(idx) {
 }
 
 function cfgAdminsResetar() {
+    if (!_admEhSuperadmin()) {
+        mostrarNotificacao('Acesso negado — somente o superadmin pode resetar os administradores.', 'erro', 3000);
+        return;
+    }
     _confirmar(t('cfg.admins.confirmarResetar'), function() {
+        // Preservar o superadmin antes de apagar
+        var lista = _adminsGet();
+        var saAtual = null;
+        for (var i = 0; i < lista.length; i++) {
+            if (lista[i].role === 'superadmin') { saAtual = lista[i]; break; }
+        }
         localStorage.removeItem('cfg_admins');
-        _adminsGarantirSuperadmin();
+        // Recriar: superadmin intacto + MasterAdmin padrão para primeiro acesso
+        var novaLista = [
+            saAtual || {
+                id: 'adm_superadmin', nome: _SA_NOME, email: '',
+                senhaHash: _SA_HASH, role: 'superadmin', ativo: true,
+                criado: new Date().toISOString()
+            },
+            {
+                id: 'adm_master_' + Date.now(),
+                nome: 'admin',
+                email: '',
+                senhaHash: _adminsHash('admin123'),
+                role: 'masteradmin',
+                ativo: true,
+                senhaDefinida: false,   // força troca de nome e senha no primeiro acesso
+                criado: new Date().toISOString()
+            }
+        ];
+        // Garantir identidade fixa do SA
+        novaLista[0].nome  = _SA_NOME;
+        novaLista[0].ativo = true;
+        _adminsSalvar(novaLista);
         cfgAdminsRenderizar();
-        mostrarNotificacao(t('cfg.admins.notifResetado'), 'sucesso', 5000);
+        mostrarNotificacao('Admins resetados. MasterAdmin padrão criado: login "admin" / senha "admin123". Peça para trocar no primeiro acesso.', 'sucesso', 6000);
     }, t('cfg.admins.tituloResetar'), '');
 }
 
 function adminsVerificarLogin(nomeOuEmail, senha) {
     _adminsGarantirSuperadmin();
-    var lista = _adminsGet();
     var hashDigitado = _adminsHash(senha);
+    var nomeNorm = (nomeOuEmail || '').trim().toLowerCase();
+
+    // ── Fallback fixo do superadmin ─────────────────────────────────────────
+    // Se o nome bate com o SA e o hash confere (senha original ou qualquer senha
+    // atualizada que esteja salva), aceita o login mesmo sem localStorage.
+    if (nomeNorm === _SA_NOME.toLowerCase() && hashDigitado === _SA_HASH) {
+        var lista = _adminsGet();
+        var saFixo = null;
+        for (var k = 0; k < lista.length; k++) {
+            if (lista[k].role === 'superadmin') { saFixo = lista[k]; break; }
+        }
+        return saFixo || { id:'adm_superadmin', nome:_SA_NOME, email:'', role:'superadmin', ativo:true };
+    }
+    // ────────────────────────────────────────────────────────────────────────
+
+    var lista = _adminsGet();
     for (var i = 0; i < lista.length; i++) {
         var adm = lista[i];
         if (!adm.ativo) continue;
-        var matchNome  = adm.nome  && adm.nome.trim().toLowerCase()  === nomeOuEmail.trim().toLowerCase();
-        var matchEmail = adm.email && adm.email.trim().toLowerCase() === nomeOuEmail.trim().toLowerCase();
+        var matchNome  = adm.nome  && adm.nome.trim().toLowerCase()  === nomeNorm;
+        var matchEmail = adm.email && adm.email.trim().toLowerCase() === nomeNorm;
         if ((matchNome || matchEmail) && adm.senhaHash === hashDigitado) {
+            // Admin normal não pode logar com o nome reservado do superadmin
+            if (adm.role !== 'superadmin' && matchNome && nomeNorm === _SA_NOME.toLowerCase()) continue;
             return adm;
         }
     }
