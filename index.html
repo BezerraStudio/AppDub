@@ -11525,6 +11525,8 @@ function cfgAdminsRenderizar() {
     var html = '';
     lista.forEach(function(adm, i) {
         var isSa = adm.role === 'superadmin';
+        // Admin comum não vê a linha do superadmin
+        if (isSa && !_admEhSuperadmin()) return;
         var stBg  = adm.ativo ? '#dcfce7' : '#f1f5f9';
         var stCor = adm.ativo ? '#166534' : '#94a3b8';
         var stLbl = adm.ativo ? t('cfg.status.atvDot') : t('cfg.status.inatvDot');
