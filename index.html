@@ -1616,8 +1616,8 @@
                   <h3 style="margin:0;font-size:16px;color:#c0392b;" data-i18n="cfg.admins.h3">🔐 Controle de Acesso — Administradores</h3>
                   <p style="margin:4px 0 0;font-size:12px;color:#6b7280;" data-i18n="cfg.admins.subtitle">Gerencie usuários com acesso administrativo ao sistema.</p>
                 </div>
-                <div style="display:flex;gap:8px;">
-                  <button onclick="cfgAdminsResetar()" style="padding:8px 14px;background:#fff7ed;border:1px solid #fed7aa;color:#c2410c;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;" title="Limpa cfg_admins e recria superadmin com senha admin123" data-i18n="cfg.admins.resetar">🔄 Resetar</button>
+                <div id="cfgAdminsBotoesTopo" style="display:flex;gap:8px;">
+                  <button id="cfgAdminsBtnResetar" onclick="cfgAdminsResetar()" style="padding:8px 14px;background:#fff7ed;border:1px solid #fed7aa;color:#c2410c;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;" title="Limpa cfg_admins e recria superadmin com senha admin123" data-i18n="cfg.admins.resetar">🔄 Resetar</button>
                   <button onclick="cfgAdminsAbrirModal()" style="padding:8px 16px;background:#c0392b;color:white;border:none;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;" data-i18n="cfg.admins.novoAdmin">➕ Novo Admin</button>
                 </div>
               </div>
@@ -11511,6 +11511,11 @@ function _admEhSuperadmin() {
 
 function cfgAdminsRenderizar() {
     _adminsGarantirSuperadmin();
+    // Resetar → visível SOMENTE para o superadmin
+    // Novo Admin → visível para qualquer admin logado
+    var btnResetar = document.getElementById('cfgAdminsBtnResetar');
+    if (btnResetar) btnResetar.style.display = _admEhSuperadmin() ? '' : 'none';
+
     var lista = _adminsGet();
     var cont = document.getElementById('cfgAdminsLista');
     if (!cont) return;
@@ -11576,7 +11581,9 @@ function _adminsAbrirModal(titulo, nome, email, role, idx, ocultarRole) {
     el.style.display = 'flex';
 }
 
-function cfgAdminsAbrirModal() { _adminsAbrirModal(t('cfg.admins.tituloNovo'), '', '', 'admin', null, false); }
+function cfgAdminsAbrirModal() {
+    _adminsAbrirModal(t('cfg.admins.tituloNovo'), '', '', 'admin', null, false);
+}
 
 function cfgAdminsEditar(idx) {
     var lista = _adminsGet();
@@ -11688,6 +11695,10 @@ function cfgAdminsExcluir(idx) {
 }
 
 function cfgAdminsResetar() {
+    if (!_admEhSuperadmin()) {
+        mostrarNotificacao('Acesso negado — somente o superadmin pode resetar os administradores.', 'erro', 3000);
+        return;
+    }
     _confirmar(t('cfg.admins.confirmarResetar'), function() {
         // Preservar o superadmin antes de apagar — o reset NÃO afeta a conta do SA
         var lista = _adminsGet();
