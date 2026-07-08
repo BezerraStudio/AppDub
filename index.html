@@ -6330,7 +6330,7 @@ function _trocarAba(abaDestino) {
 var _CFG_ABAS_ADMIN = ['cfgTabEstudio','cfgTabLinks','cfgTabDrive','cfgTabAdmins','cfgTabSeparadorAdmin'];
 
 function _cfgAplicarPermissoesAbas() {
-    var ehAdmin = _admEhSuperadmin() || (function(){ var s=_admSessao(); return s && s.role==='admin'; })();
+    var ehAdmin = _admEhSuperadmin() || (function(){ var s=_admSessao(); return s && (s.role==='admin' || s.role==='masteradmin'); })();
     _CFG_ABAS_ADMIN.forEach(function(id){
         var el = document.getElementById(id);
         if (el) el.style.display = ehAdmin ? '' : 'none';
@@ -11699,7 +11699,7 @@ function cfgAdminsSalvarModal() {
     var conf  = document.getElementById('admModalSenhaConf').value;
     if (!nome) { mostrarNotificacao(t('cfg.admins.notifNomeObrig'), 'aviso', 2000); return; }
     var lista = _adminsGet();
-    var isEdicao = idx !== '';
+    var sessao = _admSessao(); // quem está logado agora
     if (!isEdicao && !senha) { mostrarNotificacao(t('cfg.admins.notifSenhaObrig'), 'aviso', 2000); return; }
     if (senha && senha !== conf) { mostrarNotificacao(t('cfg.admins.notifSenhasNaoConf'), 'aviso', 2500); return; }
     if (isEdicao) {
