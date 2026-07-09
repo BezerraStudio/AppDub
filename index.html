@@ -2230,6 +2230,8 @@ var _i18n = {
         'proj.notif.digitarNome':     '❌ Digite o nome do projeto',
         'proj.notif.selecionarIdioma':'❌ Selecione o idioma',
         'proj.notif.informarData':    '❌ Informe a data de início',
+        'proj.notif.backupExportado': '✅ Backup completo — {n} registros',
+        'proj.notif.erroImportar':    '❌ Erro ao importar backup',
         'proj.notif.salvoEps':        '✅ Projeto "{nome}" salvo com {n} ep(s)!',
         'proj.notif.salvo':           '✅ Projeto "{nome}" salvo!',
         'proj.notif.criadoEps':       '✅ Projeto "{nome}" criado com {n} ep(s)!',
@@ -3085,6 +3087,8 @@ var _i18n = {
         'cfg.drive.sheetsLi4':           'A planilha será criada diretamente no seu Drive e aberta no browser',
         'cfg.drive.sheetsLi5':           'A aba <b>Retakes</b> terá fórmula VSTACK+FILTER automática — as linhas com "Fichier envoyé" preenchido aparecem automaticamente',
         'cfg.drive.statusAguardando':    '⏳ Aguardando autenticação para sincronizar...',
+        'cfg.drive.statusConectando':    '🔗 Conectando ao Drive...',
+        'cfg.drive.semPasta':            '⚠️ Pasta raiz do Drive não configurada',
         'cfg.drive.statusBuscando':      '⏳ Buscando dados no Drive...',
         'cfg.drive.statusNenhum':        '📭 Nenhum dado encontrado no Drive. Criando...',
         'cfg.drive.statusInicializado':  '✅ Dados inicializados no Drive!',
@@ -4132,6 +4136,8 @@ var _i18n = {
         'proj.notif.digitarNome':     '❌ Enter the project name',
         'proj.notif.selecionarIdioma':'❌ Select a language',
         'proj.notif.informarData':    '❌ Enter the start date',
+        'proj.notif.backupExportado': '✅ Backup complete — {n} records',
+        'proj.notif.erroImportar':    '❌ Error importing backup',
         'proj.notif.salvoEps':        '✅ Project "{nome}" saved with {n} ep(s)!',
         'proj.notif.salvo':           '✅ Project "{nome}" saved!',
         'proj.notif.criadoEps':       '✅ Project "{nome}" created with {n} ep(s)!',
@@ -4922,6 +4928,8 @@ var _i18n = {
         'cfg.drive.sheetsLi4':           'The spreadsheet will be created directly in your Drive and opened in the browser',
         'cfg.drive.sheetsLi5':           'The <b>Retakes</b> tab will have an automatic VSTACK+FILTER formula — lines with "Fichier envoyé" filled appear automatically',
         'cfg.drive.statusAguardando':    '⏳ Awaiting authentication to sync...',
+        'cfg.drive.statusConectando':    '🔗 Connecting to Drive...',
+        'cfg.drive.semPasta':            '⚠️ Drive root folder not configured',
         'cfg.drive.statusBuscando':      '⏳ Fetching data from Drive...',
         'cfg.drive.statusNenhum':        '📭 No data found on Drive. Creating...',
         'cfg.drive.statusInicializado':  '✅ Data initialized on Drive!',
@@ -6529,7 +6537,7 @@ function exportarBackup() {
     URL.revokeObjectURL(a.href);
     localStorage.setItem('_ultimo_backup', new Date().toISOString());
     verificarUltimoBackup();
-    mostrarNotificacao(t('proj.notif.backupExportado') || ('✅ Backup completo — ' + total + ' registros'), 'sucesso', 2500);
+    mostrarNotificacao(t('proj.notif.backupExportado', {n: total}), 'sucesso', 2500);
 }
 
 function importarBackup(event) {
@@ -8490,39 +8498,6 @@ function _pratRemoverCandidato2(persId, dubId) {
     var cont=document.getElementById('_pratConteudo'); if(cont)_pratRenderCasting(cont);
 }
 
-function _pratNovoCasting() {
-    _pratEnsureCastings();
-    var jaAprovado = projetoAtual.statusProducao === 'aprovado' || projetoAtual.statusProducao === 'producao';
-
-    function criar() {
-        var _nums = (projetoAtual.pratCastings||[]).map(function(c){ var _m=c.nome.match(/(\d+)$/); return _m?parseInt(_m[1]):0; });
-        var n = (_nums.length ? Math.max.apply(null,_nums) : 0) + 1;
-        var nome='Casting '+String(n).padStart(2,'0');
-        projetoAtual.pratCastings.push({id:'cast_'+Date.now(),nome:nome,candidatos:{},token:null,status:'rascunho',resposta:null});
-        _pratCastAtivo=projetoAtual.pratCastings.length-1;
-
-        // Se já tinha aprovação, volta para estado de reabertura
-        if (jaAprovado) {
-            projetoAtual.statusProducao = 'casting_reaberto';
-        }
-
-        salvarProjetos();
-        try { carregarProjetos(); } catch(e){}
-        var cont=document.getElementById('_pratConteudo'); if(cont)_pratRenderCasting(cont);
-        mostrarNotificacao(jaAprovado?t('esc.notif.castingCriadoProd',{nome:nome}):t('esc.notif.castingCriado',{nome:nome}),'sucesso',2500);
-    }
-
-    if (jaAprovado) {
-        _confirmar(
-            t('prat.cast.confirmarReabrir'),
-            criar,
-            t('prat.cast.tituloReabrir'), '🔄'
-        );
-    } else {
-        criar();
-    }
-}
-
 function _pratRemoverCasting() {
     if((projetoAtual.pratCastings||[]).length<=1){mostrarNotificacao(t('esc.notif.castingUnico'),'aviso',1800);return;}
     _confirmar(t('prat.cast.confirmarRemover',{nome:_pratCastAtual().nome}),function(){
@@ -9170,7 +9145,7 @@ function _pratNovoCasting() {
         mostrarNotificacao(jaAprovado?t('esc.notif.castingCriadoProd',{nome:nome}):t('esc.notif.castingCriado',{nome:nome}),'sucesso',2500);
     }
     if (jaAprovado) {
-        _confirmar('O projeto já tem Casting Final aprovado.\n\nCriar um novo casting irá reabrir a aprovação.\n\nDeseja continuar?', criar, 'Reabrir casting?', '🔄');
+        _confirmar(t('prat.cast.confirmarReabrir'), criar, t('prat.cast.tituloReabrir'), '🔄');
     } else { criar(); }
 }
 
@@ -13263,6 +13238,16 @@ function salvarConfigPagamento() {
         projetoAtual.pagamento.dataCotacao  = dataCot || new Date().toLocaleDateString('pt-BR');
     }
     salvarProjetos();
+}
+
+function atualizarMetodoPag() {
+    var metodo = (document.querySelector('[name="metodoPag"]:checked')||{value:'ambos'}).value;
+    var elPerc = document.getElementById('campoPagPerc');
+    var elChar = document.getElementById('campoPagChar');
+    if (elPerc) elPerc.style.display = (metodo === 'caractere') ? 'none' : '';
+    if (elChar) elChar.style.display = (metodo === 'percentual') ? 'none' : '';
+    salvarConfigPagamento();
+    renderizarTabelaPagamentos();
 }
 
 async function buscarCotacao() {
@@ -21556,6 +21541,8 @@ function editorAbrirModalBaixar() {
         mostrarNotificacao(t('membro.dub.driveSemPasta'), 'info', 4000);
     }
 }
+function editorFecharModalBaixar() { document.getElementById('editorModalBaixar').style.display='none'; }
+function editorExecutarBaixar() { editorFecharModalBaixar(); }
 
 // ── Editor: hub de envio de arquivos ────────────────────────────────────────
 function editorAbrirModalEnviar() {
@@ -22558,14 +22545,6 @@ function dubFiltrarPersSelect(val) {
         _dubFiltroEp = '';
     }
     _dubRenderizarEpList();
-    _dubRenderizarRoteiro();
-}
-
-function dubFiltrarPers(btn) {
-    _dubPersFiltro = btn.dataset.pers || '';
-    document.querySelectorAll('.dub-pers-btn').forEach(function(b){
-        b.classList.toggle('ativo', b.dataset.pers === _dubPersFiltro);
-    });
     _dubRenderizarRoteiro();
 }
 
@@ -24341,7 +24320,7 @@ function cfgAbrirModalRevisor(idx) {
         _cfgCampo('rvNome',t('cfg.modal.labelNome'),'text',rv&&rv.nome?rv.nome:'','') +
         _cfgCampo('rvContato',t('cfg.modal.labelContato'),'text',rv&&rv.contato?rv.contato:'','') +
         _cfgCampo('rvIdioma',t('cfg.modal.labelIdioma'),'text',rv&&rv.idioma?rv.idioma:'','PT-BR') +
-        _cfgCampo('rvSenha',t('cfg.modal.labelSenha'),'text',rv&&rv.senhaAcesso?rv.senhaAcesso:'',t('cfg.modal.phSenhaPadrao')) +
+        _cfgCampo('rvSenha',t('cfg.modal.labelSenha'),'text',rv&&rv.senhaAcesso?rv.senhaAcesso:'',t('cfg.modal.phSenha')) +
         '<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:10px;">' +
         '<label style="font-size:12px;font-weight:600;color:#92400e;display:block;margin-bottom:8px;">'+t('cfg.modal.pagamento')+'</label>' +
         '<div style="display:flex;gap:16px;margin-bottom:8px;align-items:center;">' +
@@ -25370,6 +25349,9 @@ async function dubConfirmarEpRapido() {
 // ── Fix: dubFiltrarPers compatibilidade (botão antigo ainda pode chamar) ───────
 function dubFiltrarPers(btn) {
     _dubPersFiltro = (btn && btn.dataset) ? (btn.dataset.pers || '') : (btn || '');
+    document.querySelectorAll('.dub-pers-btn').forEach(function(b){
+        b.classList.toggle('ativo', b.dataset.pers === _dubPersFiltro);
+    });
     _dubRenderizarRoteiro();
 }
 
