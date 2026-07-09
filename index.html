@@ -11412,30 +11412,102 @@ async function _cfgLogCarregar() {
             try {
                 var q2="name='catalogo.json' and '"+pastas[i].id+"' in parents and trashed=false";
                 var d2=(await (await _driveFetch('https://www.googleapis.com/drive/v3/files?q='+encodeURIComponent(q2)+'&fields=files(id)')).json()).files||[];
-                if (d2.length){ var dd=JSON.parse(await _driveLerArquivo(d2[0].id)); dd._token=pastas[i].name; entradas.push(dd); }
+                if (d2.length){
+                    var dd=JSON.parse(await _driveLerArquivo(d2[0].id));
+                    dd._token=pastas[i].name;
+                    dd._folderId=pastas[i].id; // para exclusão
+                    entradas.push(dd);
+                }
             } catch(e){}
         }
         if (!entradas.length) { el.innerHTML='<div style="text-align:center;padding:40px;color:#94a3b8;">'+t('cfg.log.nenhumaLista')+'</div>'; return; }
         el._entradas=entradas;
         el.innerHTML=entradas.map(function(d,di){
             var cl=d.cliente||{}, ok=d.status==='enviado';
-            var cor=ok?'#15803d':'#92400e', bg=ok?'#dcfce7':'#fef9c3', bd=ok?'#86efac':'#fde68a', n=(d.lista||[]).length;
-            return '<div style="background:white;border:1px solid '+bd+';border-radius:12px;overflow:hidden;">'+
+            var cor=ok?'#15803d':'#92400e', bg=ok?'#f0fdf4':'#fef9c3', bd=ok?'#86efac':'#fde68a';
+            var n=(d.lista||[]).length;
+            var dataFmt = d.data ? new Date(d.data).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
+            // Bloco de detalhes (oculto por padrão)
+            var listaHtml = (d.lista||[]).map(function(item){
+                var dubNome = '—';
+                if (item.dubId) {
+                    var dubs = carregarDubladores();
+                    var dub = dubs.find(function(x){ return x.id===item.dubId; });
+                    if (dub) dubNome = dub.nome;
+                }
+                return '<tr><td style="padding:6px 10px;font-size:12px;color:#1e293b;border-bottom:1px solid #f1f5f9;">'+
+                    (item.persNome||'—')+'</td>'+
+                    '<td style="padding:6px 10px;font-size:12px;color:#475569;border-bottom:1px solid #f1f5f9;">'+
+                    dubNome+'</td></tr>';
+            }).join('');
+            var detalheHtml =
+                '<div id="cfgLogDetalhe_'+di+'" style="display:none;border-top:1px solid #f1f5f9;background:#f8fafc;padding:14px 16px;">'+
+                '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;font-size:12px;color:#475569;">'+
+                '<div><strong style="color:#1e293b;">Cliente:</strong> '+(cl.nome||'—')+'</div>'+
+                '<div><strong style="color:#1e293b;">Empresa:</strong> '+(cl.empresa||'—')+'</div>'+
+                '<div><strong style="color:#1e293b;">Contato:</strong> '+(cl.contato||'—')+'</div>'+
+                '<div><strong style="color:#1e293b;">Prazo:</strong> '+(cl.prazo||'—')+'</div>'+
+                '<div><strong style="color:#1e293b;">Data de envio:</strong> '+dataFmt+'</div>'+
+                '<div><strong style="color:#1e293b;">Vozes selecionadas:</strong> '+n+'</div>'+
+                '</div>'+
+                '<table style="width:100%;border-collapse:collapse;background:white;border-radius:7px;overflow:hidden;border:1px solid #e5e7eb;">'+
+                '<thead><tr>'+
+                '<th style="text-align:left;padding:8px 10px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#94a3b8;border-bottom:1px solid #e5e7eb;">Personagem</th>'+
+                '<th style="text-align:left;padding:8px 10px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#94a3b8;border-bottom:1px solid #e5e7eb;">Dublador escolhido</th>'+
+                '</tr></thead><tbody>'+listaHtml+'</tbody></table></div>';
+            return '<div style="background:white;border:1px solid '+bd+';border-radius:12px;overflow:hidden;margin-bottom:10px;">'+
                 '<div style="padding:12px 16px;background:'+bg+';display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">'+
                 '<div><div style="font-size:14px;font-weight:700;color:'+cor+';">'+(cl.projeto||'Sem nome')+'</div>'+
-                '<div style="font-size:11px;color:'+cor+';opacity:.8;">'+(cl.nome||'')+(cl.empresa?' &middot; '+cl.empresa:'')+(cl.contato?' &middot; '+cl.contato:'')+(d.data?' &middot; '+new Date(d.data).toLocaleString('pt-BR'):'')+'</div></div>'+
+                '<div style="font-size:11px;color:'+cor+';opacity:.8;">'+(cl.nome||'')+(cl.empresa?' · '+cl.empresa:'')+(cl.contato?' · '+cl.contato:'')+(d.data?' · '+dataFmt:'')+'</div></div>'+
                 '<span style="font-size:10px;font-weight:700;color:'+cor+';background:white;border:1px solid '+bd+';border-radius:10px;padding:2px 10px;">'+(ok?t('cfg.log.statusEnviado'):t('cfg.log.statusRascunho'))+'</span>'+
                 '</div>'+
                 '<div style="padding:10px 16px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;">'+
-                '<span style="font-size:11px;color:#64748b;">'+n+' '+t('cfg.log.itemNs')+(cl.prazo?' &middot; '+t('cfg.log.prazo')+' '+cl.prazo:'')+'</span><div style="flex:1;"></div>'+
-                '<button onclick="_cfgLogCopiarLink('+di+')" style="padding:5px 12px;background:#ede9fe;border:1px solid #c4b5fd;border-radius:6px;font-size:11px;font-weight:600;color:#7c3aed;cursor:pointer;">Link</button>'+
-                '<button onclick="_cfgLogXLSX('+di+')" style="padding:5px 12px;background:#dcfce7;border:1px solid #86efac;border-radius:6px;font-size:11px;font-weight:600;color:#15803d;cursor:pointer;">XLSX</button>'+
-                '<button onclick="_cfgLogImportar('+di+')" style="padding:5px 12px;background:#dbeafe;border:1px solid #93c5fd;border-radius:6px;font-size:11px;font-weight:600;color:#1d4ed8;cursor:pointer;">Importar</button>'+
-                '</div></div>';
+                '<span style="font-size:11px;color:#64748b;">'+n+' '+t('cfg.log.itemNs')+(cl.prazo?' · '+t('cfg.log.prazo')+' '+cl.prazo:'')+'</span>'+
+                '<div style="flex:1;"></div>'+
+                '<button onclick="_cfgLogToggleDetalhe('+di+')" id="cfgLogBtnDet_'+di+'" style="padding:5px 12px;background:#f1f5f9;border:1px solid #cbd5e1;border-radius:6px;font-size:11px;font-weight:600;color:#334155;cursor:pointer;">▼ Ver</button>'+
+                '<button onclick="_cfgLogCopiarLink('+di+')" style="padding:5px 12px;background:#ede9fe;border:1px solid #c4b5fd;border-radius:6px;font-size:11px;font-weight:600;color:#7c3aed;cursor:pointer;">🔗 Link</button>'+
+                '<button onclick="_cfgLogXLSX('+di+')" style="padding:5px 12px;background:#dcfce7;border:1px solid #86efac;border-radius:6px;font-size:11px;font-weight:600;color:#15803d;cursor:pointer;">📥 XLSX</button>'+
+                '<button onclick="_cfgLogImportar('+di+')" style="padding:5px 12px;background:#dbeafe;border:1px solid #93c5fd;border-radius:6px;font-size:11px;font-weight:600;color:#1d4ed8;cursor:pointer;">📋 Importar</button>'+
+                '<button onclick="_cfgLogExcluir('+di+')" style="padding:5px 12px;background:#fef2f2;border:1px solid #fecaca;border-radius:6px;font-size:11px;font-weight:600;color:#dc2626;cursor:pointer;">🗑 Excluir</button>'+
+                '</div>'+
+                detalheHtml+
+                '</div>';
         }).join('');
         el._entradas=entradas;
     } catch(err){ el.innerHTML='<div style="background:#fee2e2;border-radius:8px;padding:14px;font-size:13px;color:#dc2626;">'+t('cfg.log.erro',{msg:err.message||err})+'</div>'; }
 }
+
+function _cfgLogToggleDetalhe(di) {
+    var det = document.getElementById('cfgLogDetalhe_'+di);
+    var btn = document.getElementById('cfgLogBtnDet_'+di);
+    if (!det) return;
+    var aberto = det.style.display !== 'none';
+    det.style.display = aberto ? 'none' : 'block';
+    if (btn) btn.textContent = aberto ? '▼ Ver' : '▲ Fechar';
+}
+async function _cfgLogExcluir(di) {
+    var el = document.getElementById('cfgLogLista');
+    if (!el || !el._entradas) return;
+    var d = el._entradas[di];
+    var cl = d.cliente || {};
+    var nome = cl.projeto || cl.nome || 'este registro';
+    _confirmar('Excluir o envio de casting "'+nome+'"? A pasta será movida para a lixeira do Drive.', async function() {
+        try {
+            if (!d._folderId) { mostrarNotificacao('ID da pasta não encontrado.', 'erro', 2500); return; }
+            await _driveFetch('https://www.googleapis.com/drive/v3/files/'+d._folderId, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ trashed: true })
+            });
+            el._entradas.splice(di, 1);
+            mostrarNotificacao('Registro excluído. Você pode restaurá-lo na lixeira do Drive se necessário.', 'sucesso', 4000);
+            _cfgLogCarregar(); // recarrega a lista
+        } catch(e) {
+            mostrarNotificacao('Erro ao excluir: ' + (e.message||e), 'erro', 3000);
+        }
+    }, 'Confirmar exclusão', '🗑');
+}
+
 function _cfgLogCopiarLink(di){
     var el=document.getElementById('cfgLogLista'); if(!el||!el._entradas) return;
     var d=el._entradas[di];
