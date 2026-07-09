@@ -11616,22 +11616,18 @@ function _adminsAbrirModal(titulo, nome, email, role, idx, ocultarRole) {
 
 function cfgAdminsAbrirModal() {
     _adminsAbrirModal(t('cfg.admins.tituloNovo'), '', '', 'admin', null, false);
-    _adminsAtualizarOpcoesRole('admin');
+    // Mostrar opção masteradmin apenas para superadmin
+    var optMaster = document.getElementById('admOptMaster');
+    if (optMaster) optMaster.style.display = _admEhSuperadmin() ? '' : 'none';
 }
 
-// Atualiza as opções do select de role conforme quem está logado
+// Atualiza visibilidade da opção masteradmin no select
 function _adminsAtualizarOpcoesRole(roleAtual) {
+    var optMaster = document.getElementById('admOptMaster');
+    if (optMaster) optMaster.style.display = _admEhSuperadmin() ? '' : 'none';
+    // Garantir que o valor correto está selecionado
     var sel = document.getElementById('admModalRole');
-    if (!sel) return;
-    sel.innerHTML = '';
-    // Superadmin pode criar masteradmin
-    if (_admEhSuperadmin()) {
-        sel.innerHTML += '<option value="masteradmin">🔑 MasterAdmin — gerenciamento de equipe</option>';
-    }
-    sel.innerHTML += '<option value="admin">🟠 Admin — acesso total</option>';
-    sel.innerHTML += '<option value="usuario">🟢 Usuário — acesso operacional</option>';
-    // Selecionar o role atual se existir
-    if (roleAtual) sel.value = roleAtual;
+    if (sel && roleAtual) sel.value = roleAtual;
 }
 
 function cfgAdminsEditar(idx) {
@@ -11700,6 +11696,7 @@ function cfgAdminsSalvarModal() {
     if (!nome) { mostrarNotificacao(t('cfg.admins.notifNomeObrig'), 'aviso', 2000); return; }
     var lista = _adminsGet();
     var sessao = _admSessao(); // quem está logado agora
+    var isEdicao = idx !== '';
     if (!isEdicao && !senha) { mostrarNotificacao(t('cfg.admins.notifSenhaObrig'), 'aviso', 2000); return; }
     if (senha && senha !== conf) { mostrarNotificacao(t('cfg.admins.notifSenhasNaoConf'), 'aviso', 2500); return; }
     if (isEdicao) {
@@ -28719,6 +28716,7 @@ window.addEventListener('load', function() {
       <div id="admModalRoleRow" style="margin-bottom:14px;">
         <label style="display:block;font-size:12px;font-weight:700;color:#374151;margin-bottom:5px;" data-i18n="cfg.admins.modalLabelRole">Role</label>
         <select id="admModalRole" style="width:100%;padding:9px 12px;border:1px solid #d1d5db;border-radius:7px;font-size:13px;color:#1e293b;background:white;outline:none;">
+          <option value="masteradmin" id="admOptMaster" style="display:none;">🔑 MasterAdmin — gerenciamento de equipe</option>
           <option value="admin" data-i18n="cfg.admins.modalOptAdmin">🟠 Admin — acesso total</option>
           <option value="usuario" data-i18n="cfg.admins.modalOptUsuario">🟢 Usuário — acesso operacional</option>
         </select>
