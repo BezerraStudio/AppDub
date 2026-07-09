@@ -1827,6 +1827,15 @@
           <input type="text" id="dubladorContato" placeholder="email / telefone" style="width:100%;padding:8px;border:2px solid #ecf0f1;border-radius:5px;font-size:13px;box-sizing:border-box;">
         </div>
       </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div>
+          <label style="font-size:11px;font-weight:700;color:#555;display:block;margin-bottom:3px;">🔑 Senha de acesso</label>
+          <input type="text" id="dubladorSenha" placeholder="(usa senha padrão se vazio)" style="width:100%;padding:8px;border:2px solid #ecf0f1;border-radius:5px;font-size:13px;box-sizing:border-box;">
+        </div>
+        <div style="display:flex;align-items:flex-end;padding-bottom:2px;">
+          <p style="font-size:11px;color:#95a5a6;line-height:1.5;">Se vazio: usa a senha padrão do sistema.<br>Para redefinir, escreva a nova senha aqui.</p>
+        </div>
+      </div>
       <div style="display:flex;align-items:center;gap:10px;background:#f8f9fa;padding:8px 12px;border-radius:7px;">
         <label style="font-size:12px;font-weight:700;color:#555;" data-i18n="cfg.dub.labelStatus">Status do dublador:</label>
         <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px;">
@@ -10849,6 +10858,8 @@ function abrirModalNovoDublador() {
     document.getElementById('dubladorEditId').value  = '';
     document.getElementById('dubladorNome').value    = '';
     document.getElementById('dubladorContato').value = '';
+    const inpSenhaNovo = document.getElementById('dubladorSenha');
+    if (inpSenhaNovo) inpSenhaNovo.value = '';
     document.getElementById('modalDubladorTitulo').textContent = t('cfg.dub.tituloNovo');
     // Limpar novos campos
     const _el = f => document.getElementById(f);
@@ -10893,6 +10904,8 @@ function editarDublador(id) {
     document.getElementById('dubladorEditId').value  = id;
     document.getElementById('dubladorNome').value    = d.nome;
     document.getElementById('dubladorContato').value = d.contato || '';
+    const inpSenha = document.getElementById('dubladorSenha');
+    if (inpSenha) inpSenha.value = d.senhaAcesso || '';
     document.getElementById('modalDubladorTitulo').textContent = t('cfg.dub.tituloEditar');
     preencherSelectIdiomas();
     document.getElementById('dubladorIdioma').value  = d.idioma || '';
@@ -11033,11 +11046,24 @@ async function salvarDublador() {
     const lista  = carregarDubladores();
     let editId   = document.getElementById('dubladorEditId').value;
     const ativo  = document.querySelector('input[name="dubladorStatus"]:checked')?.value !== 'inativo';
-    // Buscar o dublador existente para preservar anoBase
+    // Senha: se o admin digitou uma nova → usa ela e reseta senhaDefinida
+    // Se vazio → mantém a existente ou usa padrão para novo
+    const senhaDigitada = (document.getElementById('dubladorSenha')?.value || '').trim();
+    // Buscar o dublador existente para preservar anoBase e senhaAcesso
     const dExist = editId ? lista.find(x => x.id === editId) : null;
     const anoBaseAnterior = (dExist && dExist.portfolio && dExist.portfolio.anoBase) ? dExist.portfolio.anoBase : null;
     const dados  = { nome, idioma, contato, genero, qualidade, idades, papeis, voz, feedback, rankings, ativo,
         portfolio: { bio: portfolioBio, bioEn: portfolioBioEn, anos: portfolioAnos, anoBase: anoBaseAnterior || new Date().getFullYear() } };
+    // Senha: nova digitada → salva e reativa primeiro acesso; vazio → preserva existente
+    if (senhaDigitada) {
+        dados.senhaAcesso   = senhaDigitada;
+        dados.senhaDefinida = false; // força redefinição no próximo acesso
+    } else if (!editId) {
+        // Novo dublador sem senha → ficará com padrão (senhaAcesso vazio = usa prodGetSenhaPadrao())
+        dados.senhaAcesso   = '';
+        dados.senhaDefinida = false;
+    }
+    // Se editando e senha vazia → não incluir em dados, Object.assign preserva a existente
     if (editId) {
         const idx = lista.findIndex(d => d.id === editId);
         if (idx !== -1) Object.assign(lista[idx], dados);
@@ -20513,25 +20539,25 @@ function prodResetarSenhasConfirmar() {
 
     if (chkDub && chkDub.checked) {
         var dubs = carregarDubladores();
-        dubs.forEach(function(d){ d.senhaAcesso = padrao; });
+        dubs.forEach(function(d){ d.senhaAcesso = padrao; d.senhaDefinida = false; });
         salvarDubladores(dubs);
         resetados.push('Dubladores');
     }
     if (chkEd && chkEd.checked) {
         var eds = carregarEditores();
-        eds.forEach(function(e){ e.senhaAcesso = padrao; });
+        eds.forEach(function(e){ e.senhaAcesso = padrao; e.senhaDefinida = false; });
         salvarEditores(eds);
         resetados.push('Editores');
     }
     if (chkConf && chkConf.checked) {
         var confs = carregarConferentes();
-        confs.forEach(function(c){ c.senhaAcesso = padrao; });
+        confs.forEach(function(c){ c.senhaAcesso = padrao; c.senhaDefinida = false; });
         salvarConferentes(confs);
         resetados.push('Conferentes');
     }
     if (chkRev && chkRev.checked) {
         var revs = carregarRevisores();
-        revs.forEach(function(r){ r.senhaAcesso = padrao; });
+        revs.forEach(function(r){ r.senhaAcesso = padrao; r.senhaDefinida = false; });
         salvarRevisores(revs);
         resetados.push('Revisores');
     }
