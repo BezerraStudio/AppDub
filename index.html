@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.675</title>
+    <title>Sistema de Dublagem v12.677</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.675</p>
+        <p>v12.677</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.675</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.677</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1768,7 +1768,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.675</footer>
+    <footer>🎬 Sistema de Dublagem v12.677</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -6184,6 +6184,7 @@ function _admAbrir(adm) {
     document.getElementById('usuarioDisplay').textContent = adm.nome;
     _atualizarToggleIdioma();
     _atualizarTabLabels();
+    _aplicarPermissaoAbaConfig();
     _i18nScan();
     carregarProjetos();
     // Restaurar o último projeto que estava aberto neste dispositivo (F5, reload)
@@ -6331,6 +6332,15 @@ function _avisarNaoSalvo(callback) {
 
 // Função para trocar de aba — verifica modificações pendentes
 function _trocarAba(abaDestino) {
+    // Trava de segurança: usuário comum não acessa Configurações de jeito
+    // nenhum, mesmo que algo tente forçar a troca por outro caminho.
+    if (abaDestino === 'configuracoes') {
+        var _s = _admSessao();
+        if (_s && _s.role === 'usuario') {
+            mostrarNotificacao('Acesso negado.', 'erro', 2500);
+            return;
+        }
+    }
     // Fechar fichas abertas
     if (document.getElementById('modalFicha')?.style.display !== 'none') fecharFicha();
     if (document.getElementById('modalFichaDublador')?.style.display !== 'none') fecharFichaDublador();
@@ -6354,6 +6364,15 @@ function _trocarAba(abaDestino) {
 // visualizador veem só as abas operacionais (dubladores, equipe, serviços,
 // clientes, externos, log)
 var _CFG_ABAS_ADMIN = ['cfgTabEstudio','cfgTabLinks','cfgTabDrive','cfgTabAdmins','cfgTabSeparadorAdmin'];
+
+// Esconde a aba principal "CONFIGURAÇÕES" inteira pro papel usuario —
+// só MasterAdmin e superadmin veem essa aba no menu.
+function _aplicarPermissaoAbaConfig() {
+    var s = _admSessao();
+    var podeVerConfig = _admEhSuperadmin() || !s || s.role !== 'usuario';
+    var btnConfig = document.querySelector('.tab-btn[data-aba="configuracoes"]');
+    if (btnConfig) btnConfig.style.display = podeVerConfig ? '' : 'none';
+}
 
 function _cfgAplicarPermissoesAbas() {
     var ehAdmin = _admEhSuperadmin() || (function(){ var s=_admSessao(); return s && (s.role==='usuario' || s.role==='masteradmin'); })();
@@ -6498,7 +6517,7 @@ function salvarProjetos() {
 // ─── BACKUP / RESTORE ─────────────────────────────────────────────────────────
 function exportarBackup() {
     var data = new Date().toISOString().slice(0,10);
-    var versao = 'v12.675';
+    var versao = 'v12.677';
 
     // Ler todas as chaves do sistema do localStorage
     function lerChave(k) {
@@ -28281,17 +28300,27 @@ async function _sbCarregarDados() {
                 if (row.atualizado_em && (!maiorData || row.atualizado_em > maiorData)) maiorData = row.atualizado_em;
                 continue;
             }
-            // cfg_admins: dados de LOGIN, não cadastro de produção — a versão mais
-            // recente do banco sempre vence integralmente (sem merge add-only).
-            // Toda alteração de admin (senha, primeiro acesso, novo cadastro) já
-            // salva a lista inteira no banco, então sobrescrever local é seguro e
-            // é o que evita ficar preso numa senha/estado antigo num dispositivo
-            // que nunca recebeu a atualização.
+            // cfg_admins: dados de LOGIN, não cadastro de produção. Regra:
+            // o banco ATUALIZA quem já existe nos dois lados (resolve senha
+            // antiga travada num dispositivo), mas NUNCA remove localmente
+            // alguém que só existe aqui — isso evita que um dispositivo com
+            // uma versão desatualizada/menor apague usuários de todo mundo ao
+            // sincronizar (já aconteceu: uma aba antiga salvando algo re-enviou
+            // uma lista velha e menor, e isso "vazou" pra todo mundo).
+            // Exclusão de admin só acontece de propósito (botão Excluir).
             if (row.chave === 'cfg_admins') {
                 try {
                     var _sbAdmins = JSON.parse(serialized);
-                    if (Array.isArray(_sbAdmins) && _sbAdmins.length > 0) {
-                        _lsSetOrig(row.chave, JSON.stringify(_sbAdmins));
+                    var _locAdminsRaw = localStorage.getItem('cfg_admins');
+                    var _locAdmins = _locAdminsRaw ? JSON.parse(_locAdminsRaw) : [];
+                    if (Array.isArray(_sbAdmins) && Array.isArray(_locAdmins)) {
+                        var _idsRemoto = {};
+                        _sbAdmins.forEach(function(a){ _idsRemoto[String(a.id)] = true; });
+                        var _resultadoAdm = _sbAdmins.slice();
+                        _locAdmins.forEach(function(a){
+                            if (!_idsRemoto[String(a.id)]) _resultadoAdm.push(a);
+                        });
+                        _lsSetOrig(row.chave, JSON.stringify(_resultadoAdm));
                     }
                 } catch(_ea) {}
                 if (row.atualizado_em && (!maiorData || row.atualizado_em > maiorData)) maiorData = row.atualizado_em;
