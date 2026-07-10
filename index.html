@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Dublagem v12.672</title>
+    <title>Sistema de Dublagem v12.673</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237c3aed'/%3E%3Cpath d='M6 32 C12 12,18 12,24 32 C30 52,36 52,42 32 C48 12,54 12,58 32' stroke='white' stroke-width='6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <style>
@@ -628,7 +628,7 @@
     <div class="login-box">
         <div id="loginLogoEstudio" style="text-align:center;margin-bottom:10px;min-height:10px;"></div>
         <h1 data-i18n="login.titulo">🎬 Sistema de Dublagem</h1>
-        <p>v12.672</p>
+        <p>v12.673</p>
         <form id="formLogin">
             <input type="text"     id="usuario" placeholder="Nome ou e-mail" data-i18n-placeholder="login.user" autocomplete="username" required>
             <input type="password" id="senha"   placeholder="Senha" data-i18n-placeholder="login.senha" autocomplete="current-password" required>
@@ -657,7 +657,7 @@
             <span id="headerDataInicio" class="header-data" style="display:none;"></span>
         </div>
         <div class="header-center">
-            <h1>🎬 SISTEMA DE DUBLAGEM v12.672</h1>
+            <h1>🎬 SISTEMA DE DUBLAGEM v12.673</h1>
         </div>
         <div class="header-right">
             <span id="usuarioDisplay"></span>
@@ -1768,7 +1768,7 @@
 
     </div>
 
-    <footer>🎬 Sistema de Dublagem v12.672</footer>
+    <footer>🎬 Sistema de Dublagem v12.673</footer>
 </div>
 
 <!-- MODAIS ESCALAÇÃO / PAGAMENTOS -->
@@ -6135,6 +6135,15 @@ document.getElementById('formLogin').addEventListener('submit', async function(e
     var btn     = document.getElementById('btnEntrar');
     _adminsGarantirSuperadmin();
     var adm = adminsVerificarLogin(usuario, senha);
+    if (!adm) {
+        // Não achou localmente — pode ser um dispositivo novo/limpo que ainda não
+        // sincronizou a lista de admins com o banco. Tenta sincronizar uma vez e
+        // testa de novo antes de recusar o login.
+        btn.textContent = t('login.carregando'); btn.disabled = true;
+        await _sbCarregarDados();
+        adm = adminsVerificarLogin(usuario, senha);
+        btn.textContent = t('login.btnEntrar'); btn.disabled = false;
+    }
     if (adm) {
         btn.textContent = t('login.carregando'); btn.disabled = true;
         // Carregar dados compartilhados do Supabase antes de abrir o app
@@ -6489,7 +6498,7 @@ function salvarProjetos() {
 // ─── BACKUP / RESTORE ─────────────────────────────────────────────────────────
 function exportarBackup() {
     var data = new Date().toISOString().slice(0,10);
-    var versao = 'v12.672';
+    var versao = 'v12.673';
 
     // Ler todas as chaves do sistema do localStorage
     function lerChave(k) {
